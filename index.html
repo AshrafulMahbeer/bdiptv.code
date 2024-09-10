@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Iframe with Image Links and Server Buttons</title>
+    <style>
+        body {
+            background-image: url('your-custom-background-image.jpg');
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            color: white;
+        }
+        iframe {
+            width: 80%;
+            height: 300px;
+            border: none;
+            margin-top: 20px;
+        }
+        .images-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+        }
+        .image-item {
+            margin: 0 10px;
+            cursor: pointer;
+        }
+        .image-item img {
+            height: 100px; /* Set all images to have the same height */
+            width: auto;
+        }
+        .server-buttons {
+            margin-top: 20px;
+        }
+        .server-buttons button {
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Iframe -->
+    <iframe id="videoFrame" src="" allowfullscreen></iframe>
+
+    <!-- Image Links -->
+    <div class="images-container">
+        <div class="image-item" onclick="loadServers(['server1-link1', 'server2-link2'], 'Image 1')">
+            <img src="image1.jpg" alt="Image 1">
+        </div>
+        <div class="image-item" onclick="loadServers(['server1-link3', 'server2-link4', 'server3-link5'], 'Image 2')">
+            <img src="image2.jpg" alt="Image 2">
+        </div>
+        <div class="image-item" onclick="loadServers(['server1-link6'], 'Image 3')">
+            <img src="image3.jpg" alt="Image 3">
+        </div>
+    </div>
+
+    <!-- Server Buttons -->
+    <div class="server-buttons" id="serverButtons"></div>
+
+    <script>
+        // Function to load server buttons dynamically based on image click
+        function loadServers(servers, imageName) {
+            const serverButtons = document.getElementById('serverButtons');
+            serverButtons.innerHTML = ''; // Clear existing buttons
+
+            servers.forEach((server, index) => {
+                const button = document.createElement('button');
+                button.innerText = `Server ${index + 1}`;
+                button.onclick = () => loadIframe(server);
+                serverButtons.appendChild(button);
+            });
+        }
+
+        // Function to load the iframe with the selected server link
+        function loadIframe(serverLink) {
+            document.getElementById('videoFrame').src = serverLink;
+        }
+    </script>
+
+</body>
+</html>
