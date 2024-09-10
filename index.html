@@ -20,8 +20,8 @@
         /* Maintain 16:9 aspect ratio for the iframe */
         .iframe-container {
             position: relative;
-            width: 60%;  /* Adjust the width of the iframe */
-            padding-bottom: 45%; /* 16:9 aspect ratio */
+            width: 80%;  /* Adjust the width of the iframe */
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
             height: 0;
             margin-top: 20px;
         }
@@ -35,33 +35,42 @@
             border: none;
         }
 
+        /* Scrollable images container */
         .images-container {
             display: flex;
-            justify-content: flex-start;
             overflow-x: auto;  /* Enable horizontal scrolling */
             white-space: nowrap;  /* Prevent wrapping to the next line */
-            margin: 10px;
-            padding: 10px; /* Optional: Add padding to the container */
-            width: 45%; /* Adjust width as needed */
+            margin: 20px;
+            padding: 10px;
+            width: 90%;  /* Adjust width as needed */
+            scrollbar-width: thin;  /* Firefox: thin scrollbar */
+        }
+
+        .images-container::-webkit-scrollbar {
+            height: 8px;  /* Chrome, Safari, and Opera: thin scrollbar */
+        }
+
+        .images-container::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.5); /* Custom color for the scrollbar */
         }
 
         .image-item {
-            display: inline-block;  /* Make the images align horizontally */
+            display: inline-block;
             margin: 0 10px;
             cursor: pointer;
         }
 
         .image-item img {
-            height: 50px; /* Set all images to have the same height */
+            height: 100px; /* Set all images to have the same height */
             width: auto;
         }
 
         .server-buttons {
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .server-buttons button {
-            padding: 10px 10px;
+            padding: 10px 15px;
             margin: 5px;
             font-size: 16px;
             cursor: pointer;
@@ -75,7 +84,7 @@
         <iframe id="videoFrame" src="https://bosta-live.vercel.app/Discovery.html" allowfullscreen></iframe>
     </div>
 
-    <!-- Scrollable Image Links -->
+    <!-- Scrollable Image Links (left to right) -->
     <div class="images-container">
         <div class="image-item" onclick="loadServers(['https://bosta-live.vercel.app/Discovery.html'], 'DiscoveryBengali')">
             <img src="https://bosta-live.vercel.app/discovery.png" alt="DiscoveryBengali">
@@ -86,6 +95,7 @@
         <div class="image-item" onclick="loadServers(['server1-link6'], 'Image 3')">
             <img src="image3.jpg" alt="Image 3">
         </div>
+        <!-- Add more images as needed -->
     </div>
 
     <!-- Server Buttons -->
@@ -115,6 +125,9 @@
             loadIframe('https://bosta-live.vercel.app/Discovery.html'); // Default channel URL
         };
     </script>
+
+</body>
+</html>
 
 </body>
 </html>
