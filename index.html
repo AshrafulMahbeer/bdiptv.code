@@ -8,22 +8,18 @@
         body {
             background-image: url('https://bosta-live.vercel.app/Untitled.png');
             background-size: cover;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             margin: 0;
             padding: 0;
-            height: 100vh;
             color: white;
+            font-family: Arial, sans-serif;
         }
 
-        /* Maintain 16:9 aspect ratio for the iframe */
+        /* Container for the main iframe */
         .iframe-container {
+            width: 80%;
+            padding-bottom: 56.25%;
             position: relative;
-            width: 80%;  /* Adjust the width of the iframe */
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            margin-top: 20px;
+            margin: 20px auto;
         }
 
         iframe {
@@ -35,75 +31,86 @@
             border: none;
         }
 
-        /* Scrollable images container */
-        .images-container {
+        /* Channel logo container */
+        .logos-container {
             display: flex;
-            overflow-x: auto;  /* Enable horizontal scrolling */
-            white-space: nowrap;  /* Prevent wrapping to the next line */
-            margin: 20px;
-            padding: 10px;
-            width: 90%;  /* Adjust width as needed */
-            scrollbar-width: thin;  /* Firefox: thin scrollbar */
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
         }
 
-        .images-container::-webkit-scrollbar {
-            height: 8px;  /* Chrome, Safari, and Opera: thin scrollbar */
-        }
-
-        .images-container::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 255, 255, 0.5); /* Custom color for the scrollbar */
-        }
-
-        .image-item {
-            display: inline-block;
-            margin: 0 10px;
+        .logos-container img {
+            height: 100px;
             cursor: pointer;
+            transition: transform 0.3s;
         }
 
-        .image-item img {
-            height: 100px; /* Set all images to have the same height */
-            width: auto;
+        .logos-container img:hover {
+            transform: scale(1.1);
         }
 
-        .server-buttons {
-            margin-top: 20px;
+        /* Server buttons section with darker background */
+        .server-buttons-container {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 20px 0;
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+            display: none;
+            z-index: 100;
+            transition: opacity 0.3s ease-in-out;
         }
 
-        .server-buttons button {
+        .server-buttons-container.show {
+            display: block;
+        }
+
+        .server-buttons-container button {
+            background-color: #444;
+            border: 1px solid #fff;
             padding: 10px 15px;
             margin: 5px;
             font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
+
+        .server-buttons-container button:hover {
+            background-color: #666;
+        }
+
+        /* Full page scroll-up on logo click */
+        html, body {
+            scroll-behavior: smooth;
+        }
+
     </style>
 </head>
 <body>
 
-    <!-- Iframe Container for 16:9 Aspect Ratio -->
+    <!-- Iframe container for 16:9 Aspect Ratio -->
     <div class="iframe-container">
         <iframe id="videoFrame" src="https://bosta-live.vercel.app/Discovery.html" allowfullscreen></iframe>
     </div>
 
-    <!-- Scrollable Image Links (left to right) -->
-    <div class="images-container">
-        <div class="image-item" onclick="loadServers(['https://bosta-live.vercel.app/Discovery.html'], 'DiscoveryBengali')">
-            <img src="https://bosta-live.vercel.app/discovery.png" alt="DiscoveryBengali">
-        </div>
-        <div class="image-item" onclick="loadServers(['server1-link3', 'server2-link4', 'server3-link5'], 'Image 2')">
-            <img src="image2.jpg" alt="Image 2">
-        </div>
-        <div class="image-item" onclick="loadServers(['server1-link6'], 'Image 3')">
-            <img src="image3.jpg" alt="Image 3">
-        </div>
-        <!-- Add more images as needed -->
+    <!-- Logo images, automatically aligned based on screen size -->
+    <div class="logos-container">
+        <img src="https://bosta-live.vercel.app/discovery.png" alt="Discovery" onclick="loadServers(['https://bosta-live.vercel.app/Discovery.html'], 'Discovery')">
+        <img src="image2.jpg" alt="Channel 2" onclick="loadServers(['server1-link2', 'server2-link2'], 'Channel 2')">
+        <img src="image3.jpg" alt="Channel 3" onclick="loadServers(['server1-link3'], 'Channel 3')">
+        <!-- Add more logos as needed -->
     </div>
 
-    <!-- Server Buttons -->
-    <div class="server-buttons" id="serverButtons"></div>
+    <!-- Server buttons area -->
+    <div id="serverButtons" class="server-buttons-container"></div>
 
     <script>
         // Function to load server buttons dynamically based on image click
-        function loadServers(servers, imageName) {
+        function loadServers(servers, channelName) {
             const serverButtons = document.getElementById('serverButtons');
             serverButtons.innerHTML = ''; // Clear existing buttons
 
@@ -112,6 +119,15 @@
                 button.innerText = `Server ${index + 1}`;
                 button.onclick = () => loadIframe(server);
                 serverButtons.appendChild(button);
+            });
+
+            // Display server buttons
+            serverButtons.classList.add('show');
+
+            // Scroll to the iframe (mimics page scrolling up)
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
             });
         }
 
@@ -128,15 +144,3 @@
 
 </body>
 </html>
-
-</body>
-</html>
-<div style="text-align: center;">Bosta Live</div>
-<div style="text-align: center;">Bosta Live</div>
-<div style="text-align: center;">Bosta Live</div>
-<div style="text-align: center;">Bosta Live</div>
-<div style="text-align: center;">Bosta Live</div>
-<div style="text-align: center;">Bosta Live</div>
-<div style="text-align: center;">Bosta Live</div>
-<div style="text-align: center;">Bosta Live</div>
-<div style="text-align: center;">Bosta Live</div>
