@@ -12,12 +12,13 @@
             padding: 0;
             color: white;
             font-family: Arial, sans-serif;
+            scroll-behavior: smooth; /* Smooth scrolling */
         }
 
         /* Container for the main iframe */
         .iframe-container {
             width: 80%;
-            padding-bottom: 56.25%;
+            padding-bottom: 20%;
             position: relative;
             margin: 20px auto;
         }
@@ -27,8 +28,36 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 80%;
+            height: 100%;
             border: none;
+        }
+
+        /* Server buttons section (initially hidden) */
+        .server-buttons-container {
+            width: 100%;
+            padding: 20px 0;
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+            display: none; /* Hidden by default */
+            transition: all 0.3s ease;
+        }
+
+        .server-buttons-container.show {
+            display: block; /* Displayed when a logo is clicked */
+        }
+
+        .server-buttons-container button {
+            background-color: #444;
+            border: 1px solid #fff;
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .server-buttons-container button:hover {
+            background-color: #666;
         }
 
         /* Channel logo container */
@@ -52,50 +81,17 @@
             transform: scale(1.1);
         }
 
-        /* Server buttons section with darker background */
-        .server-buttons-container {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            padding: 20px 0;
-            background: rgba(0, 0, 0, 0.8);
-            text-align: center;
-            display: none;
-            z-index: 100;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .server-buttons-container.show {
-            display: block;
-        }
-
-        .server-buttons-container button {
-            background-color: #444;
-            border: 1px solid #fff;
-            padding: 10px 15px;
-            margin: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .server-buttons-container button:hover {
-            background-color: #666;
-        }
-
-        /* Full page scroll-up on logo click */
-        html, body {
-            scroll-behavior: smooth;
-        }
-
     </style>
 </head>
 <body>
 
-    <!-- Iframe container for 16:9 Aspect Ratio -->
+    <!-- Iframe container for the player -->
     <div class="iframe-container">
         <iframe id="videoFrame" src="https://bosta-live.vercel.app/Discovery.html" allowfullscreen></iframe>
     </div>
+
+    <!-- Server buttons section (initially hidden, will appear when logo clicked) -->
+    <div id="serverButtons" class="server-buttons-container"></div>
 
     <!-- Logo images, automatically aligned based on screen size -->
     <div class="logos-container">
@@ -104,9 +100,6 @@
         <img src="image3.jpg" alt="Channel 3" onclick="loadServers(['server1-link3'], 'Channel 3')">
         <!-- Add more logos as needed -->
     </div>
-
-    <!-- Server buttons area -->
-    <div id="serverButtons" class="server-buttons-container"></div>
 
     <script>
         // Function to load server buttons dynamically based on image click
@@ -121,12 +114,11 @@
                 serverButtons.appendChild(button);
             });
 
-            // Display server buttons
+            // Display the server buttons section
             serverButtons.classList.add('show');
 
-            // Scroll to the iframe (mimics page scrolling up)
-            window.scrollTo({
-                top: document.body.scrollHeight,
+            // Scroll the page to the server buttons section (above logos)
+            serverButtons.scrollIntoView({
                 behavior: 'smooth'
             });
         }
