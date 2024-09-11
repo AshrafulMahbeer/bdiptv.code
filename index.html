@@ -90,7 +90,7 @@
         <iframe id="videoFrame" src="https://bosta-live.vercel.app/Discovery.html" allowfullscreen></iframe>
     </div>
 
-    <!-- Server buttons section (initially hidden, will appear when logo clicked) -->
+    <!-- Server buttons section (will appear after the iframe) -->
     <div id="serverButtons" class="server-buttons-container"></div>
 
     <!-- Logo images, automatically aligned based on screen size -->
@@ -107,6 +107,9 @@
             const serverButtons = document.getElementById('serverButtons');
             serverButtons.innerHTML = ''; // Clear existing buttons
 
+            // Add default server as the iframe source
+            loadIframe(servers[0]);
+
             servers.forEach((server, index) => {
                 const button = document.createElement('button');
                 button.innerText = `Server ${index + 1}`;
@@ -117,8 +120,8 @@
             // Display the server buttons section
             serverButtons.classList.add('show');
 
-            // Scroll the page to the server buttons section (above logos)
-            serverButtons.scrollIntoView({
+            // Scroll to the iframe (mimics page scrolling up to iframe)
+            document.querySelector('.iframe-container').scrollIntoView({
                 behavior: 'smooth'
             });
         }
