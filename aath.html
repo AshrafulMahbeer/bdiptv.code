@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://bosta-live.vercel.app/DPlayer.min.css" />
+    <script src="https://bosta-live.vercel.app/DPlayer.min.js"></script>
+    <script src="https://bosta-live.vercel.app/hls.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #dplayer {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="dplayer"></div>
+    <script>
+        const dp = new DPlayer({
+            container: document.getElementById('dplayer'),
+            live: true,  // Indicate that the stream is live
+            autoplay: true,
+            video: {
+                url: 'https://ottbangla.com/themes/chunklist.m3u8?load=215218dc50b20e9ce79d8642721f2e2b6cf8e2f25b4033ab389a34ca296c3f26b315c93319e1b5570a6eaf72be322b964bb553d8ac22d9b6e6ca6c483ef02ebc845711557627dcacdc8357b9cf40332ea0a08d055278d43bbb3a436e26a4d25c4c31b04c8dfbd009db8f34f670af0adf5482c6da316bb4948a606c84b40bbb7afdb340e8fa020195a9ff98406ac8512d3b752008006547eddd8cc729957d566eab540db0cbe09c9565507bd72bc3ca2cee01b02ad45cf340708ce7339b9aabf985cc3c0fce8c728a8a046aa6c85b4e01d4c1d908b43ab74bbb52cb271977c37f9ef437fbbebd963cfe4f01a68466b13251b7211761b54aeaaac7645b5c87d2c7bc0de4d4d8632236ceb806f8a003fb7c695ea06268ab504e8d031f6a64f123b74b9cddfe3ff0e466e0920c9f98acdee07144ff4ccccbb54047d07a2075906cad823eb662dab48b270e29899f363e47fd5708ea472f2c6e6311f8c20c25b81ed5a13b3fee28134326b59e8ae5cc25f9ec&token=',
+                type: 'customHls',
+                customType: {
+                    customHls: function(video, player) {
+                        if (Hls.isSupported()) {
+                            const hls = new Hls();
+                            hls.loadSource(video.src);
+                            hls.attachMedia(video);
+                        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                            video.src = video.src;
+                        }
+                    }
+                }
+            },
+        });
+    </script>
+</body>
+</html>
