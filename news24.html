@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://bosta-live.vercel.app/DPlayer.min.css" />
     <script src="https://bosta-live.vercel.app/DPlayer.min.js"></script>
-    <script src="https://bosta-live.vercel.app/hls.min.js"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
     <style>
         body, html {
             margin: 0;
@@ -22,62 +20,24 @@
             width: 100%;
             height: 100%;
         }
-        iframe {
-            display: none; /* Hides the YouTube iframe */
-        }
     </style>
 </head>
 <body>
-    <iframe id="youtube-iframe" width="1116" height="560" src="https://www.youtube.com/embed/myXnRGPKUqM?enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
     <div id="dplayer"></div>
+
     <script>
-        let player;
-
-        // YouTube API function
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-iframe', {
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            event.target.playVideo(); // Auto-play YouTube video when ready
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING) {
-                // Get YouTube video URL
-                const videoUrl = player.getVideoUrl();
-                // Pass the YouTube video URL to DPlayer
-                initializeDPlayer(videoUrl);
-            }
-        }
-
-        function initializeDPlayer(videoUrl) {
-            const dp = new DPlayer({
-                container: document.getElementById('dplayer'),
-                live: true, // Indicate that the stream is live
-                autoplay: true,
-                video: {
-                    url: videoUrl,
-                    type: 'customHls',
-                    customType: {
-                        customHls: function (video, player) {
-                            if (Hls.isSupported()) {
-                                const hls = new Hls();
-                                hls.loadSource(video.src);
-                                hls.attachMedia(video);
-                            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                                video.src = video.src;
-                            }
-                        }
-                    }
-                },
-            });
-        }
+        const dp = new DPlayer({
+            container: document.getElementById('dplayer'),
+            autoplay: true,
+            video: {
+                url: 'https://www.youtube.com/watch?v=myXnRGPKUqM', // Replace with your YouTube video URL
+                type: 'youtube', // Specify YouTube as the type
+            },
+            screenshot: true, // Allow screenshots
+            preload: 'auto',
+            playbackSpeed: [0.5, 1.0, 1.5, 2.0], // Allow playback speed control
+            contextmenu: [], // Disable right-click context menu (optional)
+        });
     </script>
 </body>
 </html>
