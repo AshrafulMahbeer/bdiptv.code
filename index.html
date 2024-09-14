@@ -108,17 +108,17 @@
     <div id="serverButtons" class="server-buttons-container"></div>
 
     <!-- Category filter dropdown -->
-    <div class="category-filter">
-        <label for="categorySelect">Sort by Category: </label>
-        <select id="categorySelect" onchange="filterChannels()">
-            <option value="all">All</option>
-            <option value="News">News</option>
-            <option value="Featured">Featured</option>
-            <option value="Kids">Kids</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Documentary">Documentary</option>
-        </select>
-    </div>
+<div class="category-filter">
+    <label for="categorySelect">Sort by Category: </label>
+    <select id="categorySelect" onchange="filterChannels()">
+        <option value="all">All</option>
+        <option value="News">News</option>
+        <option value="Featured">Featured</option>
+        <option value="Kids">Kids</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Documentary">Documentary</option>
+    </select>
+</div>
 
     <!-- Logo images -->
     <div class="logos-container">
@@ -200,6 +200,24 @@
             loadIframe('https://bosta-live.vercel.app/Discovery.html'); // Default channel URL
         };
     </script>
+        <script>
+        function filterChannels() {
+            var selectedCategory = document.getElementById('categorySelect').value.toLowerCase();
+            var images = document.querySelectorAll('img[data-category]');
+            images.forEach(function(img) {
+                var categories = img.getAttribute('data-category').toLowerCase().split(',');
+                categories = categories.map(function(category) {
+                    return category.trim();
+                });
+                if (selectedCategory === 'all' || categories.includes(selectedCategory)) {
+                    img.style.display = '';
+                } else {
+                    img.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
 
 </body>
 
