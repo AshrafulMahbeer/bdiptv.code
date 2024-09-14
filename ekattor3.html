@@ -1,38 +1,48 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clappr Player</title>
-  <script src="https://cdn.jsdelivr.net/npm/@clappr/core@latest/dist/clappr.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@clappr/dash-shaka-playback@latest/dist/clappr-dash-shaka-playback.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKASH GO Player</title>
+    <!-- Include JW Player JavaScript Library -->
+    <script src="https://content.jwplatform.com/libraries/Z79JsmAO.js"></script>
+    <style>
+        /* Fullscreen styles for the player */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: black; /* Background color for better visibility */
+        }
+
+        #jwplayerDiv {
+            width: 100%;
+            height: 100vh; /* Full viewport height */
+        }
+    </style>
 </head>
 <body>
-  <div id="player"></div>
+    <!-- Create a DIV container for JW Player -->
+    <div id="jwplayerDiv"></div>
 
-  <script>
-    const player = new Clappr.Player({
-      parentId: document.getElementById('player'),
-      sources: [
-        {
-          src: 'https://medialive.akash-go.com/out/v1/1eec5c4527b14f70bb9580fa18c331e8/index.mpd',
-          type: 'application/dash+xml', // Specify DASH type
-          drm: {
-            // Configure ClearKey DRM if needed
-            eme: 'clearkey',
-            keyId: '716a623d1eb648559429a7baee4dc38a',
-            key: '04de11307db20beb1cdc2c76eeebecbf'
-          }
-        }
-      ],
-      plugins: {
-        core: [
-          Clappr.DashShakaPlayback // Add DashShakaPlayback plugin
-        ]
-      }
-    });
-
-    player.play(); // Start playback
-  </script>
+    <script>
+        // Initialize JW Player
+        jwplayer("jwplayerDiv").setup({
+            file: "https://medialive.akash-go.com/out/v1/1eec5c4527b14f70bb9580fa18c331e8/index.mpd",
+            type: "dash",  // Specify the type as DASH
+            drm: {
+                clearkey: {
+                    key: "04de11307db20beb1cdc2c76eeebecbf",  // ClearKey DRM key
+                    keyId: "716a623d1eb648559429a7baee4dc38a"  // ClearKey DRM key ID
+                }
+            },
+            width: "100%",  // Full width
+            height: "100%",  // Full height
+            stretching: "fit",  // Ensures the player fills the container
+            autostart: true,  // Set to true to autoplay if needed
+            controls: true,  // Show controls for playback
+        });
+    </script>
 </body>
 </html>
