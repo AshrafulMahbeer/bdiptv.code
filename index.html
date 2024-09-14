@@ -1,8 +1,6 @@
-<div style="color: white; background-color: rgba(0, 0, 0, 0.5); padding: 10px; text-align: center;">
-  &copy; Bostafull Live by Syed Ashraful Islam Mahbeer
-</div>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,35 +33,36 @@
             border: none;
         }
 
-/* Server buttons section (initially hidden) */
-.server-buttons-container {
-  width: 100%;
-  padding: 20px 0;
-  background: rgba(0, 0, 0, 0.8);
-  text-align: center;
-  display: none; /* Hidden by default */
-  transition: all 0.3s ease;
-  color: white; /* Text color set to white */
-}
+        /* Server buttons section */
+        .server-buttons-container {
+            width: 100%;
+            padding: 20px 0;
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+            display: none;
+            transition: all 0.3s ease;
+            color: white;
+        }
 
-.server-buttons-container.show {
-  display: block; /* Displayed when a logo is clicked */
-}
+        .server-buttons-container.show {
+            display: block;
+        }
 
-.server-buttons-container button {
-  background-color: #444;
-  border: 1px solid #fff;
-  padding: 10px 15px;
-  margin: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  color: white;
-}
+        .server-buttons-container button {
+            background-color: #444;
+            border: 1px solid #fff;
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            color: white;
+        }
 
-.server-buttons-container button:hover {
-  background-color: #666;
-}
+        .server-buttons-container button:hover {
+            background-color: #666;
+        }
+
         /* Channel logo container */
         .logos-container {
             display: flex;
@@ -85,8 +84,19 @@
             transform: scale(1.1);
         }
 
+        /* Style for the category filter */
+        .category-filter {
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .category-filter select {
+            padding: 10px;
+            font-size: 16px;
+        }
     </style>
 </head>
+
 <body>
 
     <!-- Iframe container for the player -->
@@ -94,36 +104,50 @@
         <iframe id="videoFrame" src="https://bosta-live.vercel.app/Discovery.html" allowfullscreen></iframe>
     </div>
 
-    <!-- Server buttons section (will appear after the iframe) -->
+    <!-- Server buttons section -->
     <div id="serverButtons" class="server-buttons-container"></div>
 
-    <!-- Logo images, automatically aligned based on screen size -->
+    <!-- Category filter dropdown -->
+    <div class="category-filter">
+        <label for="categorySelect">Sort by Category: </label>
+        <select id="categorySelect" onchange="filterChannels()">
+            <option value="all">All</option>
+            <option value="News">News</option>
+            <option value="Featured">Featured</option>
+            <option value="Kids">Kids</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Documentary">Documentary</option>
+        </select>
+    </div>
+
+    <!-- Logo images -->
     <div class="logos-container">
-        <img src="/discovery.png" alt="Discovery" onclick="loadServers(['Discovery.html'], 'Discovery')">
-        <img src="/3.png" alt="Jamuna" onclick="loadServers(['/Jamuna.html', 'https://www.youtube.com/embed/Ik62rcBbZdk'], 'Jamuna')">
-        <img src="/dbc-news.png" alt="DBC" onclick="loadServers(['/DBC.html', 'https://www.youtube.com/embed/p_rx0gebwkc'], 'DBC')">
-        <img src="/2.jpg" alt="ekhn" onclick="loadServers(['/ekhon.html', 'https://www.youtube.com/embed/kWWmOiRrw4A'], 'ekhn')">
-        <img src="/independenttv.png" alt="independent" onclick="loadServers(['/independent.html', 'https://www.youtube.com/embed/1YhmjNQlnP8'], 'independent')">
-        <img src="/somoynews.png" alt="somoy" onclick="loadServers(['/somoy.html', 'somoy-of.html', 'https://www.youtube.com/embed/xEl7I8pN-C0'], 'somoy')">
-        <img src="/channel-24.png" alt="24" onclick="loadServers(['/24.html', 'https://www.youtube.com/embed/exTJgSp4TUE'], '24')">
-        <img src="/atn-bangla.png" alt="atn" onclick="loadServers(['/atnbn.html'], 'atn')">
-        <img src="/deepto-tv.png" alt="deepto" onclick="loadServers(['/deepto.html'], 'deepto')">
-        <img src="/bangla-tv.png" alt="bangla" onclick="loadServers(['/banglatv.html'], 'bangla')">
-        <img src="/maasranga-tv.png" alt="masranga" onclick="loadServers(['/masranga.html'], 'masranga')">
-        <img src="/channel-i.png" alt="channel-i" onclick="loadServers(['/channel-i.html', 'https://www.youtube.com/embed/U1mfg8dqAoo'], 'channel-i')">
-        <img src="/ananda-tv.jpg" alt="ananda" onclick="loadServers(['/ananda.html'], 'ananda')">
-        <img src="/ekattor-tv.png" alt="ekattor" onclick="loadServers(['/ekattor.html'], 'ekattor')">
-        <img src="/sa-tv.png" alt="satv" onclick="loadServers(['/sa-tv.html'], 'satv')">
-        <img src="/rtv.png" alt="rtv" onclick="loadServers(['/rtv.html'], 'rtv')">
-        <img src="/boishakhi-tv.png" alt="boishakhi" onclick="loadServers(['/boishakhi.html'], 'boishakhi')">
-        <img src="/bijoy-tv.png" alt="bijoy" onclick="loadServers(['/bijoy.html'], 'bijoy')">
-        <img src="/bangla-vision.png" alt="bv" onclick="loadServers(['/bv.html'], 'bv')">
-        <img src="/my-tv.png" alt="mytv" onclick="loadServers(['/mytv.html'], 'mytv')">
-        <img src="/ekushey-tv.png" alt="etv" onclick="loadServers(['/etv.html'], 'etv')">
-        <img src="/asian-tv.png" alt="asian" onclick="loadServers(['/asian.html'], 'asian')">
-        <img src="/news-24.png" alt="n24" onclick="loadServers(['/news24.html'], 'n24')">
-        <img src="/download.jpeg" alt="aath" onclick="loadServers(['/aath.html'], 'aath')">
-        <!-- Add more logos as needed -->
+<img src="/discovery.png" alt="Discovery" data-category="Documentary, Featured" onclick="loadServers(['Discovery.html'], 'Discovery')">
+<img src="/3.png" alt="Jamuna" data-category="News" onclick="loadServers(['/Jamuna.html', 'https://www.youtube.com/embed/Ik62rcBbZdk'], 'Jamuna')">
+<img src="/dbc-news.png" alt="DBC" data-category="News" onclick="loadServers(['/DBC.html', 'https://www.youtube.com/embed/p_rx0gebwkc'], 'DBC')">
+<img src="/2.jpg" alt="ekhn" data-category="News" onclick="loadServers(['/ekhon.html', 'https://www.youtube.com/embed/kWWmOiRrw4A'], 'ekhn')">
+<img src="/independenttv.png" alt="independent" data-category="News" onclick="loadServers(['/independent.html', 'https://www.youtube.com/embed/1YhmjNQlnP8'], 'independent')">
+<img src="/somoynews.png" alt="somoy" data-category="News" onclick="loadServers(['/somoy.html', 'somoy-of.html', 'https://www.youtube.com/embed/xEl7I8pN-C0'], 'somoy')">
+<img src="/channel-24.png" alt="24" data-category="News" onclick="loadServers(['/24.html', 'https://www.youtube.com/embed/exTJgSp4TUE'], '24')">
+<img src="/atn-bangla.png" alt="atn" data-category="Entertainment" onclick="loadServers(['/atnbn.html'], 'atn')">
+<img src="/deepto-tv.png" alt="deepto" data-category="Entertainment" onclick="loadServers(['/deepto.html'], 'deepto')">
+<img src="/bangla-tv.png" alt="bangla" data-category="Entertainment" onclick="loadServers(['/banglatv.html'], 'bangla')">
+<img src="/maasranga-tv.png" alt="masranga" data-category="Entertainment, Featured, Kids" onclick="loadServers(['/masranga.html'], 'masranga')">
+<img src="/channel-i.png" alt="channel-i" data-category="Featured" onclick="loadServers(['/channel-i.html', 'https://www.youtube.com/embed/U1mfg8dqAoo'], 'channel-i')">
+<img src="/ananda-tv.jpg" alt="ananda" data-category="Entertainment" onclick="loadServers(['/ananda.html'], 'ananda')">
+<img src="/ekattor-tv.png" alt="ekattor" data-category="News" onclick="loadServers(['/ekattor.html'], 'ekattor')">
+<img src="/sa-tv.png" alt="satv" data-category="Entertainment" onclick="loadServers(['/sa-tv.html'], 'satv')">
+<img src="/rtv.png" alt="rtv" data-category="Entertainment" onclick="loadServers(['/rtv.html'], 'rtv')">
+<img src="/boishakhi-tv.png" alt="boishakhi" data-category="Entertainment" onclick="loadServers(['/boishakhi.html'], 'boishakhi')">
+<img src="/bijoy-tv.png" alt="bijoy" data-category="Entertainment" onclick="loadServers(['/bijoy.html'], 'bijoy')">
+<img src="/bangla-vision.png" alt="bv" data-category="Entertainment" onclick="loadServers(['/bv.html'], 'bv')">
+<img src="/my-tv.png" alt="mytv" data-category="Entertainment" onclick="loadServers(['/mytv.html'], 'mytv')">
+<img src="/ekushey-tv.png" alt="etv" data-category="News" onclick="loadServers(['/etv.html'], 'etv')">
+<img src="/asian-tv.png" alt="asian" data-category="Entertainment" onclick="loadServers(['/asian.html'], 'asian')">
+<img src="/news-24.png" alt="n24" data-category="News" onclick="loadServers(['/news24.html'], 'n24')">
+<img src="/download.jpeg" alt="aath" data-category="Entertainment, Featured" onclick="loadServers(['/aath.html'], 'aath')">
+
+        <!-- Add more logos with appropriate data-category attributes -->
     </div>
 
     <script>
@@ -156,6 +180,21 @@
             document.getElementById('videoFrame').src = serverLink;
         }
 
+        // Function to filter channels based on the selected category
+        function filterChannels() {
+            const selectedCategory = document.getElementById('categorySelect').value;
+            const logos = document.querySelectorAll('.logos-container img');
+
+            logos.forEach(logo => {
+                const category = logo.getAttribute('data-category');
+                if (selectedCategory === 'all' || category === selectedCategory) {
+                    logo.style.display = 'inline';
+                } else {
+                    logo.style.display = 'none';
+                }
+            });
+        }
+
         // Load a default channel on page load
         window.onload = function() {
             loadIframe('https://bosta-live.vercel.app/Discovery.html'); // Default channel URL
@@ -163,7 +202,5 @@
     </script>
 
 </body>
+
 </html>
-<div style="color: white; background-color: rgba(0, 0, 0, 0.5); padding: 10px; text-align: center;">
-  &copy; Bostafull Live by Syed Ashraful Islam Mahbeer. Any embedded content on this site are collected from the internet and Bostafull Live is not Connected with them. Wait up to 1 min to load, if not, change server.
-</div>
