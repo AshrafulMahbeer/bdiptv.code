@@ -1,42 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M3U8 Stream Player</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <title>CORS Proxy for m3u8</title>
 </head>
 <body>
-
-<video id="video" controls width="600"></video>
-
-<script>
-    // Replace with your Vercel serverless function URL after deployment
-    const proxyUrl = 'https://bosta-live.vercel.app/api/fetch-m3u8.js';
-
-    // Replace with the actual .m3u8 URL you want to fetch
-    const m3u8Url = 'http://172.20.2.5:8082/T-SPORTS/index.m3u8?token=d8a34ca0c9cb1e81042b5c0c1d60eef308e87c65-98e97e9957d5798dc2c3baaa59a70b73-1726329267-1726318467'; // Example URL, replace with actual
-
-    const video = document.getElementById('video');
-    const finalUrl = proxyUrl + encodeURIComponent(m3u8Url);
-
-    if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(finalUrl);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function() {
-            video.play();
-        });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Safari's native support for HLS
-        video.src = finalUrl;
-        video.addEventListener('loadedmetadata', function() {
-            video.play();
-        });
-    } else {
-        alert("HLS is not supported in your browser");
-    }
-</script>
-
+  <form id="proxy-form">
+    <label for="url">Enter m3u8 URL:</label>
+    <input type="text" id="url" name="url">
+    <button type="submit">Proxy</button>
+  </form>
+  <div id="result"></div>
 </body>
+<script src="script.js"></script>
 </html>
