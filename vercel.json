@@ -3,22 +3,5 @@
     { "source": "/", "destination": "/index.html" }
   ]
 }
-{
-  "headers": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "https://bosta-live.vercel.app/"
-        }
-      ],
-      "headers" : [
-        {
-          "key" : "X-Robots-Tag",
-          "value" : "noindex"
-        }
-      ]
-    }
-  ]
+
 }
