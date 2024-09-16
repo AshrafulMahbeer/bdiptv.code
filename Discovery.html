@@ -31,7 +31,7 @@
             live: true,  // Indicate that the stream is live
             autoplay: true,
             video: {
-                url: 'https://bosta-live.vercel.app/DiscoveryBengali.m3u8', // Main m3u8 link
+                url: 'https://bosta-live.vercel.app/DiscoveryBengali.m3u8',
                 type: 'customHls',
                 customType: {
                     customHls: function(video, player) {
@@ -39,25 +39,8 @@
                             const hls = new Hls();
                             hls.loadSource(video.src);
                             hls.attachMedia(video);
-
-                            // Optional: Enable manual quality switching
-                            hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-                                const qualityLevels = data.levels.map((level, index) => {
-                                    return {
-                                        name: `${level.height}p`, // Display quality by height (resolution)
-                                        url: level.url[0],
-                                        type: 'hls'
-                                    };
-                                });
-                                
-                                // Add the quality control options to DPlayer
-                                player.switchVideo({
-                                    quality: qualityLevels,
-                                    defaultQuality: 0 // Auto-select quality (can be changed to a specific index)
-                                });
-                            });
                         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                            video.src = video.src;  // For native HLS support (Safari)
+                            video.src = video.src;
                         }
                     }
                 }
