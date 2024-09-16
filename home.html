@@ -24,7 +24,7 @@
         .player-container {
             position: relative;
             width: 100%;
-            padding-bottom: 62.5%; /* 16:10 aspect ratio (10/16 = 62.5%) */
+            padding-bottom: 62.5%; /* 16:10 aspect ratio */
             background-color: rgba(0, 0, 0, 0.7); /* Faded black background */
         }
 
@@ -62,15 +62,22 @@
         }
 
         @media (min-width: 768px) {
-            /* Desktop view: list on the right side of iframe */
+            /* Desktop view: Flex layout for iframe and list side by side */
             .container {
                 flex-direction: row;
+                align-items: flex-start; /* Align items to the top */
+            }
+
+            /* Keep the iframe in a 16:10 aspect ratio in desktop view */
+            .player-container {
+                width: 70%; /* Player takes up 70% of the container's width */
+                padding-bottom: calc(70% * 0.625); /* Maintain 16:10 aspect ratio */
             }
 
             #channelList {
-                width: 300px;
+                width: 30%; /* Channel list takes up 30% of the container */
                 height: auto;
-                max-height: 500px; /* Match iframe height */
+                max-height: calc(70vw * 0.625); /* Match the player's height */
                 margin: 0; /* Align flush with the iframe */
             }
         }
