@@ -24,11 +24,12 @@
             background-color: rgba(0, 0, 0, 0.6);
         }
 
-        /* Player and Channel Container */
+        /* Main Content */
         .content {
             flex: 1;
             display: flex;
             padding: 20px;
+            flex-direction: row;
         }
 
         .player-container {
@@ -48,8 +49,9 @@
             flex: 1;
             max-width: 300px;
             padding: 20px;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
             overflow-y: auto;
+            margin-left: 20px;
         }
 
         .channel-item {
@@ -57,17 +59,14 @@
             align-items: center;
             margin-bottom: 10px;
             cursor: pointer;
+            font-size: 14px;
+            color: #000;
         }
 
         .channel-item img {
             width: 50px;
             height: 50px;
             margin-right: 10px;
-        }
-
-        .channel-item span {
-            font-size: 14px;
-            color: #fff;
         }
 
         /* Server buttons */
@@ -110,6 +109,17 @@
 
             iframe {
                 height: 300px;
+            }
+
+            .channel-list {
+                margin: 0;
+                max-height: 300px;
+                overflow-y: auto;
+                background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+                margin-top: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center; /* Center list on mobile */
             }
 
             .server-buttons {
