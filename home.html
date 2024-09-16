@@ -14,15 +14,26 @@
 
         .container {
             display: flex;
-            flex-direction: column; /* Default mobile view (list under iframe) */
+            flex-direction: column; /* Mobile view: list under iframe */
             max-width: 1200px;
             margin: 20px auto;
+            padding: 10px;
+        }
+
+        /* Maintain 16:10 aspect ratio for the iframe */
+        .player-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 62.5%; /* 16:10 aspect ratio (10/16 = 62.5%) */
+            background-color: rgba(0, 0, 0, 0.7); /* Faded black background */
         }
 
         #player {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 500px;
-            background-color: rgba(0, 0, 0, 0.7); /* Faded black background */
+            height: 100%;
             border: none;
         }
 
@@ -33,6 +44,8 @@
             display: flex;
             flex-direction: column;
             padding: 10px;
+            max-width: 90%; /* Limit width in mobile view */
+            margin: 10px auto;
         }
 
         .channel {
@@ -56,15 +69,19 @@
 
             #channelList {
                 width: 300px;
-                height: 500px; /* Match iframe height */
+                height: auto;
+                max-height: 500px; /* Match iframe height */
+                margin: 0; /* Align flush with the iframe */
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Iframe for the player with a default channel -->
-        <iframe id="player" src="/Discovery.html"></iframe>
+        <!-- Iframe container for maintaining 16:10 aspect ratio -->
+        <div class="player-container">
+            <iframe id="player" src="/Discovery.html"></iframe>
+        </div>
 
         <!-- Scrollable channel list -->
         <div id="channelList"></div>
@@ -75,8 +92,7 @@
         const channels = [
             { name: 'Channel 1', link: '/Discovery.html' },
             { name: 'Channel 2', link: '/DBC.html' },
-            { name: 'Channel 3', link: '/independent.html' },
-            // Add more channels as needed
+            { name: 'Channel 3', link: '/independent.html' }
         ];
 
         // Get the channel list div
