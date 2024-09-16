@@ -12,6 +12,7 @@
             font-family: Arial, sans-serif;
             height: 100vh; /* Ensure body covers the full viewport height */
             overflow: hidden; /* Prevent body scroll */
+            padding-right: 20px; /* Padding to the right */
         }
 
         .container {
@@ -20,7 +21,8 @@
             max-width: 1200px;
             margin: 20px auto;
             padding: 10px;
-            height: 100vh; /* Full viewport height */
+            padding-bottom: 30px; /* Padding below the page */
+            height: calc(100vh - 30px); /* Adjust height to account for padding */
         }
 
         /* Maintain 16:10 aspect ratio for the iframe */
@@ -70,6 +72,8 @@
             /* Desktop view: Flex layout for iframe and list side by side */
             .container {
                 flex-direction: row;
+                padding-bottom: 0; /* Remove bottom padding in desktop view */
+                padding-right: 0; /* Remove right padding in desktop view */
             }
 
             /* Keep the iframe in a 16:10 aspect ratio in desktop view */
