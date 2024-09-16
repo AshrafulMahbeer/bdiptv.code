@@ -12,17 +12,24 @@
             font-family: Arial, sans-serif;
         }
 
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
         #player {
-            width: 100%;
+            flex: 3;
             height: 500px;
             background-color: rgba(0, 0, 0, 0.7); /* Faded black background */
             border: none;
         }
 
         #channelList {
+            flex: 1;
             background-color: white;
             overflow-y: scroll;
-            height: 150px;
+            height: 500px;
             display: flex;
             flex-direction: column;
             padding: 10px;
@@ -33,27 +40,22 @@
             color: black;
             padding: 10px;
             cursor: pointer;
-            text-align: center;
+            text-align: left; /* Align text to the left */
             border-bottom: 1px solid #ccc;
         }
 
         .channel:hover {
             background-color: #f0f0f0;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Iframe for the player -->
-        <iframe id="player" src="about:blank"></iframe>
-
-        <!-- Scrollable channel list -->
+        <!-- Scrollable channel list on the left -->
         <div id="channelList"></div>
+
+        <!-- Iframe for the player on the right -->
+        <iframe id="player" src="about:blank"></iframe>
     </div>
 
     <script>
