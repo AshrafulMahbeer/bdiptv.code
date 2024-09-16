@@ -14,22 +14,22 @@
 
         .container {
             display: flex;
+            flex-direction: column; /* Default mobile view (list under iframe) */
             max-width: 1200px;
             margin: 20px auto;
         }
 
         #player {
-            flex: 3;
+            width: 100%;
             height: 500px;
             background-color: rgba(0, 0, 0, 0.7); /* Faded black background */
             border: none;
         }
 
         #channelList {
-            flex: 1;
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.8); /* Faded white background */
             overflow-y: scroll;
-            height: 500px;
+            height: 150px;
             display: flex;
             flex-direction: column;
             padding: 10px;
@@ -47,15 +47,27 @@
         .channel:hover {
             background-color: #f0f0f0;
         }
+
+        @media (min-width: 768px) {
+            /* Desktop view: list on the right side of iframe */
+            .container {
+                flex-direction: row;
+            }
+
+            #channelList {
+                width: 300px;
+                height: 500px; /* Match iframe height */
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Scrollable channel list on the left -->
-        <div id="channelList"></div>
+        <!-- Iframe for the player with a default channel -->
+        <iframe id="player" src="/Discovery.html"></iframe>
 
-        <!-- Iframe for the player on the right -->
-        <iframe id="player" src="about:blank"></iframe>
+        <!-- Scrollable channel list -->
+        <div id="channelList"></div>
     </div>
 
     <script>
