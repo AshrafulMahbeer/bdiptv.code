@@ -23,6 +23,7 @@
             padding: 10px;
             padding-bottom: 60px; /* Padding below the page */
             height: calc(100vh - 60px); /* Adjust height to account for padding */
+            box-sizing: border-box; /* Include padding in height calculation */
         }
 
         /* Maintain 16:10 aspect ratio for the iframe */
@@ -50,10 +51,9 @@
             flex-direction: column;
             padding: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Optional shadow for better visibility */
-            /* Mobile view styles */
             width: 90%; /* Less than full width to ensure padding */
-            height: calc(100vh - 200px); /* Rest of the screen height minus iframe height */
             margin: 0 auto; /* Center the list */
+            max-height: calc(100vh - 200px); /* Ensure it fits within the remaining height */
         }
 
         .channel {
