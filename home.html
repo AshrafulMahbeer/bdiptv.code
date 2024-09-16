@@ -3,206 +3,146 @@
 </div>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bostafull Live BDIX TV Server 24/7 BD IPTV</title>
     <style>
         body {
-            background-image: url('https://bosta-live.vercel.app/bosta.png');
-            background-size: cover;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            color: white;
-            font-family: Arial, sans-serif;
-            scroll-behavior: smooth; /* Smooth scrolling */
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live TV Channels</title>
-
-    <!-- Internal CSS -->
-    <style>
-        .player-container {
             display: flex;
-            flex-direction: column;
         }
 
-        #player {
+        /* Player and Channel Container */
+        .player-container {
+            flex: 2;
+            padding: 20px;
+        }
+
+        iframe {
             width: 100%;
-            height: 400px;
+            height: 500px;
+            border: none;
         }
 
-        #server-buttons {
-            margin-top: 10px;
+        /* Channel List */
+        .channel-list {
+            flex: 1;
+            max-width: 300px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            overflow-y: auto;
         }
 
-        .logos-container img {
-            width: 100px;
-            height: auto;
-            margin: 10px;
+        .channel-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
             cursor: pointer;
         }
 
-        .logos-container {
+        .channel-item img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .channel-item span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Server buttons */
+        .server-buttons {
+            margin-top: 20px;
             display: flex;
             flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .category-filter {
-            margin-bottom: 20px;
+        .server-buttons button {
+            padding: 8px 15px;
+            border: 1px solid #333;
+            background-color: #fff;
+            cursor: pointer;
         }
 
-        #channel-list {
-            display: flex;
-            flex-direction: column;
+        .server-buttons button:hover {
+            background-color: #ddd;
         }
 
-        @media (min-width: 768px) {
-            .player-container {
-                flex-direction: row;
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
             }
 
-            #server-buttons {
-                margin-top: 0;
-                margin-right: 10px;
+            .player-container, .channel-list {
+                width: 100%;
             }
 
-            #channel-list {
-                flex: 1;
-                margin-left: 20px;
+            iframe {
+                height: 300px;
             }
-        }
 
-        @media (max-width: 767px) {
-            #channel-list {
-                margin-top: 10px;
+            .server-buttons {
+                justify-content: center;
             }
         }
     </style>
+    <title>Live TV</title>
 </head>
 <body>
-
-    <div class="category-filter">
-        <label for="categorySelect">Sort by Category: </label>
-        <select id="categorySelect" onchange="filterChannels()">
-            <option value="all">All</option>
-            <option value="News">News</option>
-            <option value="Featured">Featured</option>
-            <option value="Kids">Kids</option>
-            <option value="Sports">Sports</option>
-            <option value="Religious">Religious</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Documentary">Documentary</option>
-        </select>
-    </div>
-
+    <!-- Player Section -->
     <div class="player-container">
-        <div id="player">
-            <!-- Player code here -->
-        </div>
-        <div id="server-buttons">
-            <!-- Server buttons will load here -->
-        </div>
-        <div id="channel-list">
-            <div class="logos-container">
-                <!-- Channel logos will be displayed here dynamically -->
-            </div>
-        </div>
+        <h2>Live TV Player</h2>
+        <iframe id="tvPlayer" src="about:blank"></iframe>
+        
+        <div class="server-buttons" id="serverButtons"></div>
     </div>
 
-    <!-- Internal JavaScript -->
+    <!-- Channel List Section -->
+    <div class="channel-list">
+        <h3>Channels</h3>
+        <div class="channel-item" onclick="loadServers(['Discovery.html'], 'Discovery')">
+            <img src="/discovery.png" alt="Discovery">
+            <span>Discovery</span>
+        </div>
+        <div class="channel-item" onclick="loadServers(['/Jamuna.html'], 'Jamuna')">
+            <img src="/3.png" alt="Jamuna">
+            <span>Jamuna</span>
+        </div>
+        <div class="channel-item" onclick="loadServers(['/dbc2.html', '/DBC.html', 'https://www.youtube.com/embed/FSIvSJaWZ1A'], 'DBC')">
+            <img src="/dbc-news.png" alt="DBC">
+            <span>DBC</span>
+        </div>
+        <!-- Add more channel items as needed -->
+    </div>
+
     <script>
-        const channels = [
-{ src: '/discovery.png', alt: 'Discovery', category: 'Documentary,Featured', servers: ['Discovery.html'] },
-{ src: '/3.png', alt: 'Jamuna', category: 'News', servers: ['/Jamuna.html'] },
-{ src: '/dbc-news.png', alt: 'DBC', category: 'News', servers: ['/dbc2.html', '/DBC.html', 'https://www.youtube.com/embed/FSIvSJaWZ1A'] },
-{ src: '/2.jpg', alt: 'ekhn', category: 'News', servers: ['/ekhon.html', 'https://www.youtube.com/embed/_BXYvp0fZ2A'] },
-{ src: '/independenttv.png', alt: 'independent', category: 'News', servers: ['/ind2.html', '/independent.html', 'https://www.youtube.com/embed/1YhmjNQlnP8'] },
-{ src: '/somoynews.png', alt: 'somoy', category: 'News', servers: ['/somoy4.html', 'somoy-of.html', 'somoy.html', 'https://www.youtube.com/embed/xEl7I8pN-C0'] },
-{ src: '/channel-24.png', alt: '24', category: 'News', servers: ['/24a.html', '/24.html', 'https://www.youtube.com/embed/exTJgSp4TUE'] },
-{ src: '/atn-bangla.png', alt: 'atn', category: 'Entertainment', servers: ['/atnbn.html'] },
-{ src: '/btv.png', alt: 'btv', category: 'Entertainment', servers: ['/btv3.html', 'btv2.html'] },
-{ src: '/moviebanglatv-logo-2.png', alt: 'mv', category: 'Entertainment', servers: ['/mv.html'] },
-{ src: '/deepto-tv.png', alt: 'deepto', category: 'Entertainment', servers: ['/deepto2.html', '/deepto.html'] },
-{ src: '/bangla-tv.png', alt: 'bangla', category: 'Entertainment', servers: ['/banglatv.html'] },
-{ src: '/maasranga-tv.png', alt: 'masranga', category: 'Entertainment,Featured,Kids', servers: ['/masranga.html'] },
-{ src: '/channel-i.png', alt: 'channel-i', category: 'Entertainment', servers: ['/channel-i.html', 'https://www.youtube.com/embed/8RUcbWIZIWQ'] },
-{ src: '/ananda-tv.jpg', alt: 'ananda', category: 'Entertainment', servers: ['/ananda.html'] },
-{ src: '/ekattor-tv.png', alt: 'ekattor', category: 'News', servers: ['/ekattor3.html', '/ekattor-2.html', '/ekattor.html'] },
-{ src: '/sa-tv.png', alt: 'satv', category: 'Entertainment', servers: ['/sa-tv.html'] },
-{ src: '/rtv.png', alt: 'rtv', category: 'Entertainment', servers: ['/rtv4.html', '/rtv3.html', 'rtv.html'] },
-{ src: '/boishakhi-tv.png', alt: 'boishakhi', category: 'Entertainment', servers: ['/boishakhi.html'] },
-{ src: '/bijoy-tv.png', alt: 'bijoy', category: 'Entertainment', servers: ['/bijoy.html'] },
-{ src: '/bangla-vision.png', alt: 'bv', category: 'Entertainment', servers: ['/bv2.html', 'bv.html'] },
-{ src: '/my-tv.png', alt: 'mytv', category: 'Entertainment', servers: ['/mytv.html'] },
-{ src: '/ekushey-tv.png', alt: 'etv', category: 'News', servers: ['/etv.html'] },
-{ src: '/rongeen-tv.jpg', alt: 'rongeen', category: 'Kids', servers: ['/rongeen.html'] },
-{ src: '/asian-tv.png', alt: 'asian', category: 'Entertainment', servers: ['/asian.html'] },
-{ src: '/nagorik.png', alt: 'nagorik', category: 'Entertainment', servers: ['/nagorik.html'] },
-{ src: '/songsodtv.jpg', alt: 'sangsad', category: 'Entertainment', servers: ['/sangsad.html'] },
-{ src: '/bangla-tv-europe.png', alt: 'bntveu', category: 'Entertainment', servers: ['/banglaeu.html'] },
-{ src: '/ntv-bangla.png', alt: 'ntv', category: 'Entertainment', servers: ['/ntv2.html', 'ntv.html'] },
-{ src: '/t-sports.png', alt: 'tsports', category: 'Sports', servers: ['/tsports.html'] },
-{ src: '/gazi-tv.png', alt: 'bntveu', category: 'Entertainment,Sports', servers: ['/gtv.html', 'https://bosta-live.w3spaces.com/new-file.html'] },
-{ src: '/biswa-bangla-24.jpg', alt: 'bsbn24', category: 'Entertainment', servers: ['/biswabn24.html'] },
-{ src: '/atnnews.jpg', alt: 'atnnws', category: 'News', servers: ['atnnews2.html', '/atnnews.html', '/atnnws2.html'] },
-{ src: '/islam-bangla.jpg', alt: 'isbn', category: 'Religious', servers: ['/islambn.html'] },
-{ src: '/madani.jpeg', alt: 'madani', category: 'Religious', servers: ['/madanibn.html'] },
-{ src: '/iqra-bangla.jpg', alt: 'iqbn', category: 'Religious', servers: ['/iqrabn.html'] },
-{ src: '/download.jpeg', alt: 'aath', category: 'Entertainment,Featured', servers: ['/aath.html'] },
-{ src: '/trvl.png', alt: 'trvl', category: 'Documentary', servers: ['trvl.html'] },
-{ src: '/tlc.png', alt: 'tlc', category: 'Documentary', servers: ['tlc.html'] },
-{ src: '/id.png', alt: 'id', category: 'Documentary', servers: ['id.html'] },
-{ src: '/turbo.png', alt: 'turbo', category: 'Documentary', servers: ['turbo.html'] }
-
-            // Add more channels as needed
-        ];
-
+        // Load server URLs into the iframe and show buttons for server switching
         function loadServers(servers, channelName) {
-            const serverButtonsDiv = document.getElementById('server-buttons');
-            serverButtonsDiv.innerHTML = '';
+            const iframe = document.getElementById('tvPlayer');
+            const serverButtons = document.getElementById('serverButtons');
 
+            // Load the first server URL in iframe
+            iframe.src = servers[0];
+
+            // Clear existing server buttons
+            serverButtons.innerHTML = '';
+
+            // Create buttons for each server
             servers.forEach((server, index) => {
                 const button = document.createElement('button');
-                button.textContent = `Server ${index + 1}`;
-                button.onclick = () => loadStream(server, channelName);
-                serverButtonsDiv.appendChild(button);
+                button.innerText = 'Server ' + (index + 1);
+                button.onclick = () => {
+                    iframe.src = server;
+                };
+                serverButtons.appendChild(button);
             });
         }
-
-        function loadStream(url, channelName) {
-            // Logic to load the selected stream
-            console.log(`Loading ${channelName} from ${url}`);
-        }
-
-        function filterChannels() {
-            const selectedCategory = document.getElementById('categorySelect').value;
-            const logosContainer = document.querySelector('.logos-container');
-            logosContainer.innerHTML = '';
-
-            channels.forEach(channel => {
-                if (selectedCategory === 'all' || channel.category.includes(selectedCategory)) {
-                    const img = document.createElement('img');
-                    img.src = channel.src;
-                    img.alt = channel.alt;
-                    img.setAttribute('data-category', channel.category);
-                    img.onclick = () => loadServers(channel.servers, channel.alt);
-                    logosContainer.appendChild(img);
-                }
-            });
-        }
-
-        // Load all channels on page load
-        window.onload = filterChannels;
     </script>
-
 </body>
-</html>
-
 </html>
 <div style="color: white; background-color: rgba(0, 0, 0, 0.5); padding: 10px; text-align: center;">
   &copy; Bostafull Live by Syed Ashraful Islam Mahbeer. Any embedded content on this site are collected from the internet and Bostafull Live is not Connected with them. Wait up to 1 min to load, if not, change server.
