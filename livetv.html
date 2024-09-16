@@ -39,13 +39,14 @@
 
         #channelList {
             background-color: rgba(255, 255, 255, 0.8); /* Faded white background */
-            overflow-y: scroll;
+            overflow-y: auto; /* Allow scrolling */
             height: 150px;
             display: flex;
             flex-direction: column;
             padding: 10px;
             max-width: 90%; /* Limit width in mobile view */
             margin: 10px auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Optional shadow for better visibility */
         }
 
         .channel {
@@ -99,8 +100,11 @@
         const channels = [
             { name: 'Channel 1', link: '/Discovery.html' },
             { name: 'Channel 2', link: '/DBC.html' },
-            { name: 'Channel 3', link: '/ind2.html' }
-            
+            { name: 'Channel 3', link: '/independent.html' },
+            { name: 'Channel 4', link: '/etv.html' }, // Additional channels
+            { name: 'Channel 5', link: '/gtv.html' };  // Additional channels
+            { name: 'Channel 6', link: '/Jamuna.html' }
+            // Add more channels as needed
         ];
 
         // Get the channel list div
