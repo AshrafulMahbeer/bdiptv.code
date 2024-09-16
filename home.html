@@ -62,7 +62,25 @@
     }
   </style>
   <script>
-    // ... your existing JavaScript code ...
+    function loadServers(servers, channelName) {
+      // Implement server loading logic here (e.g., update iframe source)
+      console.log(`Loading servers for ${channelName}:`, servers);
+      const iframe = document.getElementById('player-iframe');
+      if (servers.length > 0) {
+        iframe.src = servers[0]; // Load the first server by default
+      } else {
+        iframe.src = "https://www.youtube.com/embed/FSIvSJaWZ1A"; // Default to a placeholder URL
+      }
+    }
+
+    // Attach click event listeners to channel links
+    document.querySelectorAll('.channel-list a').forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault(); // Prevent default link behavior
+        const channelName = link.textContent; // Get the channel name from the link text
+        loadServers(['server1.html', 'server2.html'], channelName); // Replace with your actual server URLs
+      });
+    });
   </script>
 </head>
 <body>
@@ -76,13 +94,13 @@
   <div class="channel-list-container">
     <h2 class="channel-list-title">Channels</h2>
     <ul class="channel-list">
-      <li><a href="#" onclick="loadServers(['Discovery.html'], 'Discovery HD Bangla')">
-        <img src="/discovery.png" alt="Discovery HD Bangla">
-        Discovery HD Bangla
+      <li><a href="/" onclick="loadServers(['Discovery.html'], 'Discovery')">
+        <img src="Discovery.png" alt="Channel 1 thumbnail">
+        Discovery
       </a></li>
-      <li><a href="#" onclick="loadServers(['DBC.html', 'dbc2.html'], 'DBC News')">
-        <img src="dbc-news.png" alt="DBC News">
-        DBC News
+      <li><a href="/" onclick="loadServers(['DBC.html', 'dbc2.html'], 'Channel 2')">
+        <img src="dbc.png" alt="DBC">
+        Channel 2
       </a></li>
       </ul>
   </div>
