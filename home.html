@@ -1,356 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="refresh" content="7200">
-    <title>Bostafull Live BDIX TV Server!</title>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <!-- jQuery library -->
-    <link href="css/video-js.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live TV Channels</title>
     <style>
-        @media all and (min-width: 992px) {
-            body {
-                background: #000 url(bosta.png);
-                background-repeat: no-repeat;
-                background-size: cover !important;
-                background-attachment: fixed !important;
-            }
+        body {
+            background-image: url('/bosta.png');
+            background-size: cover;
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
-        @media all and (max-width: 992px) {
-            body {
-                background: #000 url(bosta.png);
-                background-repeat: repeat;
-                background-size: contain !important;
-                background-attachment: fixed !important;
-            }
-        }
-        a {
-            color: #ffffff;
-        }
-        h1, h2 {
-            text-align: center;
-        }
-        h1 {
-            color: rgba(0, 250, 255, 0.8);
-        }
-        .PULSE {
-            /* Chrome, Safari, Opera */
-            -webkit-animation: PULSE 1s infinite; 
-            /* Internet Explorer */
-            -ms-animation: PULSE 1s infinite;
-            /* Standard Syntax */
-            animation: PULSE 1.25s infinite; 
-            margin-left: 10px;
-        }
-        /* Chrome, Safari, Opera */
-        @-webkit-keyframes PULSE {
-            0% { color: rgba(255,0,255); }
-            100% { color: black; }
-        }
-        /* Internet Explorer */
-        @-ms-keyframes PULSE {
-            0% { color: rgba(255,255,0); }
-            100% { color: black; }
-        }
-        /* Standard Syntax */
-        @keyframes PULSE {
-            0% { color: rgba(0,255,255); }
-            100% { color: black; }
-        }
-        .channel-item {
+
+        #player {
             width: 100%;
-            max-width: 400px; /* Ensure it does not exceed 400px */
-            height: 100%;
-            max-height: 400px; /* Ensure it does not exceed 400px */
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
-            overflow: hidden; /* Hide any overflow */
-            border: 1px solid #ccc; /* Optional: Border around each item */
-            margin-bottom: 10px; /* Spacing between items */
+            height: 500px;
+            background-color: rgba(0, 0, 0, 0.7); /* Faded black background */
+            border: none;
+        }
+
+        #channelList {
+            background-color: white;
+            overflow-y: scroll;
+            height: 150px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            padding: 10px;
         }
-        .channel-item img {
-            max-width: 100%;
-            max-height: 80%;
-            object-fit: contain; /* Scale image to fit inside container */
+
+        .channel {
+            font-weight: bold;
+            color: black;
+            padding: 10px;
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
         }
-        .channel-item span {
-            margin-top: 5px;
-            text-align: center;                                         
-           
-    
-<li class="Documentary Featured">
-    <a id="myLink" onclick="view.location.href='Discovery.html'" class="channel flex-item">
-        <img src="/discovery.png" alt="Discovery">
-    </a>
-</li>
 
-<li class="News">
-    <a id="myLink" onclick="view.location.href='/Jamuna.html'" class="channel flex-item">
-        <img src="/3.png" alt="Jamuna">
-    </a>
-</li>
+        .channel:hover {
+            background-color: #f0f0f0;
+        }
 
-<li class="News">
-    <a id="myLink" onclick="view.location.href='/dbc2.html'" class="channel flex-item">
-        <img src="/dbc-news.png" alt="DBC">
-    </a>
-</li>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Iframe for the player -->
+        <iframe id="player" src="about:blank"></iframe>
 
-<li class="News">
-    <a id="myLink" onclick="view.location.href='/ekhon.html'" class="channel flex-item">
-        <img src="/2.jpg" alt="ekhn">
-    </a>
-</li>
-
-<li class="News">
-    <a id="myLink" onclick="view.location.href='/ind2.html'" class="channel flex-item">
-        <img src="/independenttv.png" alt="independent">
-    </a>
-</li>
-
-<li class="News">
-    <a id="myLink" onclick="view.location.href='/somoy4.html'" class="channel flex-item">
-        <img src="/somoynews.png" alt="somoy">
-    </a>
-</li>
-
-<li class="News">
-    <a id="myLink" onclick="view.location.href='/24a.html'" class="channel flex-item">
-        <img src="/channel-24.png" alt="24">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/atnbn.html'" class="channel flex-item">
-        <img src="/atn-bangla.png" alt="atn">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/btv3.html'" class="channel flex-item">
-        <img src="/btv.png" alt="btv">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/mv.html'" class="channel flex-item">
-        <img src="/moviebanglatv-logo-2.png" alt="mv">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/deepto2.html'" class="channel flex-item">
-        <img src="/deepto-tv.png" alt="deepto">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/banglatv.html'" class="channel flex-item">
-        <img src="/bangla-tv.png" alt="bangla">
-    </a>
-</li>
-
-<li class="Entertainment Featured Kids">
-    <a id="myLink" onclick="view.location.href='/masranga.html'" class="channel flex-item">
-        <img src="/maasranga-tv.png" alt="masranga">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/channel-i.html'" class="channel flex-item">
-        <img src="/channel-i.png" alt="channel-i">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/ananda.html'" class="channel flex-item">
-        <img src="/ananda-tv.jpg" alt="ananda">
-    </a>
-</li>
-
-<li class="News">
-    <a id="myLink" onclick="view.location.href='/ekattor3.html'" class="channel flex-item">
-        <img src="/ekattor-tv.png" alt="ekattor">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/sa-tv.html'" class="channel flex-item">
-        <img src="/sa-tv.png" alt="satv">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/rtv4.html'" class="channel flex-item">
-        <img src="/rtv.png" alt="rtv">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/boishakhi.html'" class="channel flex-item">
-        <img src="/boishakhi-tv.png" alt="boishakhi">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/bijoy.html'" class="channel flex-item">
-        <img src="/bijoy-tv.png" alt="bijoy">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/bv2.html'" class="channel flex-item">
-        <img src="/bangla-vision.png" alt="bv">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/mytv.html'" class="channel flex-item">
-        <img src="/my-tv.png" alt="mytv">
-    </a>
-</li>
-
-<li class="News">
-    <a id="myLink" onclick="view.location.href='/etv.html'" class="channel flex-item">
-        <img src="/ekushey-tv.png" alt="etv">
-    </a>
-</li>
-
-<li class="Kids">
-    <a id="myLink" onclick="view.location.href='/rongeen.html'" class="channel flex-item">
-        <img src="/rongeen-tv.jpg" alt="rongeen">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/asian.html'" class="channel flex-item">
-        <img src="/asian-tv.png" alt="asian">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/nagorik.html'" class="channel flex-item">
-        <img src="/nagorik.png" alt="nagorik">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/sangsad.html'" class="channel flex-item">
-        <img src="/songsodtv.jpg" alt="sangsad">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/banglaeu.html'" class="channel flex-item">
-        <img src="/bangla-tv-europe.png" alt="bntveu">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/ntv2.html'" class="channel flex-item">
-        <img src="/ntv-bangla.png" alt="ntv">
-    </a>
-</li>
-
-<li class="Sports">
-    <a id="myLink" onclick="view.location.href='/tsports.html'" class="channel flex-item">
-        <img src="/t-sports.png" alt="tsports">
-    </a>
-</li>
-
-<li class="Entertainment Sports">
-    <a id="myLink" onclick="view.location.href='/gtv.html'" class="channel flex-item">
-        <img src="/gazi-tv.png" alt="bntveu">
-    </a>
-</li>
-
-<li class="Entertainment">
-    <a id="myLink" onclick="view.location.href='/biswabn24.html'" class="channel flex-item">
-        <img src="/biswa-bangla-24.jpg" alt="bsbn24">
-    </a>
-</li>
-
-<li class="News">
-    <a id="myLink" onclick="view.location.href='/atnnews.html'" class="channel flex-item">
-        <img src="/atnnews.jpg" alt="atnnws">
-    </a>
-</li>
-
-<li class="Religious">
-    <a id="myLink" onclick="view.location.href='/islambn.html'" class="channel flex-item">
-        <img src="/islam-bangla.jpg" alt="isbn">
-    </a>
-</li>
-
-<li class="Religious">
-    <a id="myLink" onclick="view.location.href='/madanibn.html'" class="channel flex-item">
-        <img src="/madani.jpeg" alt="madani">
-    </a>
-</li>
-
-<li class="Religious">
-    <a id="myLink" onclick="view.location.href='/iqrabn.html'" class="channel flex-item">
-        <img src="/iqra-bangla.jpg" alt="iqbn">
-    </a>
-</li>
-
-<li class="Entertainment Featured">
-    <a id="myLink" onclick="view.location.href='/aath.html'" class="channel flex-item">
-        <img src="/download.jpeg" alt="aath">
-    </a>
-</li>
-
-<li class="Documentary">
-    <a id="myLink" onclick="view.location.href='trvl.html'" class="channel flex-item">
-        <img src="/trvl.png" alt="trvl">
-    </a>
-</li>
-
-<li class="Documentary">
-    <a id="myLink" onclick="view.location.href='tlc.html'" class="channel flex-item">
-        <img src="/tlc.png" alt="tlc">
-    </a>
-</li>
-
-<li class="Documentary">
-    <a id="myLink" onclick="view.location.href='id.html'" class="channel flex-item">
-        <img src="/id.png" alt="id">
-    </a>
-</li>
-
-<li class="Documentary">
-    <a id="myLink" onclick="view.location.href='turbo.html'" class="channel flex-item">
-        <img src="/turbo.png" alt="turbo">
-    </a>
-</li>
-										
-										
-										
-										   
-										   
-                                        </div>
-                </ul>
-
-            </div>
-        </div>
-
+        <!-- Scrollable channel list -->
+        <div id="channelList"></div>
     </div>
-</div>
 
-  
+    <script>
+        // Array of channels with embed links
+        const channels = [
+            { name: 'Channel 1', link: '/Discovery.html' },
+            { name: 'Channel 2', link: '/DBC.html' },
+            { name: 'Channel 3', link: '/independent.html' },
+            // Add more channels as needed
+        ];
 
-    <!-- Latest compiled JavaScript -->
+        // Get the channel list div
+        const channelList = document.getElementById('channelList');
 
-<script src="js/jquery.min.js"></script>
+        // Dynamically create the channel list
+        channels.forEach(channel => {
+            const channelDiv = document.createElement('div');
+            channelDiv.className = 'channel';
+            channelDiv.innerText = channel.name;
 
-<script src="js/scripts.js"></script>
+            // On clicking the channel, change the iframe source
+            channelDiv.addEventListener('click', () => {
+                document.getElementById('player').src = channel.link;
+            });
 
+            // Add the channel div to the channel list
+            channelList.appendChild(channelDiv);
+        });
+    </script>
 </body>
 </html>
