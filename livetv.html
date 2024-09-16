@@ -11,7 +11,7 @@
             margin: 0;
             font-family: Arial, sans-serif;
             height: 100vh; /* Ensure body covers the full viewport height */
-            overflow: hidden; /* Prevent body scroll */
+            overflow: true; /* Prevent body scroll */
             padding-right: 20px; /* Padding to the right */
         }
 
@@ -69,7 +69,7 @@
             background-color: #f0f0f0;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 600px) {
             /* Desktop view: Flex layout for iframe and list side by side */
             .container {
                 flex-direction: row;
