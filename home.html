@@ -53,6 +53,7 @@
             overflow-y: auto; /* Enable vertical scrolling */
             padding: 10px;
             box-sizing: border-box;
+            color: white;
         }
 
         .logos-container {
@@ -73,6 +74,22 @@
             text-align: center;
             padding: 10px;
             background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+        }
+
+        .logo-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-item img {
+            max-width: 50px; /* Adjust the size as needed */
+            height: auto;
+        }
+
+        .logo-item span {
+            color: white;
+            font-size: 16px;
         }
 
         @media (min-width: 768px) {
@@ -114,12 +131,12 @@
 
         function filterChannels() {
             var category = document.getElementById('categorySelect').value;
-            var channels = document.querySelectorAll('.logos-container img');
+            var channels = document.querySelectorAll('.logos-container .logo-item');
             
             channels.forEach(function(channel) {
                 var dataCategory = channel.getAttribute('data-category').split(',');
                 if (category === 'all' || dataCategory.includes(category)) {
-                    channel.style.display = 'block';
+                    channel.style.display = 'flex';
                 } else {
                     channel.style.display = 'none';
                 }
@@ -153,35 +170,86 @@
             </select>
         </div>
         <div class="logos-container">
-            <img src="/discovery.png" alt="Discovery" data-category="Documentary,Featured" onclick="loadServers(['Discovery.html'], 'Discovery')">
-            <img src="/3.png" alt="Jamuna" data-category="News" onclick="loadServers(['/Jamuna.html'], 'Jamuna')">
-            <img src="/dbc-news.png" alt="DBC" data-category="News" onclick="loadServers(['/dbc2.html', '/DBC.html', 'https://www.youtube.com/embed/FSIvSJaWZ1A'], 'DBC')">
-            <img src="/2.jpg" alt="ekhn" data-category="News" onclick="loadServers(['/ekhon.html', 'https://www.youtube.com/embed/_BXYvp0fZ2A'], 'ekhn')">
-            <img src="/independenttv.png" alt="independent" data-category="News" onclick="loadServers(['/ind2.html', '/independent.html', 'https://www.youtube.com/embed/1YhmjNQlnP8'], 'independent')">
-            <img src="/somoynews.png" alt="somoy" data-category="News" onclick="loadServers(['/somoy4.html', 'somoy-of.html', 'somoy.html', 'https://www.youtube.com/embed/xEl7I8pN-C0'], 'somoy')">
-            <img src="/channel-24.png" alt="24" data-category="News" onclick="loadServers(['/24a.html', '/24.html', 'https://www.youtube.com/embed/exTJgSp4TUE'], '24')">
-            <img src="/atn-bangla.png" alt="atn" data-category="Entertainment" onclick="loadServers(['/atnbn.html'], 'atn')">
-            <img src="/btv.png" alt="btv" data-category="Entertainment" onclick="loadServers(['/btv3.html', 'btv2.html'], 'btv')">
-            <img src="/moviebanglatv-logo-2.png" alt="mv" data-category="Entertainment" onclick="loadServers(['/mv.html'], 'mv')">
-            <img src="/deepto-tv.png" alt="deepto" data-category="Entertainment" onclick="loadServers(['/deepto2.html', '/deepto.html'], 'deepto')">
-            <img src="/bangla-tv.png" alt="bangla" data-category="Entertainment" onclick="loadServers(['/banglatv.html'], 'bangla')">
-            <img src="/maasranga-tv.png" alt="masranga" data-category="Entertainment,Featured,Kids" onclick="loadServers(['/masranga.html'], 'masranga')">
-            <img src="/channel-i.png" alt="channel-i" data-category="Entertainment" onclick="loadServers(['/channel-i.html', 'https://www.youtube.com/embed/8RUcbWIZIWQ'], 'channel-i')">
-            <img src="/ananda-tv.jpg" alt="ananda" data-category="Entertainment" onclick="loadServers(['/ananda.html'], 'ananda')">
-            <img src="/ekattor-tv.png" alt="ekattor" data-category="News" onclick="loadServers(['/ekattor3.html', '/ekattor-2.html', '/ekattor.html'], 'ekattor')">
-            <img src="/sa-tv.png" alt="satv" data-category="Entertainment" onclick="loadServers(['/sa-tv.html'], 'satv')">
-            <img src="/rtv.png" alt="rtv" data-category="Entertainment" onclick="loadServers(['/rtv4.html', '/rtv3.html', 'rtv.html'], 'rtv')">
-            <img src="/boishakhi-tv.png" alt="boishakhi" data-category="Entertainment" onclick="loadServers(['/boishakhi.html'], 'boishakhi')">
-            <img src="/bijoy-tv.png" alt="bijoy" data-category="Entertainment" onclick="loadServers(['/bijoy.html'], 'bijoy')">
-            <img src="/bangla-vision.png" alt="bv" data-category="Entertainment" onclick="loadServers(['/bv2.html', 'bv.html'], 'bv')">
-            <img src="/my-tv.png" alt="mytv" data-category="Entertainment" onclick="loadServers(['/mytv.html'], 'mytv')">
-            <img src="/ekushey-tv.png" alt="etv" data-category="Entertainment" onclick="loadServers(['/etv2.html', '/etv.html'], 'etv')">
-            <img src="/bible-tv.png" alt="bible" data-category="Religious" onclick="loadServers(['/bible.html'], 'bible')">
-            <img src="/deen-tv.png" alt="deen" data-category="Religious" onclick="loadServers(['/deen.html'], 'deen')">
-            <img src="/mta.png" alt="mta" data-category="Religious" onclick="loadServers(['/mta.html'], 'mta')">
-            <img src="/ramadan-tv.png" alt="ramadan" data-category="Religious" onclick="loadServers(['/ramadan.html'], 'ramadan')">
-            <img src="/ja-tv.png" alt="ja" data-category="Religious" onclick="loadServers(['/ja.html'], 'ja')">
-            <img src="/bctv.png" alt="bctv" data-category="Religious" onclick="loadServers(['/bctv.html'], 'bctv')">
+            <div class="logo-item" data-category="Documentary,Featured">
+                <img src="/discovery.png" alt="Discovery" onclick="loadServers(['Discovery.html'], 'Discovery')">
+                <span>Discovery</span>
+            </div>
+            <div class="logo-item" data-category="News">
+                <img src="/3.png" alt="Jamuna" onclick="loadServers(['/Jamuna.html'], 'Jamuna')">
+                <span>Jamuna</span>
+            </div>
+            <div class="logo-item" data-category="News">
+                <img src="/dbc-news.png" alt="DBC" onclick="loadServers(['/dbc2.html', '/DBC.html', 'https://www.youtube.com/embed/FSIvSJaWZ1A'], 'DBC')">
+                <span>DBC</span>
+            </div>
+            <div class="logo-item" data-category="News">
+                <img src="/2.jpg" alt="ekhn" onclick="loadServers(['/ekhon.html', 'https://www.youtube.com/embed/_BXYvp0fZ2A'], 'ekhn')">
+                <span>ekhn</span>
+            </div>
+            <div class="logo-item" data-category="News">
+                <img src="/independenttv.png" alt="independent" onclick="loadServers(['/ind2.html', '/independent.html', 'https://www.youtube.com/embed/1YhmjNQlnP8'], 'independent')">
+                <span>Independent</span>
+            </div>
+            <div class="logo-item" data-category="News">
+                <img src="/somoynews.png" alt="somoy" onclick="loadServers(['/somoy4.html', 'somoy-of.html', 'somoy.html', 'https://www.youtube.com/embed/xEl7I8pN-C0'], 'somoy')">
+                <span>Somoy</span>
+            </div>
+            <div class="logo-item" data-category="News">
+                <img src="/channel-24.png" alt="24" onclick="loadServers(['/24a.html', '/24.html', 'https://www.youtube.com/embed/exTJgSp4TUE'], '24')">
+                <span>24</span>
+            </div>
+            <div class="logo-item" data-category="Entertainment">
+                <img src="/atn-bangla.png" alt="atn" onclick="loadServers(['/atnbn.html'], 'atn')">
+                <span>ATN</span>
+            </div>
+            <div class="logo-item" data-category="Entertainment">
+                <img src="/btv.png" alt="btv" onclick="loadServers(['/btv3.html', 'btv2.html'], 'btv')">
+                <span>BTV</span>
+            </div>
+            <div class="logo-item" data-category="Entertainment">
+                <img src="/moviebanglatv-logo-2.png" alt="mv" onclick="loadServers(['/mv.html'], 'mv')">
+                <span>Movie Bangla TV</span>
+            </div>
+            <div class="logo-item" data-category="Entertainment">
+                <img src="/deepto-tv.png" alt="deepto" onclick="loadServers(['/deepto2.html', '/deepto.html'], 'deepto')">
+                <span>Deepto TV</span>
+            </div>
+            <div class="logo-item" data-category="Entertainment">
+                <img src="/bangla-tv.png" alt="bangla" onclick="loadServers(['/banglatv.html'], 'bangla')">
+                <span>Bangla TV</span>
+            </div>
+            <div class="logo-item" data-category="Entertainment,Featured,Kids">
+                <img src="/maasranga-tv.png" alt="masranga" onclick="loadServers(['/masranga.html'], 'masranga')">
+                <span>Maasranga TV</span>
+            </div>
+            <div class="logo-item" data-category="Religious">
+                <img src="/etv.png" alt="etv" onclick="loadServers(['/etv2.html', '/etv.html'], 'etv')">
+                <span>ETV</span>
+            </div>
+            <div class="logo-item" data-category="Religious">
+                <img src="/bible-tv.png" alt="bible" onclick="loadServers(['/bible.html'], 'bible')">
+                <span>Bible TV</span>
+            </div>
+            <div class="logo-item" data-category="Religious">
+                <img src="/deen-tv.png" alt="deen" onclick="loadServers(['/deen.html'], 'deen')">
+                <span>Deen TV</span>
+            </div>
+            <div class="logo-item" data-category="Religious">
+                <img src="/mta.png" alt="mta" onclick="loadServers(['/mta.html'], 'mta')">
+                <span>MTA</span>
+            </div>
+            <div class="logo-item" data-category="Religious">
+                <img src="/ramadan-tv.png" alt="ramadan" onclick="loadServers(['/ramadan.html'], 'ramadan')">
+                <span>Ramadan TV</span>
+            </div>
+            <div class="logo-item" data-category="Religious">
+                <img src="/ja-tv.png" alt="ja" onclick="loadServers(['/ja.html'], 'ja')">
+                <span>JA TV</span>
+            </div>
+            <div class="logo-item" data-category="Religious">
+                <img src="/bctv.png" alt="bctv" onclick="loadServers(['/bctv.html'], 'bctv')">
+                <span>BCTV</span>
+            </div>
         </div>
     </div>
 
