@@ -1,26 +1,20 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta http-equiv="refresh" content="7200">
-    <title> Bostafull Live BDIX TV Server !</title>
+    <meta http-equiv="refresh" content="7200">
+    <title>Bostafull Live BDIX TV Server!</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- jQuery library -->
-
     <link href="css/video-js.css" rel="stylesheet">
-
     <link href="css/style.css" rel="stylesheet">
 
-
-
-
-    <style class="clappr-style">
+    <style>
         @media all and (min-width: 992px) {
             body {
-                background: #000 url(common.jpg?v=2);
+                background: #000 url(bosta.png);
                 background-repeat: no-repeat;
                 background-size: cover !important;
                 background-attachment: fixed !important;
@@ -28,96 +22,67 @@
         }
         @media all and (max-width: 992px) {
             body {
-                background: #000 url(common.jpg?v=2);
+                background: #000 url(bosta.png);
                 background-repeat: repeat;
                 background-size: contain !important;
                 background-attachment: fixed !important;
-            }}
-        a{
+            }
+        }
+        a {
             color: #ffffff;
         }
-		h1,h2{
-  text-align:center;
-}
-h1{
-  color:rgba(0, 250, 255, 299);
-}
-.PULSE {
-   /* Chrome, Safari, Opera */
-  -webkit-animation: PULSE 1s infinite; 
-  
-  /* Internet Explorer */
-  -ms-animation: PULSE 1s infinite;
-  
-  /* Standard Syntax */
-  animation: PULSE 1.25s infinite; 
-  margin-left :10px;
-}
-
-/* Chrome, Safari, Opera */
-@-webkit-keyframes PULSE{
-   0%{color:rgba(255,0,255);}	
-	110%{color: black;}
-}
-
-/* Internet Explorer */
-@-ms-keyframes PULSE{
-  0%{color:rgba(255,255,0);}	
-	110%{color: black;}
-}
-
-/* Standard Syntax */
-@keyframes PULSE{
-  0%{color:rgba(0,255,255);}	
-	110%{color: black;}
-}
-
-    </style>
-</head>
-<body id="body">
-
-<div class="container-fluid p-3">
-    <div class="row justify-content-center">
-
-        <div class="col-12 col-lg-8 mt-4">
-            <div class="embed-responsive embed-responsive-16by9">
-                <div id="player" class="embed-responsive-item">
-                  <iframe name="view" scrolling="no" src="wel.php" allowfullscreen></iframe>
-                </div>
-            </div>
-			<h6 class="PULSE">INTERNATIONAL Channel May Buffer</h6>
-			<p>  <a href="#">   
-    
-        </div>
-
-        <div class="col-12 col-lg-4 mt-4" >
-<div class="channel-list mx-auto" style="-webkit-backdrop-filter: blur(8px);backdrop-filter: blur(8px);background-color: #6e6e6e29;border-radius: 10px;">
-                <ul class="nav nav-tabs nav-justified " style=" margin-bottom: 15px;">
-                                            <li class="nav-item">
-                            <a class="nav-link active"
-                               data-type="Sports">Sports</a>
-                        </li>
-                                                <li class="nav-item">
-                            <a class="nav-link "
-                               data-type="Others">Others</a>
-                        </li>
-                                                <li class="nav-item">
-                            <a class="nav-link "
-                               data-type="Kids">Kids</a>
-                        </li>
-                                                <li class="nav-item">
-                            <a class="nav-link "
-                               data-type="Hindi">Hindi</a>
-                        </li>
-                                                <li class="nav-item">
-                            <a class="nav-link "
-                               data-type="Bangla">Bangla</a>
-                        </li>
-                        
-                </ul>
-                <ul id="vidlink" class="thumbnail-slider flex-container">
-                    <div class="row">
-                                         
+        h1, h2 {
+            text-align: center;
+        }
+        h1 {
+            color: rgba(0, 250, 255, 0.8);
+        }
+        .PULSE {
+            /* Chrome, Safari, Opera */
+            -webkit-animation: PULSE 1s infinite; 
+            /* Internet Explorer */
+            -ms-animation: PULSE 1s infinite;
+            /* Standard Syntax */
+            animation: PULSE 1.25s infinite; 
+            margin-left: 10px;
+        }
+        /* Chrome, Safari, Opera */
+        @-webkit-keyframes PULSE {
+            0% { color: rgba(255,0,255); }
+            100% { color: black; }
+        }
+        /* Internet Explorer */
+        @-ms-keyframes PULSE {
+            0% { color: rgba(255,255,0); }
+            100% { color: black; }
+        }
+        /* Standard Syntax */
+        @keyframes PULSE {
+            0% { color: rgba(0,255,255); }
+            100% { color: black; }
+        }
+        .channel-item {
+            width: 100%;
+            max-width: 400px; /* Ensure it does not exceed 400px */
+            height: 100%;
+            max-height: 400px; /* Ensure it does not exceed 400px */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            overflow: hidden; /* Hide any overflow */
+            border: 1px solid #ccc; /* Optional: Border around each item */
+            margin-bottom: 10px; /* Spacing between items */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .channel-item img {
+            max-width: 100%;
+            max-height: 80%;
+            object-fit: contain; /* Scale image to fit inside container */
+        }
+        .channel-item span {
+            margin-top: 5px;
+            text-align: center;                                         
            
     
 <li class="Documentary Featured">
