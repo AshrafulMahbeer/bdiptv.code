@@ -11,7 +11,7 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      left: 0;
+      right: 0;
       width: 300px; /* Adjust as needed */
       background: rgba(255, 255, 255, 0.8);
       overflow-y: auto;
@@ -25,12 +25,20 @@
     }
 
     .channel-list li {
-      margin-bottom: 5px;
+      margin-bottom: 10px;
     }
 
     .channel-list a {
+      display: flex;
+      align-items: center;
       color: black;
       text-decoration: none;
+    }
+
+    .channel-list img {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
     }
 
     .server-buttons {
@@ -41,18 +49,20 @@
       padding: 10px;
       background: rgba(255, 255, 255, 0.8);
     }
-  </style>
-  <script>
-    function loadServers(servers, channelName) {
-      // Implement server loading logic here (e.g., update iframe source)
-      console.log(`Loading servers for ${channelName}:`, servers);
-      const iframe = document.getElementById('player-iframe');
-      if (servers.length > 0) {
-        iframe.src = servers[0]; // Load the first server by default
-      } else {
-        iframe.src = "https://www.youtube.com/embed/FSIvSJaWZ1A"; // Default to a placeholder URL
+
+    @media (max-width: 767px) {
+      .channel-list-container {
+        position: relative;
+        width: 100%;
+      }
+
+      .player-container {
+        margin-bottom: 100px; /* Adjust for channel list height */
       }
     }
+  </style>
+  <script>
+    // ... your existing JavaScript code ...
   </script>
 </head>
 <body>
@@ -66,8 +76,14 @@
   <div class="channel-list-container">
     <h2 class="channel-list-title">Channels</h2>
     <ul class="channel-list">
-      <li><a href="#" onclick="loadServers(['server1.html'], 'Channel 1')">Channel 1</a></li>
-      <li><a href="#" onclick="loadServers(['server2.html', 'server3.html'], 'Channel 2')">Channel 2</a></li>
+      <li><a href="#" onclick="loadServers(['Discovery.html'], 'Discovery HD Bangla')">
+        <img src="/discovery.png" alt="Discovery HD Bangla">
+        Discovery HD Bangla
+      </a></li>
+      <li><a href="#" onclick="loadServers(['DBC.html', 'dbc2.html'], 'DBC News')">
+        <img src="dbc-news.png" alt="DBC News">
+        DBC News
+      </a></li>
       </ul>
   </div>
 
