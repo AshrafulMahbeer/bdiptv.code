@@ -1,41 +1,48 @@
-<script type="text/javascript"
-        src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js">
-</script>
-<div id="player"></div>
-<script>
-    var player = new Clappr.Player({
-        source: "https://edge01.iptv.digijadoo.net/live/atn_bangla/playlist.m3u8?md5=2fFJ1dVYjxxiM82fJmoD7Q&expires=1726797721&user=c15be118d93a464dabf77260596012cf", 
-        parentId: "#player",
-        poster: 'http://clappr.io/poster.png',
-        autoPlay: true,
-        playback: {
-            hlsjsConfig: {
-                fragLoadingMaxRetry: 3,  // Retry fragment loading 3 times before error
-                fragLoadingRetryDelay: 1000,  // Retry delay
-                enableWorker: true,  // Use workers to improve performance
-                liveSyncDurationCount: 3,  // Keep sync with live stream
-                liveMaxLatencyDurationCount: 5  // Max allowable latency before syncing
-            }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full-Screen Clappr Player</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
+    <style>
+        /* Make sure body and html take full height and remove any margins */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
-    });
 
-    // Listen for errors and smoothly reload stream without viewer noticing
-    player.on(Clappr.Events.PLAYER_ERROR, function() {
-        console.warn('Error detected, trying to reload the stream seamlessly...');
-        reloadStreamSeamlessly();
-    });
-
-    // Seamless reload by reloading the source in the background without disrupting playback
-    function reloadStreamSeamlessly() {
-        var currentTime = player.getCurrentTime();  // Capture current playback time
-        var source = player.options.source;  // Get current source
-        
-        player.configure({
-            source: source,
-            startPosition: currentTime,  // Resume at the same position
-            autoPlay: true
+        /* Full-screen container for Clappr player */
+        #player {
+            width: 100vw;   /* Full width */
+            height: 100vh;  /* Full height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="player"></div>
+    <script>
+        var player = new Clappr.Player({
+            source: "https://edge01.iptv.digijadoo.net/live/atn_bangla/playlist.m3u8?md5=2fFJ1dVYjxxiM82fJmoD7Q&expires=1726797721&user=c15be118d93a464dabf77260596012cf", 
+            parentId: "#player",
+            poster: 'http://clappr.io/poster.png',
+            autoPlay: true,
+            width: '100%',    // Full width
+            height: '100%',   // Full height
+            playback: {
+                hlsjsConfig: {
+                    fragLoadingMaxRetry: 3,
+                    fragLoadingRetryDelay: 1000,
+                    enableWorker: true,
+                    liveSyncDurationCount: 3,
+                    liveMaxLatencyDurationCount: 5
+                }
+            }
         });
-
-        console.log('Stream reloaded seamlessly at time:', currentTime);
-    }
-</script>
+    </script>
+</body>
+</html>
