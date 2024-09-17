@@ -20,7 +20,7 @@
   ],
   "redirects": [
     {
-      "source": "/index.html",
+      "source": "/livetv.html",
       "destination": "/",
       "permanent": true
     }
