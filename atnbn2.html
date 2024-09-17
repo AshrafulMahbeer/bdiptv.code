@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full-Screen Clappr Player</title>
+    <title>Full-Screen Clappr Player with Reload on Error</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
     <style>
-        /* Make sure body and html take full height and remove any margins */
+        /* Ensure body and html take full height and remove margins */
         html, body {
             height: 100%;
             margin: 0;
@@ -35,13 +35,33 @@
             height: '100%',   // Full height
             playback: {
                 hlsjsConfig: {
-                    fragLoadingMaxRetry: 3,
-                    fragLoadingRetryDelay: 1000,
+                    fragLoadingMaxRetry: 3,   // Retry loading fragment 3 times
+                    fragLoadingRetryDelay: 1000,  // Delay between retries
                     enableWorker: true,
-                    liveSyncDurationCount: 3,
-                    liveMaxLatencyDurationCount: 5
+                    liveSyncDurationCount: 0,  // Turn off live syncing
+                    liveMaxLatencyDurationCount: 0  // No latency control (syncing off)
                 }
             }
+        });
+
+        // Function to reload the stream seamlessly
+        function reloadStreamSeamlessly() {
+            var currentTime = player.getCurrentTime();  // Capture the current playback time
+            var source = player.options.source;  // Get the current source URL
+
+            player.configure({
+                source: source,  // Reload the same source
+                startPosition: currentTime,  // Resume from the same position
+                autoPlay: true
+            });
+
+            console.log('Stream reloaded seamlessly at time:', currentTime);
+        }
+
+        // Listen for player errors and reload the stream
+        player.on(Clappr.Events.PLAYER_ERROR, function() {
+            console.warn('Error detected, reloading the stream...');
+            reloadStreamSeamlessly();
         });
     </script>
 </body>
