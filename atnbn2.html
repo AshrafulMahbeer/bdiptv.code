@@ -1,75 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://bosta-live.vercel.app/DPlayer.min.css" />
-    <script src="https://bosta-live.vercel.app/DPlayer.min.js"></script>
-    <script src="https://bosta-live.vercel.app/hls.min.js"></script>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+<script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js">
+</script>
+<div id="player"></div>
+<script>
+    var player = new Clappr.Player({
+        source: "https://edge01.iptv.digijadoo.net/live/atn_bangla/playlist.m3u8?md5=2fFJ1dVYjxxiM82fJmoD7Q&expires=1726797721&user=c15be118d93a464dabf77260596012cf", 
+        parentId: "#player",
+        poster: 'http://clappr.io/poster.png',
+        autoPlay: true,
+        playback: {
+            hlsjsConfig: {
+                fragLoadingMaxRetry: 3,  // Retry fragment loading 3 times before error
+                fragLoadingRetryDelay: 1000,  // Retry delay
+                enableWorker: true,  // Use workers to improve performance
+                liveSyncDurationCount: 3,  // Keep sync with live stream
+                liveMaxLatencyDurationCount: 5  // Max allowable latency before syncing
+            }
         }
-        #dplayer {
-            width: 100%;
-            height: 100%;
-        }
-    </style>
-</head>
-<body>
-    <div id="dplayer"></div>
-    <script>
-        let hls;
-        const dp = new DPlayer({
-            container: document.getElementById('dplayer'),
-            live: true,  
-            autoplay: true,
-            video: {
-                url: 'https://edge01.iptv.digijadoo.net/live/atn_bangla/playlist.m3u8?md5=2fFJ1dVYjxxiM82fJmoD7Q&expires=1726797721&user=c15be118d93a464dabf77260596012cf',
-                type: 'customHls',
-                customType: {
-                    customHls: function(video, player) {
-                        if (Hls.isSupported()) {
-                            hls = new Hls();
-                            hls.loadSource(video.src);
-                            hls.attachMedia(video);
-                        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                            video.src = video.src;
-                        }
-                    }
-                }
-            },
+    });
+
+    // Listen for errors and smoothly reload stream without viewer noticing
+    player.on(Clappr.Events.PLAYER_ERROR, function() {
+        console.warn('Error detected, trying to reload the stream seamlessly...');
+        reloadStreamSeamlessly();
+    });
+
+    // Seamless reload by reloading the source in the background without disrupting playback
+    function reloadStreamSeamlessly() {
+        var currentTime = player.getCurrentTime();  // Capture current playback time
+        var source = player.options.source;  // Get current source
+        
+        player.configure({
+            source: source,
+            startPosition: currentTime,  // Resume at the same position
+            autoPlay: true
         });
 
-        // Periodically check for network errors (like 409) by polling the network state
-        setInterval(() => {
-            const video = dp.video;
-            
-            // Check the network state of the video
-            if (video.networkState === video.NETWORK_NO_SOURCE) {
-                console.warn('Network error detected, reloading the stream...');
-                reloadStream();
-            }
-        }, 5000);  // Check every 5 seconds
-
-        // Function to reload the stream
-        function reloadStream() {
-            if (hls) {
-                hls.destroy();  // Destroy the existing instance
-                hls = new Hls();
-                hls.loadSource(dp.video.src);
-                hls.attachMedia(dp.video);
-            } else {
-                dp.video.src = dp.video.src;  // For native HLS support in Safari
-            }
-        }
-    </script>
-</body>
-</html>
+        console.log('Stream reloaded seamlessly at time:', currentTime);
+    }
+</script>
