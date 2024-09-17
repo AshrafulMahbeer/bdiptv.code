@@ -26,9 +26,10 @@
 <body>
     <div id="dplayer"></div>
     <script>
+        let hls;
         const dp = new DPlayer({
             container: document.getElementById('dplayer'),
-            live: true,  // Indicate that the stream is live
+            live: true,  
             autoplay: true,
             video: {
                 url: 'https://edge01.iptv.digijadoo.net/live/atn_bangla/playlist.m3u8?md5=2fFJ1dVYjxxiM82fJmoD7Q&expires=1726797721&user=c15be118d93a464dabf77260596012cf',
@@ -36,21 +37,9 @@
                 customType: {
                     customHls: function(video, player) {
                         if (Hls.isSupported()) {
-                            const hls = new Hls();
+                            hls = new Hls();
                             hls.loadSource(video.src);
                             hls.attachMedia(video);
-
-                            // Listen for errors, especially 409 or related HTTP errors
-                            hls.on(Hls.Events.ERROR, function(event, data) {
-                                if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                                    // Check for 409 error code
-                                    if (data.response && data.response.code === 409) {
-                                        // Reload the stream
-                                        console.warn('Received 409 error, reloading the stream...');
-                                        hls.loadSource(video.src);  // Reload the stream
-                                    }
-                                }
-                            });
                         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                             video.src = video.src;
                         }
@@ -58,6 +47,29 @@
                 }
             },
         });
+
+        // Periodically check for network errors (like 409) by polling the network state
+        setInterval(() => {
+            const video = dp.video;
+            
+            // Check the network state of the video
+            if (video.networkState === video.NETWORK_NO_SOURCE) {
+                console.warn('Network error detected, reloading the stream...');
+                reloadStream();
+            }
+        }, 5000);  // Check every 5 seconds
+
+        // Function to reload the stream
+        function reloadStream() {
+            if (hls) {
+                hls.destroy();  // Destroy the existing instance
+                hls = new Hls();
+                hls.loadSource(dp.video.src);
+                hls.attachMedia(dp.video);
+            } else {
+                dp.video.src = dp.video.src;  // For native HLS support in Safari
+            }
+        }
     </script>
 </body>
 </html>
