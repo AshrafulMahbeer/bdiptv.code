@@ -44,10 +44,12 @@
         }
 
         #searchBar {
-            width: 90%;
+            margin-bottom: 10px;
             padding: 10px;
+            border: 1px solid #ccc;
             font-size: 16px;
-            margin: 0 auto 10px;
+            width: 90%;
+            margin: 0 auto;
             display: block;
         }
 
@@ -89,27 +91,42 @@
                 margin-bottom: 0;
             }
 
-            #channelList {
+            #channelSection {
                 width: 30%;
-                height: auto;
-                max-height: calc(70vw * 0.625);
+                display: flex;
+                flex-direction: column;
+            }
+
+            #channelList {
+                width: 100%;
                 margin: 0;
                 position: static;
+                max-height: calc(70vw * 0.625);
+            }
+
+            #searchBar {
+                width: 100%;
+                margin: 0;
+                padding: 8px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Iframe container for maintaining 16:10 aspect ratio -->
         <div class="player-container">
             <iframe id="player" src="/Discovery.html"></iframe>
         </div>
 
-        <!-- Search bar for filtering channels -->
-        <input type="text" id="searchBar" placeholder="Search channels...">
+        <!-- Channel Section containing Search bar and Channel List -->
+        <div id="channelSection">
+            <!-- Search Bar -->
+            <input type="text" id="searchBar" placeholder="Search channels...">
 
-        <!-- Scrollable channel list -->
-        <div id="channelList"></div>
+            <!-- Scrollable channel list -->
+            <div id="channelList"></div>
+        </div>
     </div>
 
     <script>
@@ -156,10 +173,9 @@
         const channelList = document.getElementById('channelList');
         const searchBar = document.getElementById('searchBar');
 
-        // Function to display filtered channels
-        function displayChannels(filteredChannels) {
-            channelList.innerHTML = ''; // Clear current list
-            filteredChannels.forEach(channel => {
+        function displayChannels(channelData) {
+            channelList.innerHTML = '';
+            channelData.forEach(channel => {
                 const channelDiv = document.createElement('div');
                 channelDiv.className = 'channel';
                 channelDiv.innerText = channel.name;
@@ -175,10 +191,12 @@
         // Display all channels initially
         displayChannels(channels);
 
-        // Add event listener to search bar for filtering channels
-        searchBar.addEventListener('input', (e) => {
-            const searchQuery = e.target.value.toLowerCase();
-            const filteredChannels = channels.filter(channel => channel.name.toLowerCase().includes(searchQuery));
+        // Filter channels based on search input
+        searchBar.addEventListener('input', function() {
+            const searchTerm = searchBar.value.toLowerCase();
+            const filteredChannels = channels.filter(channel =>
+                channel.name.toLowerCase().includes(searchTerm)
+            );
             displayChannels(filteredChannels);
         });
     </script>
