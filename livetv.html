@@ -10,29 +10,28 @@
             background-size: cover;
             margin: 0;
             font-family: Arial, sans-serif;
-            height: 100vh; /* Ensure body covers the full viewport height */
-            overflow: true; /* Prevent body scroll */
-            padding-right: 20px; /* Padding to the right */
+            height: 100vh;
+            overflow: hidden;
+            padding-right: 20px;
         }
 
         .container {
             display: flex;
-            flex-direction: column; /* Mobile view: list under iframe */
+            flex-direction: column;
             max-width: 1200px;
             margin: 20px auto;
             padding: 10px;
-            padding-bottom: 60px; /* Padding below the page */
-            height: calc(100vh - 60px); /* Adjust height to account for padding */
-            box-sizing: border-box; /* Include padding in height calculation */
+            padding-bottom: 60px;
+            height: calc(100vh - 60px);
+            box-sizing: border-box;
         }
 
-        /* Maintain 16:10 aspect ratio for the iframe */
         .player-container {
             position: relative;
             width: 100%;
-            padding-bottom: 62.5%; /* 16:10 aspect ratio */
-            background-color: rgba(0, 0, 0, 0.7); /* Faded black background */
-            margin-bottom: 10px; /* Space between player and list */
+            padding-bottom: 62.5%;
+            background-color: rgba(0, 0, 0, 0.7);
+            margin-bottom: 10px;
         }
 
         #player {
@@ -44,16 +43,24 @@
             border: none;
         }
 
+        #searchBar {
+            width: 90%;
+            padding: 10px;
+            font-size: 16px;
+            margin: 0 auto 10px;
+            display: block;
+        }
+
         #channelList {
-            background-color: rgba(255, 255, 255, 0.8); /* Faded white background */
-            overflow-y: auto; /* Allow scrolling */
+            background-color: rgba(255, 255, 255, 0.8);
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             padding: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Optional shadow for better visibility */
-            width: 90%; /* Less than full width to ensure padding */
-            margin: 0 auto; /* Center the list */
-            max-height: calc(100vh - 200px); /* Ensure it fits within the remaining height */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            margin: 0 auto;
+            max-height: calc(100vh - 200px);
         }
 
         .channel {
@@ -61,7 +68,7 @@
             color: black;
             padding: 10px;
             cursor: pointer;
-            text-align: left; /* Align text to the left */
+            text-align: left;
             border-bottom: 1px solid #ccc;
         }
 
@@ -70,100 +77,109 @@
         }
 
         @media (min-width: 600px) {
-            /* Desktop view: Flex layout for iframe and list side by side */
             .container {
                 flex-direction: row;
-                padding-bottom: 0; /* Remove bottom padding in desktop view */
-                padding-right: 0; /* Remove right padding in desktop view */
+                padding-bottom: 0;
+                padding-right: 0;
             }
 
-            /* Keep the iframe in a 16:10 aspect ratio in desktop view */
             .player-container {
-                width: 70%; /* Player takes up 70% of the container's width */
-                padding-bottom: calc(70% * 0.625); /* Maintain 16:10 aspect ratio */
-                margin-bottom: 0; /* No margin between player and list */
+                width: 70%;
+                padding-bottom: calc(70% * 0.625);
+                margin-bottom: 0;
             }
 
             #channelList {
-                width: 30%; /* Channel list takes up 30% of the container */
-                height: auto; /* Height auto in desktop view */
-                max-height: calc(70vw * 0.625); /* Match the player's height */
-                margin: 0; /* Align flush with the iframe */
-                position: static; /* Reset mobile positioning */
+                width: 30%;
+                height: auto;
+                max-height: calc(70vw * 0.625);
+                margin: 0;
+                position: static;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Iframe container for maintaining 16:10 aspect ratio -->
         <div class="player-container">
             <iframe id="player" src="/Discovery.html"></iframe>
         </div>
+
+        <!-- Search bar for filtering channels -->
+        <input type="text" id="searchBar" placeholder="Search channels...">
 
         <!-- Scrollable channel list -->
         <div id="channelList"></div>
     </div>
 
     <script>
-        // Array of channels with embed links
         const channels = [
             { name: 'Discovery HD Bangla', link: '/Discovery.html' },
-            { name: 'Ekushey Television (Official)', link: '/etv.html' }, // Additional channels
-            { name: 'Channel 24 (Akash Go)', link: '/24a.html' }, // Additional channels
+            { name: 'Ekushey Television (Official)', link: '/etv.html' },
+            { name: 'Channel 24 (Akash Go)', link: '/24a.html' },
             { name: 'ATN News (Akash Go)', link: '/atnnews2.html' },
             { name: 'Bangla TV (Official)', link: '/banglatv.html' },
-            { name: 'Bangla TV Europe (Official)', link: '/banglaeu.html' }, // Additional channels
-            { name: 'BTV (Akash Go)', link: '/btv3.html' },  // Additional channels
+            { name: 'Bangla TV Europe (Official)', link: '/banglaeu.html' },
+            { name: 'BTV (Akash Go)', link: '/btv3.html' },
             { name: 'Bangla Vision (Akash Go)', link: '/bv2.html' },
-            { name: 'Masranga (Official)', link: '/masranga.html' }, // Additional channels
-            { name: 'NTV (Akash Go)', link: '/ntv2.html' }, // Additional channels
+            { name: 'Masranga (Official)', link: '/masranga.html' },
+            { name: 'NTV (Akash Go)', link: '/ntv2.html' },
             { name: 'RTV (Official)', link: '/rtv4.html' },
-            { name: 'T Sports (HFlix)', link: '/tsports.html' },  // Additional channels
-            { name: 'GTV (HFlix)', link: '/gtv.html' },  // Additional channels
+            { name: 'T Sports (HFlix)', link: '/tsports.html' },
+            { name: 'GTV (HFlix)', link: '/gtv.html' },
             { name: 'Somoy TV (Official)', link: '/somoy-of.html' },
-            { name: 'My TV (Official)', link: '/my-tv.html' },  // Additional channels
+            { name: 'My TV (Official)', link: '/my-tv.html' },
             { name: 'Ekattor TV (Akash Go)', link: '/ekattor3.html' },
-            { name: 'Rongeen TV', link: '/rongeen.html' },  // Additional channels
+            { name: 'Rongeen TV', link: '/rongeen.html' },
             { name: 'Asian TV (JagoBD)', link: '/asian.html' },
             { name: 'Independent TV (JagoBD)', link: '/independent.html' },
-            { name: 'Channel i (JagoBD)', link: '/channel-i.html' }, // Additional channels
-            { name: 'Deepto TV (JagoBD)', link: '/deepto.html' },  // Additional channels
-            { name: 'Sony Aath (Ottbangla)', link: '/aath.html' }, // Additional channels
-            { name: 'Ekhon TV (JagoBD)', link: '/ekhon.html' }, // Additional channels
-            { name: 'ATN Bangla (JagoBD)', link: '/atnbn.html' },  // Additional channels
+            { name: 'Channel i (JagoBD)', link: '/channel-i.html' },
+            { name: 'Deepto TV (JagoBD)', link: '/deepto.html' },
+            { name: 'Sony Aath (Ottbangla)', link: '/aath.html' },
+            { name: 'Ekhon TV (JagoBD)', link: '/ekhon.html' },
+            { name: 'ATN Bangla (JagoBD)', link: '/atnbn.html' },
             { name: 'Jamuna TV (JagoBD)', link: '/Jamuna.html' },
             { name: 'DBC News (JagoBD)', link: '/DBC.html' },
-            { name: 'Ananda TV (JagoBD)', link: '/ananda.html' },  // Additional channels
+            { name: 'Ananda TV (JagoBD)', link: '/ananda.html' },
             { name: 'Nagorik TV (Jadoo IPTV)', link: '/nagorik.html' },
-            { name: 'Bijoy TV (JagoBD)', link: '/bijoy.html' },  // Additional channels
+            { name: 'Bijoy TV (JagoBD)', link: '/bijoy.html' },
             { name: 'Biswa Bangla 24 (JagoBD)', link: '/biswabn24.html' },
-            { name: 'Boishakhi TV (JagoBD)', link: '/boishakhi.html' }, // Additional channels
-            { name: 'SATV (JagoBD)', link: '/sa-tv.html' }, // Additional channels
-            { name: 'Sangsad TV (Jadoo IPTV)', link: '/sangsad.html' },  // Additional channels
+            { name: 'Boishakhi TV (JagoBD)', link: '/boishakhi.html' },
+            { name: 'SATV (JagoBD)', link: '/sa-tv.html' },
+            { name: 'Sangsad TV (Jadoo IPTV)', link: '/sangsad.html' },
             { name: 'TLC', link: '/tlc.html' },
-            { name: 'Movie Bangla (JagoBD)', link: '/mv.html' }, // Additional channels
-            { name: 'Madani Bangla (Official)', link: '/madanibn.html' },  // Additional channels
-            { name: 'Mytv (JagoBD)', link: '/mytv.html' },  // Additional channels
-            // Add more channels as needed
+            { name: 'Movie Bangla (JagoBD)', link: '/mv.html' },
+            { name: 'Madani Bangla (Official)', link: '/madanibn.html' },
+            { name: 'Mytv (JagoBD)', link: '/mytv.html' },
         ];
 
-        // Get the channel list div
         const channelList = document.getElementById('channelList');
+        const searchBar = document.getElementById('searchBar');
 
-        // Dynamically create the channel list
-        channels.forEach(channel => {
-            const channelDiv = document.createElement('div');
-            channelDiv.className = 'channel';
-            channelDiv.innerText = channel.name;
+        // Function to display filtered channels
+        function displayChannels(filteredChannels) {
+            channelList.innerHTML = ''; // Clear current list
+            filteredChannels.forEach(channel => {
+                const channelDiv = document.createElement('div');
+                channelDiv.className = 'channel';
+                channelDiv.innerText = channel.name;
 
-            // On clicking the channel, change the iframe source
-            channelDiv.addEventListener('click', () => {
-                document.getElementById('player').src = channel.link;
+                channelDiv.addEventListener('click', () => {
+                    document.getElementById('player').src = channel.link;
+                });
+
+                channelList.appendChild(channelDiv);
             });
+        }
 
-            // Add the channel div to the channel list
-            channelList.appendChild(channelDiv);
+        // Display all channels initially
+        displayChannels(channels);
+
+        // Add event listener to search bar for filtering channels
+        searchBar.addEventListener('input', (e) => {
+            const searchQuery = e.target.value.toLowerCase();
+            const filteredChannels = channels.filter(channel => channel.name.toLowerCase().includes(searchQuery));
+            displayChannels(filteredChannels);
         });
     </script>
 </body>
