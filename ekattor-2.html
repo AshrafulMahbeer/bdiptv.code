@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATN Banla</title>
+    <title>Ekattor TV</title>
 <style>
         /* Make sure body and html take full height and remove any margins */
         html, body {
@@ -14,8 +14,8 @@
 
         /* Full-screen container for Clappr player */
         #player {
-            width: 100vw;   /* Full width */
-            height: 100vh;  /* Full height */
+            width: 100%;   /* Full width */
+            height: 100%;  /* Full height */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -29,7 +29,6 @@
     var player = new Clappr.Player({
         source: "https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=dxFr1wP5nD8j3GQOGfANIw&expires=1726849392&user=c15be118d93a464dabf77260596012cf", 
         parentId: "#player",
-        poster: 'http://clappr.io/poster.png',
         autoPlay: true,
         playback: {
             hlsjsConfig: {
