@@ -20,14 +20,25 @@
         #dplayer {
             width: 100%;
             height: 100%;
+     .logo {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      max-width: 8%;  /* Limit maximum width to 7% */
+      max-height: 6%; /* Limit maximum height to 7% */
+      opacity: 0.5; /* Adjust opacity for desired fade effect */
+    }
         }
     </style>
 </head>
 <body>
     <div id="dplayer"></div>
-    <script>
-        const dp = new DPlayer({
-            container: document.getElementById('dplayer'),
+  <script>
+    let dp;
+
+    function initPlayer() {
+      dp = new DPlayer({
+        container: document.getElementById('dplayer'),
             live: true,  // Indicate that the stream is live
             autoplay: true,
             video: {
