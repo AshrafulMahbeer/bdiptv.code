@@ -1,22 +1,64 @@
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<video id="video"></video>
-<script>
-  var video = document.getElementById('video');
-  if(Hls.isSupported()) {
-    var hls = new Hls();
-    hls.loadSource('https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=dxFr1wP5nD8j3GQOGfANIw&expires=1726849392&user=c15be118d93a464dabf77260596012cf');
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED,function() {
-      video.play();
-  });
- }
- // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
- // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element throught the `src` property.
- // This is using the built-in support of the plain video element, without using hls.js.
-  else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = 'https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=dxFr1wP5nD8j3GQOGfANIw&expires=1726849392&user=c15be118d93a464dabf77260596012cf';
-    video.addEventListener('canplay',function() {
-      video.play();
-    });
-  }
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full-Screen hls.js Player with Reload on Error</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #videoPlayer {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <video id="videoPlayer" controls autoplay></video>
+
+    <script>
+        if (Hls.isSupported()) {
+            var video = document.getElementById('videoPlayer');
+            var hls = new Hls({
+                liveSyncDurationCount: 0,  // Disable live syncing
+                maxLiveSyncPlaybackRate: 1,  // Normal playback speed (no speedup)
+                fragLoadingMaxRetry: 3,  // Retry fragment loading 3 times
+                fragLoadingRetryDelay: 1000,  // Retry delay
+            });
+
+            hls.loadSource('https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=dxFr1wP5nD8j3GQOGfANIw&expires=1726849392&user=c15be118d93a464dabf77260596012cf');
+            hls.attachMedia(video);
+
+            // Handle errors and reload the stream
+            hls.on(Hls.Events.ERROR, function(event, data) {
+                if (data.fatal) {
+                    console.warn('Error detected, reloading the stream...');
+                    reloadStream();
+                }
+            });
+
+            function reloadStream() {
+                var currentTime = video.currentTime;  // Capture current playback time
+                hls.stopLoad();  // Stop current load
+                hls.startLoad();  // Reload the stream
+                video.currentTime = currentTime;  // Resume from where it left off
+                console.log('Stream reloaded seamlessly at time:', currentTime);
+            }
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = 'https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=dxFr1wP5nD8j3GQOGfANIw&expires=1726849392&user=c15be118d93a464dabf77260596012cf';
+            video.addEventListener('loadedmetadata', function() {
+                video.play();
+            });
+        }
+    </script>
+</body>
+</html>
