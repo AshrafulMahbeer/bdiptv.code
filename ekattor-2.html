@@ -1,12 +1,22 @@
-<head>
-  <script type="text/javascript"
-      src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js">
-  </script>
-</head>      
-<body>
-  <div id="player"></div>
-  <script>
-    var player = new Clappr.Player({source: "https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=dxFr1wP5nD8j3GQOGfANIw&expires=1726849392&user=c15be118d93a464dabf77260596012cf", parentId: "#player"});
-  </script>
-</body>
-            
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<video id="video"></video>
+<script>
+  var video = document.getElementById('video');
+  if(Hls.isSupported()) {
+    var hls = new Hls();
+    hls.loadSource('https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=dxFr1wP5nD8j3GQOGfANIw&expires=1726849392&user=c15be118d93a464dabf77260596012cf');
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED,function() {
+      video.play();
+  });
+ }
+ // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
+ // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element throught the `src` property.
+ // This is using the built-in support of the plain video element, without using hls.js.
+  else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = 'https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=dxFr1wP5nD8j3GQOGfANIw&expires=1726849392&user=c15be118d93a464dabf77260596012cf';
+    video.addEventListener('canplay',function() {
+      video.play();
+    });
+  }
+</script>
