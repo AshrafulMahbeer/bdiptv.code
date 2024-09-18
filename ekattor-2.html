@@ -1,56 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekattor TV</title>
-<style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Full-screen container for Clappr player */
-        #player {
-            width: 100vw;   /* Full width */
-            height: 100vh;  /* Full height */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-              }
-    </style>
-<script type="text/javascript"
-        src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js">
-</script>
-<div id="player"></div>
-<script>
-    var player = new Clappr.Player({
-        source: "https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=dxFr1wP5nD8j3GQOGfANIw&expires=1726849392&user=c15be118d93a464dabf77260596012cf", 
-        parentId: "#player",
-        autoPlay: true,
-        playback: {
-            hlsjsConfig: {
-                // Add hls.js config to listen for errors
-                fragLoadingMaxRetry: 3,  // Number of retries before throwing an error
-                fragLoadingRetryDelay: 2000  // Retry delay in milliseconds
-            }
-        }
-    });
-
-    // Listen for error events
-    player.on(Clappr.Events.PLAYER_ERROR, function() {
-        console.warn('Error detected, reloading the stream...');
-        reloadStream();
-    });
-
-    // Reload function to refresh the stream
-    function reloadStream() {
-        player.load(player.options.source);  // Reload the stream
-        player.play();  // Auto-play after reload
-    }
-</script>
+  <script type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js">
+  </script>
+</head>      
+<body>
+  <div id="player"></div>
+  <script>
+    var player = new Clappr.Player({source: "https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=dxFr1wP5nD8j3GQOGfANIw&expires=1726849392&user=c15be118d93a464dabf77260596012cf", parentId: "#player"});
+  </script>
+</body>
+            
