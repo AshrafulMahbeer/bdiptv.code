@@ -27,13 +27,16 @@
       position: absolute;
       bottom: 10px;
       left: 10px;
+      max-width: 8%;  /* Limit maximum width to 7% */
+      max-height: 6%; /* Limit maximum height to 7% */
       opacity: 0.5; /* Adjust opacity for desired fade effect */
     }
   </style>
 </head>
 <body>
   <div id="dplayer"></div>
-  <img src="logo.png" class="logo" alt="Logo">  <script>
+  <img src="logo.png" class="logo" alt="Logo">
+  <script>
     let dp;
 
     function initPlayer() {
@@ -42,7 +45,7 @@
         live: true,  // Indicate that the stream is live
         autoplay: true,
         video: {
-          url: 'https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=P_NO09D3dsocceNojKNTPQ&expires=1726880573&user=c15be118d93a464dabf77260596012cf',
+          url: 'https://edge01.iptv.digijadoo.net/live/ekattor_tv/playlist.m3u8?md5=P_NO09D3socceNojKNTPQ&expires=1726880573&user=c15be118d93a464dabf77260596012cf',
           type: 'customHls',
           customType: {
             customHls: function(video, player) {
