@@ -1,48 +1,72 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AKASH GO Player</title>
-    <!-- Include JW Player JavaScript Library -->
-    <script src="https://content.jwplatform.com/libraries/Z79JsmAO.js"></script>
-    <style>
-        /* Fullscreen styles for the player */
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background-color: black; /* Background color for better visibility */
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AKASH GO Player</title>
+  <script src="https://content.jwplatform.com/libraries/Z79JsmAO.js"></script>
+  <style>
+    /* Fullscreen styles for the player */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: black; /* Background color for better visibility */
+    }
 
-        #jwplayerDiv {
-            width: 100%;
-            height: 100vh; /* Full viewport height */
-        }
-    </style>
+    #jwplayerDiv {
+      width: 100%;
+      height: 100vh; /* Full viewport height */
+    }
+
+    .logo {
+      position: absolute;
+      top: 5%;
+      left: 5%;
+      max-width: 12%; /* Limit maximum width to 12% */
+      max-height: 9%; /* Limit maximum height to 9% */
+      opacity: 0.5;
+      z-index: 2;
+      pointer-events: none; /* Non-interactive */
+    }
+  </style>
 </head>
 <body>
-    <!-- Create a DIV container for JW Player -->
-    <div id="jwplayerDiv"></div>
+  <div id="jwplayerDiv"></div>
 
-    <script>
-        // Initialize JW Player
-        jwplayer("jwplayerDiv").setup({
-            file: "https://medialive.akash-go.com/out/v1/5dddba2c4d6242f8a97e86ea9e77a464/index.mpd",
-            type: "dash",  // Specify the type as DASH
-            drm: {
-                clearkey: {
-                    key: "42819b85c2871aee5c5128519b057269",  // ClearKey DRM key
-                    keyId: "3f8f4a98cbbb4911b243eff1c19a0bc8"  // ClearKey DRM key ID
-                }
-            },
-            width: "100%",  // Full width
-            height: "100%",  // Full height
-            stretching: "fit",  // Ensures the player fills the container
-            autostart: true,  // Set to true to autoplay if needed
-            controls: true,  // Show controls for playback
-        });
-    </script>
+  <script>
+    // Initialize JW Player
+    jwplayer("jwplayerDiv").setup({
+      file: "https://medialive.akash-go.com/out/v1/5dddba2c4d6242f8a97e86ea9e77a464/index.mpd",
+      type: "dash",  // Specify the type as DASH
+      drm: {
+        clearkey: {
+          key: "42819b85c2871aee5c5128519b057269",  // ClearKey DRM key
+          keyId: "3f8f4a98cbbb4911b243eff1c19a0bc8"  // ClearKey DRM key ID
+        }
+      },
+      width: "100%",  // Full width
+      height: "100%",  // Full height
+      stretching: "fit",  // Ensures the player fills the container
+      autostart: true,  // Set to true to autoplay if needed
+      controls: true,   // Show controls for playback
+    });
+
+    // Add the logo dynamically inside the player container
+    const logo = document.createElement('img');
+    logo.src = 'logo.png'; // Replace 'logo.png' with the actual path to your logo image
+    logo.classList.add('logo');
+    document.getElementById('jwplayerDiv').appendChild(logo);
+
+    // Handle logo visibility during fullscreen changes
+    const player = jwplayer();
+    player.on('fullscreen', function() {
+      logo.style.display = 'block';
+    });
+
+    player.on('fullscreen_cancel', function() {
+      logo.style.display = 'block';
+    });
+  </script>
 </body>
 </html>
