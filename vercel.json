@@ -1,17 +1,4 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/proxy.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/hls/(.*)",
-      "dest": "/api/proxy.js?url=$1"
-    }
-  ],
   "headers": [
     {
       "source": "/",
