@@ -17,8 +17,10 @@ export default async function handler(req, res) {
     // Set the appropriate headers for HLS content
     res.setHeader('Content-Type', response.headers.get('content-type'));
     
-    // Pipe the response body to the client
-    response.body.pipe(res);
+    // Stream the response in chunks
+    const body = await response.arrayBuffer();
+    res.status(200).send(Buffer.from(body));
+    
   } catch (error) {
     // Catch any errors during the fetch or streaming
     return res.status(500).json({ error: 'Internal server error', details: error.message });
