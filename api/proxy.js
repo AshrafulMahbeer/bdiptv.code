@@ -1,29 +1,26 @@
-import fetch from 'node-fetch';
-
 export default async function handler(req, res) {
   const { url } = req.query;
 
-  // Check if the URL is provided
   if (!url) {
-    return res.status(400).json({ error: "URL parameter is missing" });
+    return res.status(400).json({ error: "Missing URL parameter" });
   }
 
   try {
     // Fetch the HLS stream from the provided URL
     const response = await fetch(decodeURIComponent(url));
 
-    // If the response is not successful, return an error
+    // Check if the response is successful
     if (!response.ok) {
-      return res.status(response.status).json({ error: 'Failed to fetch the stream' });
+      return res.status(response.status).send('Error fetching the stream');
     }
 
-    // Set the appropriate content type (HLS playlist or media segments)
+    // Set the appropriate headers for HLS content
     res.setHeader('Content-Type', response.headers.get('content-type'));
-
-    // Pipe the stream response to the client
+    
+    // Pipe the response body to the client
     response.body.pipe(res);
   } catch (error) {
-    // Handle any errors that occur
+    // Catch any errors during the fetch or streaming
     return res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 }
