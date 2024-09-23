@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://bosta-live.vercel.app/DPlayer.min.css" />
+  <script src="https://bosta-live.vercel.app/DPlayer.min.js"></script>
+  <script src="https://bosta-live.vercel.app/hls.min.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    #dplayer {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo {
+      position: absolute;
+      top: 5%;
+      left: 5%;
+      max-width: 12%;  /* Limit maximum width to 12% */
+      max-height: 9%; /* Limit maximum height to 9% */
+      opacity: 0.5;
+      z-index: 2;
+      pointer-events: none; /* Non-interactive */
+    }
+  </style>
+</head>
+<body>
+  <div id="dplayer"></div>
+  
+  <script>
+    let dp;
+
+    function initPlayer() {
+      dp = new DPlayer({
+        container: document.getElementById('dplayer'),
+        live: true,
+        autoplay: true,
+        video: {
+          url: 'https://edge01.iptv.digijadoo.net/live/maasranga/playlist.m3u8?md5=fukalTYau4CG9fIOzpNfqQ&expires=1727278493&user=bdc8fedd2e7c49a49f4dc2f29c88f276',
+          type: 'customHls',
+          customType: {
+            customHls: function(video, player) {
+              if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(video.src);
+                hls.attachMedia(video);
+              } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = video.src;
+              }
+            }
+          }
+        },
+      });
+
+      // Add the logo dynamically inside the player container
+      const logo = document.createElement('img');
+      logo.src = 'logo.png';
+      logo.classList.add('logo');
+      dp.container.appendChild(logo);
+
+      // Add an event listener to handle fullscreen
+      dp.on('fullscreen', function() {
+        logo.style.display = 'block';
+      });
+
+      dp.on('fullscreen_cancel', function() {
+        logo.style.display = 'block';
+      });
+    }
+
+    // Reload stream function
+    function reloadStream() {
+      dp.destroy();
+      initPlayer();
+    }
+
+    // Initialize the player for the first time
+    initPlayer();
+
+    // Set an interval to reload the stream every 18 seconds
+    setInterval(reloadStream, 18000);
+  </script>
+</body>
+</html>
