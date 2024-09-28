@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Homepage</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('bosta.png') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            text-align: center;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 40px 0;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin: 10px 0 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+
+        .watch-now {
+            margin-top: 100px;
+        }
+
+        .watch-now button {
+            padding: 20px 40px;
+            font-size: 20px;
+            background-color: #FF5722;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .watch-now button:hover {
+            background-color: #E64A19;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 28px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .watch-now button {
+                font-size: 18px;
+                padding: 15px 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 24px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .watch-now button {
+                font-size: 16px;
+                padding: 12px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <a href="index.html">
+            <img src="logo.png" alt="IPTV Logo" style="width: 150px;">
+        </a>
+    </div>
+    <h1>Bostafull Live BDIX TV Server 24/7</h1>
+</header>
+
+    </header>
+
+    <!-- Watch Now Button -->
+    <div class="watch-now">
+        <button onclick="window.location.href='channel-list.html'">Watch Now</button>
+    </div>
+
+</body>
+</html>
