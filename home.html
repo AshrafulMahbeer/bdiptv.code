@@ -38,11 +38,16 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        /* Featured channels section */
-        .featured {
-            margin: 50px 0;
+        /* Black faded background for the featured section */
+        .featured-container {
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+            padding: 30px;
+            border-radius: 10px;
+            margin: 50px auto;
+            max-width: 800px;
         }
 
+        /* Featured channels section */
         .featured h2 {
             font-size: 24px;
             margin-bottom: 20px;
@@ -146,14 +151,16 @@
     <h1>Bostafull Live</h1>
 </header>
 
-<!-- Featured Channels Section -->
-<div class="featured">
-    <h2>Featured Channels</h2>
-    <div class="featured-channels">
-        <a href="channel-list.html"><img src="channel1.png" alt="Channel 1"></a>
-        <a href="channel-list.html"><img src="channel2.png" alt="Channel 2"></a>
-        <a href="channel-list.html"><img src="channel3.png" alt="Channel 3"></a>
-        <a href="channel-list.html"><img src="channel4.png" alt="Channel 4"></a>
+<!-- Featured Channels Section with Faded Background -->
+<div class="featured-container">
+    <div class="featured">
+        <h2>Featured Channels</h2>
+        <div class="featured-channels">
+            <a href="channel-list.html"><img src="channel1.png" alt="Channel 1"></a>
+            <a href="channel-list.html"><img src="channel2.png" alt="Channel 2"></a>
+            <a href="channel-list.html"><img src="channel3.png" alt="Channel 3"></a>
+            <a href="channel-list.html"><img src="channel4.png" alt="Channel 4"></a>
+        </div>
     </div>
 </div>
 
