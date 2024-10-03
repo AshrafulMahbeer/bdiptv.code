@@ -16,22 +16,58 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative; /* Ensure the dropdown positions correctly */
         }
         #dplayer {
             width: 100%;
             height: 100%;
         }
+        .dplayer-server-menu {
+            position: absolute;
+            bottom: 15%;
+            right: 5%;
+            z-index: 9999;
+            background-color: transparent;
+            color: black;
+            border-radius: 1px;
+            padding: 1px;
+            text-align: center;
+            font-size: 1rem; /* Change font size for better visibility */
+        }
+
+        .dplayer-server-menu select {
+            background-color: transparent;
+            color: white;
+            border: none;
+            padding: 2px 2px;
+            font-size: 1rem; /* Adjust text size of the dropdown */
+            cursor: pointer;
+        }
+
+        .dplayer-server-menu select option {
+            background-color: transparent;
+            color: black;
+        }
     </style>
 </head>
 <body>
     <div id="dplayer"></div>
+
+    <!-- Dropdown menu in the middle bottom of the player -->
+    <div class="dplayer-server-menu">
+        <select id="serverDropdown">
+            <option value="official">Official HD 720p</option>
+            <option value="jagobd">JagoBD HD 720p</option>
+        </select>
+    </div>
+
     <script>
         const dp = new DPlayer({
             container: document.getElementById('dplayer'),
             live: true,  // Indicate that the stream is live
             autoplay: true,
             video: {
-                url: 'https://livess.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/rtv-sg.stream/playlist.m3u8',
+                url: 'https://streamingengine.rtvplus.tv/rtvpluslive/rtvpluslive.stream/playlist.m3u8', // Official HD 720p
                 type: 'customHls',
                 customType: {
                     customHls: function(video, player) {
@@ -45,6 +81,33 @@
                     }
                 }
             },
+        });
+
+        // Server switching functionality based on dropdown
+        document.getElementById('serverDropdown').addEventListener('change', function() {
+            let selectedServer = this.value;
+            let newServerUrl = '';
+
+            if (selectedServer === 'official') {
+                newServerUrl = 'https://streamingengine.rtvplus.tv/rtvpluslive/rtvpluslive.stream/playlist.m3u8'; // Official HD 720p
+            } else if (selectedServer === 'jagobd') {
+                newServerUrl = 'https://global.ncare.live/live-orgin/rtv-sg.stream/playlist.m3u8'; // JagoBD HD 720p
+            }
+
+            dp.switchVideo({
+                url: newServerUrl,
+                type: 'customHls'
+            });
+            dp.play();  // Play the new stream after switching
+        });
+
+        // Ensure the dropdown menu stays visible during fullscreen
+        dp.on('fullscreen', function() {
+            document.querySelector('.dplayer-server-menu').style.display = 'block';
+        });
+
+        dp.on('exitFullscreen', function() {
+            document.querySelector('.dplayer-server-menu').style.display = 'block';
         });
     </script>
 </body>
