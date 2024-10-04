@@ -1,114 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://bosta-live.vercel.app/DPlayer.min.css" />
-    <script src="https://bosta-live.vercel.app/DPlayer.min.js"></script>
-    <script src="https://bosta-live.vercel.app/hls.min.js"></script>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative; /* Ensure the dropdown positions correctly */
-        }
-        #dplayer {
-            width: 100%;
-            height: 100%;
-        }
-        .dplayer-server-menu {
-            position: absolute;
-            bottom: 15%;
-            right: 5%;
-            z-index: 9999;
-            background-color: transparent;
-            color: black;
-            border-radius: 1px;
-            padding: 1px;
-            text-align: center;
-            font-size: 1rem; /* Change font size for better visibility */
-        }
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://bosta-live.vercel.app/DPlayer.min.css" />
+  <script src="https://bosta-live.vercel.app/DPlayer.min.js"></script>
+  <script src="https://bosta-live.vercel.app/hls.min.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
 
-        .dplayer-server-menu select {
-            background-color: transparent;
-            color: white;
-            border: none;
-            padding: 2px 2px;
-            font-size: 1rem; /* Adjust text size of the dropdown */
-            cursor: pointer;
-        }
+    #dplayer {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
 
-        .dplayer-server-menu select option {
-            background-color: transparent;
-            color: black;
-        }
-    </style>
+    .logo {
+      position: absolute;
+      bottom: 5%;
+      left: 5%;
+      width: 9%; /* Adjust for desired width */
+      max-height: 12%; /* Adjust for desired height */
+      opacity: 0.5; /* Adjust opacity for desired fade effect */
+      z-index: 2;
+      pointer-events: none; /* Make the logo non-interactive */
+    }
+  </style>
 </head>
 <body>
-    <div id="dplayer"></div>
+  <div id="dplayer"></div>
 
-    <!-- Dropdown menu in the middle bottom of the player -->
-    <div class="dplayer-server-menu">
-        <select id="serverDropdown">
-            <option value="official">Official HD 720p</option>
-            <option value="jagobd">JagoBD HD 720p</option>
-        </select>
-    </div>
+  <script>
+    let dp;
 
-    <script>
-        const dp = new DPlayer({
-            container: document.getElementById('dplayer'),
-            live: true,  // Indicate that the stream is live
-            autoplay: true,
-            video: {
-                url: 'https://streamingengine.rtvplus.tv/rtvpluslive/rtvpluslive.stream/playlist.m3u8', // Official HD 720p
-                type: 'customHls',
-                customType: {
-                    customHls: function(video, player) {
-                        if (Hls.isSupported()) {
-                            const hls = new Hls();
-                            hls.loadSource(video.src);
-                            hls.attachMedia(video);
-                        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                            video.src = video.src;
-                        }
-                    }
-                }
-            },
-        });
-
-        // Server switching functionality based on dropdown
-        document.getElementById('serverDropdown').addEventListener('change', function() {
-            let selectedServer = this.value;
-            let newServerUrl = '';
-
-            if (selectedServer === 'official') {
-                newServerUrl = 'https://streamingengine.rtvplus.tv/rtvpluslive/rtvpluslive.stream/playlist.m3u8'; // Official HD 720p
-            } else if (selectedServer === 'jagobd') {
-                newServerUrl = 'https://global.ncare.live/live-orgin/rtv-sg.stream/playlist.m3u8'; // JagoBD HD 720p
+    function initPlayer() {
+      dp = new DPlayer({
+        container: document.getElementById('dplayer'),
+        live: true,
+        autoplay: true,
+        video: {
+          url: 'https://global.ncare.live/live-orgin/rtv-sg.stream/playlist.m3u8',
+          type: 'customHls',
+          customType: {
+            customHls: function(video, player) {
+              if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(video.src);
+                hls.attachMedia(video);
+              } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = video.src;
+              }
             }
+          }
+        },
+      });
 
-            dp.switchVideo({
-                url: newServerUrl,
-                type: 'customHls'
-            });
-            dp.play();  // Play the new stream after switching
-        });
+      // Add the logo dynamically inside the player container
+      const logo = document.createElement('img');
+      logo.src = 'logo.png';
+      logo.classList.add('logo');
+      dp.container.appendChild(logo);
 
-        // Ensure the dropdown menu stays visible during fullscreen
-        dp.on('fullscreen', function() {
-            document.querySelector('.dplayer-server-menu').style.display = 'block';
-        });
+      // Add an event listener to ensure the logo remains visible in fullscreen
+      dp.on('fullscreen', function() {
+        logo.style.display = 'block';
+      });
 
-        dp.on('exitFullscreen', function() {
-            document.querySelector('.dplayer-server-menu').style.display = 'block';
-        });
-    </script>
+      dp.on('fullscreen_cancel', function() {
+        logo.style.display = 'block';
+      });
+    }
+
+    // Initialize the player
+    initPlayer();
+  </script>
 </body>
 </html>
