@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTV Ok</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #player {
+            flex: 1;
+            position: relative;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 5px;
+        }
+        footer button {
+            margin: 0 10px;
+            padding: 5px;
+            border-radius: 20px
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="player">
+        <iframe id="dplayer-iframe" src="/rtv4.html" allowfullscreen></iframe>
+    </div>
+    <footer>
+        <button onclick="changeServer('/rtv.html')">HD 720p JagoBD</button>
+        <button onclick="changeServer('/rtv4.html')">HD 720p Official</button>
+    </footer>
+
+    <script>
+        function changeServer(serverUrl) {
+            const iframe = document.getElementById('dplayer-iframe');
+            iframe.src = serverUrl; // Change the iframe source to the selected server
+        }
+    </script>
+</body>
+</html>
