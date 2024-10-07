@@ -1,0 +1,4 @@
+#EXTM3U
+
+#EXT-X-STREAM-INF:BANDWIDTH=6000000,RESOLUTION=1280x720,NAME="HD"
+https://global.ncare.live/live-orgin/somoyt000011226615544544.stream/playlist.m3u8
