@@ -1,0 +1,8 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:30
+#EXT-X-MEDIA-SEQUENCE:73111
+#EXTINF:30,
+https://edge01.iptv.digijadoo.net/live/atn_bangla/playlist.m3u8?md5=oTJV9XJ1YJtExQIUamzTKw&expires=1728754438&user=811838a63b224e85b02b925b31d0fece
+#EXTINF:30,
+https://edge01.iptv.digijadoo.net/live/atn_bangla/playlist.m3u8?md5=kqHCDz7AePL-UtTiArHuZw&expires=1728754508&user=811838a63b224e85b02b925b31d0fece
