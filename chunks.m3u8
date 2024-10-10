@@ -1,6 +1,5 @@
 #EXTM3U
-#EXT-X-VERSION:3
-#EXTINF:30,
-https://edge01.iptv.digijadoo.net/live/atn_bangla/playlist.m3u8?md5=kqHCDz7AePL-UtTiArHuZw&expires=1728754508&user=811838a63b224e85b02b925b31d0fece
-#EXTINF:30,
+#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=1280x720
 https://edge01.iptv.digijadoo.net/live/atn_bangla/playlist.m3u8?md5=B7jfNab4CiBhMnPA90NMmg&expires=1728754831&user=811838a63b224e85b02b925b31d0fece
+#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=1280x720
+https://edge01.iptv.digijadoo.net/live/atn_bangla/playlist.m3u8?md5=_1lsng6RiL_FW1FsV-L9Ng&expires=1728754991&user=811838a63b224e85b02b925b31d0fece
