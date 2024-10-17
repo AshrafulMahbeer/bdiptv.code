@@ -26,15 +26,12 @@
 <body>
     <div id="dplayer"></div>
     <script>
-        let lastReloadTime = Date.now();
-        const reloadInterval = 18000; // minimum interval between reloads (18 seconds)
-
         const dp = new DPlayer({
             container: document.getElementById('dplayer'),
             live: true,  // Indicate that the stream is live
-            autoplay: false,
+            autoplay: true,
             video: {
-                url: 'https://bosta-live.vercel.app/Duronto.m3u8',
+                url: 'http://starshare.live:8080/live/3569087360/6542246996/433.ts',
                 type: 'customHls',
                 customType: {
                     customHls: function(video, player) {
@@ -47,33 +44,7 @@
                         }
                     }
                 }
-            }
-        });
-
-        let bufferTimeout = null;
-
-        dp.on('waiting', function () {
-            if (!bufferTimeout) {
-                bufferTimeout = setTimeout(function () {
-                    const currentTime = Date.now();
-                    if (currentTime - lastReloadTime > reloadInterval) {
-                        dp.switchVideo({
-                            url: 'http://starshare.live:8080/live/9826816920/8625825719/433.ts',
-                            type: 'customHls'
-                        });
-                        lastReloadTime = Date.now();
-                    }
-                    bufferTimeout = null;
-                }, 3000);  // 3 seconds buffer timeout
-            }
-        });
-
-        dp.on('playing', function () {
-            // Clear the timeout if playback resumes before 3 seconds
-            if (bufferTimeout) {
-                clearTimeout(bufferTimeout);
-                bufferTimeout = null;
-            }
+            },
         });
     </script>
 </body>
