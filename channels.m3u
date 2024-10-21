@@ -1,0 +1,34 @@
+#EXTM3U
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/8/8b/Somoy_TV_Logo.png", Somoy TV
+https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/somoyt000011226615544544.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTcvMjAyNCA1OjQyOjQ4IEFNJmhhc2hfdmFsdWU9Q2ZiN0VPWnFEeVBvZ210Q0hQLytyUT09JnZhbGlkbWludXRlcz01MCZpZD01
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/e/eb/Channel-i.png", Channel i
+https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/channeli-8-org.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTIvMjAyNCA1OjA1OjI4IEFNJmhhc2hfdmFsdWU9b3hsTEs4RVdUWmxwaFBQVWRNMnc0QT09JnZhbGlkbWludXRlcz01MCZpZD01
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/4/48/NTV_Bangla.svg", NTV
+http://starshare.live:8080/live/Habib/Habib/424.ts
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/5/5e/ATN_Bangla_Logo.png", ATN Bangla
+https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/atnbd-8-org.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTMvMjAyNCA3OjU1OjU2IEFNJmhhc2hfdmFsdWU9OFpnUGVZcU40Z3pHRW1WcTdiZUlBdz09JnZhbGlkbWludXRlcz01MCZpZD01
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/1/17/Maasranga_Television.png", Maasranga TV
+http://starshare.live:8080/live/Habib/Habib/1036.ts
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/9/97/DBC_News_Logo.png", DBC News
+https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/dbcnews.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTEvMjAyNCAxMTowMTo1OCBBTSZoYXNoX3ZhbHVlPUlseG1vN1J4dFhNTG5TS2tDYkpkaVE9PSZ2YWxpZG1pbnV0ZXM9NTAmaWQ9NQ==
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/f/f1/Deepto_TV.png", Deepto TV
+https://byphdgllyk.gpcdn.net/hls/deeptotv/index.m3u8
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/c/c5/Independent_TV_Logo.png", Independent TV
+https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/deshtv.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTAvMjAyNCA2OjA4OjE1IEFNJmhhc2hfdmFsdWU9TndDNU9wSG9UcFZJUmdwd1FzM3BtUT09JnZhbGlkbWludXRlcz01MCZpZD01
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/f/ff/RTV_Bangladesh_logo.png", RTV
+https://streamingengine.rtvplus.tv/rtvpluslive/rtvpluslive.stream/playlist.m3u8
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/9/95/Desh_TV.png", Desh TV
+https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/deshtv.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTAvMjAyNCA2OjA4OjE1IEFNJmhhc2hfdmFsdWU9TndDNU9wSG9UcFZJUmdwd1FzM3BtUT09JnZhbGlkbWludXRlcz01MCZpZD01
+
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/en/7/7d/Ekattor_TV_Logo.png", Ekattor TV
+https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/ekattor.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTIvMjAyNCA1OjAxOjA1IEFNJmhhc2hfdmFsdWU9cXhjTWcydU4zSFRZMGZYYmdqNS9nUT09JnZhbGlkbWludXRlcz01MCZpZD01
