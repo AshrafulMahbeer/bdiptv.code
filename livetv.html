@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://bosta-live.vercel.app/DPlayer.min.css" />
     <script src="https://bosta-live.vercel.app/DPlayer.min.js"></script>
@@ -123,6 +122,7 @@
                 dp.pause();  // Stop the current stream
                 dp.destroy();  // Destroy the instance
                 dp = null;  // Clear the dp reference
+                console.log("DPlayer destroyed");
             }
         }
 
@@ -192,6 +192,7 @@
         // Function to populate the playlist with channels
         function populatePlaylist(channels) {
             const playlist = document.getElementById('playlist');
+            playlist.innerHTML = ''; // Clear the previous playlist to avoid duplication
 
             channels.forEach((channel, index) => {
                 // Create row container
