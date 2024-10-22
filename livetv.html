@@ -12,38 +12,40 @@
         body, html {
             margin: 0;
             padding: 0;
+            height: 100%;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow: hidden; /* Fixes the viewport */
         }
-        /* DPlayer container with 16:9 aspect ratio */
-        #dplayer-container {
-            width: 100%;
-            max-width: 1280px;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            position: relative;
-        }
-        #dplayer {
-            position: absolute;
-            top: 0;
-            left: 0;
+
+        /* Container for both player and playlist */
+        #main-container {
             width: 100%;
             height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* DPlayer container with aspect-ratio */
+        #dplayer {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
         }
 
         /* Playlist container */
         #playlist {
             width: 100%;
-            max-width: 800px;
-            margin-top: 20px;
+            height: 40%; /* Takes up the rest of the space below player */
+            overflow-y: auto;
         }
 
         /* Playlist row style */
         .playlist-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             padding: 10px;
             border: 1px solid #ddd;
             margin-bottom: 10px;
@@ -83,21 +85,34 @@
             font-weight: bold;
         }
 
-        /* Playlist row flexbox alignment */
-        .playlist-content {
-            display: flex;
-            align-items: center;
+        /* Layout for wider viewports (when width is greater than height) */
+        @media (min-aspect-ratio: 1 / 1) {
+            #main-container {
+                flex-direction: row;
+                height: 100vh;
+            }
+            #dplayer {
+                width: 70%;
+                height: 100%;
+                aspect-ratio: unset;
+            }
+            #playlist {
+                width: 30%;
+                height: 100%;
+                overflow-y: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- DPlayer Container -->
-    <div id="dplayer-container">
+    <!-- Main container for the player and playlist -->
+    <div id="main-container">
+        <!-- DPlayer Container -->
         <div id="dplayer"></div>
-    </div>
 
-    <!-- Playlist Container -->
-    <div id="playlist"></div>
+        <!-- Playlist Container -->
+        <div id="playlist"></div>
+    </div>
 
     <script>
         let dp;  // Variable to hold the DPlayer instance
