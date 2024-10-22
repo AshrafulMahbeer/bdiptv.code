@@ -12,27 +12,92 @@
         body, html {
             margin: 0;
             padding: 0;
-            height: 100%;
             width: 100%;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
+            align-items: center;
         }
-        #channel-list {
-            margin-bottom: 10px;
+        /* DPlayer container with 16:9 aspect ratio */
+        #dplayer-container {
+            width: 100%;
+            max-width: 800px;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            position: relative;
         }
         #dplayer {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 500px;
+            height: 100%;
+        }
+
+        /* Playlist container */
+        #playlist {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        /* Playlist row style */
+        .playlist-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .playlist-row:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Logo in playlist row */
+        .playlist-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        /* Channel info container */
+        .channel-info {
+            display: flex;
+            flex-direction: column;
+            margin-left: 10px;
+            flex: 1;
+        }
+
+        /* Channel name */
+        .channel-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Live text */
+        .live-text {
+            font-size: 12px;
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Playlist row flexbox alignment */
+        .playlist-content {
+            display: flex;
+            align-items: center;
         }
     </style>
 </head>
 <body>
-    <div id="channel-list">
-        <select id="channel-selector"></select>
+    <!-- DPlayer Container -->
+    <div id="dplayer-container">
+        <div id="dplayer"></div>
     </div>
-    <div id="dplayer"></div>
+
+    <!-- Playlist Container -->
+    <div id="playlist"></div>
 
     <script>
         let dp;  // Variable to hold the DPlayer instance
@@ -77,7 +142,8 @@
                 .then(response => response.text())
                 .then(data => {
                     const channels = parseM3U(data);
-                    populateChannelSelector(channels);
+                    populatePlaylist(channels);
+                    initializePlayer(channels[0]);  // Auto play the first channel
                 })
                 .catch(error => console.error('Error loading M3U file:', error));
         }
@@ -106,23 +172,50 @@
             return channels;
         }
 
-        // Function to populate the channel selector dropdown
-        function populateChannelSelector(channels) {
-            const selector = document.getElementById('channel-selector');
+        // Function to populate the playlist with channels
+        function populatePlaylist(channels) {
+            const playlist = document.getElementById('playlist');
+
             channels.forEach((channel, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.text = channel.name;
-                selector.appendChild(option);
-            });
+                // Create row container
+                const row = document.createElement('div');
+                row.className = 'playlist-row';
 
-            // Automatically play the first channel
-            initializePlayer(channels[0]);
+                // Add click event to change player to the selected channel
+                row.addEventListener('click', () => {
+                    initializePlayer(channel);
+                });
 
-            // Handle channel switch
-            selector.addEventListener('change', () => {
-                const selectedChannel = channels[selector.value];
-                initializePlayer(selectedChannel);
+                // Channel logo
+                const logo = document.createElement('img');
+                logo.className = 'playlist-logo';
+                logo.src = channel.logo || 'https://via.placeholder.com/60';  // Fallback if no logo
+
+                // Channel info container
+                const infoContainer = document.createElement('div');
+                infoContainer.className = 'channel-info';
+
+                // Channel name
+                const name = document.createElement('div');
+                name.className = 'channel-name';
+                name.textContent = channel.name;
+
+                // Live text
+                const liveText = document.createElement('div');
+                liveText.className = 'live-text';
+                liveText.textContent = 'LIVE';
+
+                // Append elements
+                infoContainer.appendChild(name);
+                infoContainer.appendChild(liveText);
+
+                const content = document.createElement('div');
+                content.className = 'playlist-content';
+                content.appendChild(logo);
+                content.appendChild(infoContainer);
+
+                row.appendChild(content);
+                playlist.appendChild(row);
             });
         }
 
