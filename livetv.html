@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://bosta-live.vercel.app/DPlayer.min.css" />
+    <script src="https://bosta-live.vercel.app/DPlayer.min.js"></script>
+    <script src="https://bosta-live.vercel.app/hls.min.js"></script>
+    <title>M3U Playlist with DPlayer</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #channel-list {
+            margin-bottom: 10px;
+        }
+        #dplayer {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div id="channel-list">
+        <select id="channel-selector"></select>
+    </div>
+    <div id="dplayer"></div>
+
+    <script>
+        let dp;  // Variable to hold the DPlayer instance
+
+        // Function to destroy the existing DPlayer instance
+        function destroyPlayer() {
+            if (dp) {
+                dp.destroy();
+            }
+        }
+
+        // Function to initialize DPlayer with the selected channel
+        function initializePlayer(channelInfo) {
+            destroyPlayer();  // Destroy the previous player if it exists
+
+            dp = new DPlayer({
+                container: document.getElementById('dplayer'),
+                live: true,
+                autoplay: true,
+                video: {
+                    url: channelInfo.url,
+                    type: 'customHls',
+                    customType: {
+                        customHls: function(video, player) {
+                            if (Hls.isSupported()) {
+                                const hls = new Hls();
+                                hls.loadSource(video.src);
+                                hls.attachMedia(video);
+                            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                                video.src = video.src;
+                            }
+                        }
+                    },
+                    pic: channelInfo.logo  // Set the logo of the channel
+                }
+            });
+        }
+
+        // Function to load and parse the M3U file
+        function loadChannels() {
+            fetch('/channels.m3u')
+                .then(response => response.text())
+                .then(data => {
+                    const channels = parseM3U(data);
+                    populateChannelSelector(channels);
+                })
+                .catch(error => console.error('Error loading M3U file:', error));
+        }
+
+        // Function to parse the M3U file and extract channel info (name, logo, URL)
+        function parseM3U(data) {
+            const lines = data.split('\n');
+            const channels = [];
+            let channel = {};
+
+            lines.forEach(line => {
+                line = line.trim();
+
+                if (line.startsWith('#EXTINF')) {
+                    const nameMatch = line.match(/,(.*)/);
+                    const logoMatch = line.match(/tvg-logo="(.*?)"/);
+                    channel.name = nameMatch ? nameMatch[1] : 'Unknown Channel';
+                    channel.logo = logoMatch ? logoMatch[1] : '';  // Extract logo URL if available
+                } else if (line && !line.startsWith('#')) {
+                    channel.url = line;  // The stream URL is the next non-comment line
+                    channels.push({ ...channel });
+                    channel = {};  // Reset for next channel
+                }
+            });
+
+            return channels;
+        }
+
+        // Function to populate the channel selector dropdown
+        function populateChannelSelector(channels) {
+            const selector = document.getElementById('channel-selector');
+            channels.forEach((channel, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.text = channel.name;
+                selector.appendChild(option);
+            });
+
+            // Automatically play the first channel
+            initializePlayer(channels[0]);
+
+            // Handle channel switch
+            selector.addEventListener('change', () => {
+                const selectedChannel = channels[selector.value];
+                initializePlayer(selectedChannel);
+            });
+        }
+
+        // Load channels when the page loads
+        window.onload = loadChannels;
+    </script>
+</body>
+</html>
