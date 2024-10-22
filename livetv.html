@@ -120,7 +120,9 @@
         // Function to destroy the existing DPlayer instance
         function destroyPlayer() {
             if (dp) {
-                dp.destroy();
+                dp.pause();  // Stop the current stream
+                dp.destroy();  // Destroy the instance
+                dp = null;  // Clear the dp reference
             }
         }
 
@@ -224,12 +226,9 @@
                 infoContainer.appendChild(name);
                 infoContainer.appendChild(liveText);
 
-                const content = document.createElement('div');
-                content.className = 'playlist-content';
-                content.appendChild(logo);
-                content.appendChild(infoContainer);
+                row.appendChild(logo);
+                row.appendChild(infoContainer);
 
-                row.appendChild(content);
                 playlist.appendChild(row);
             });
         }
