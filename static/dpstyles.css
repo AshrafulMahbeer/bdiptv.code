@@ -21,34 +21,36 @@ body, html {
     aspect-ratio: 16 / 9;  /* Maintain 16:9 aspect ratio */
     background-color: #000;
     border: none;
+    flex-shrink: 0;  /* Prevents resizing */
 }
 
 #playlist {
     width: 100%;
-    height: auto;  /* Adjust height based on remaining space */
+    height: 50%;  /* Ensures playlist has space below player */
     overflow-y: auto;
-    flex: 1;  /* Take up remaining space below player */
+    flex-grow: 1;  /* Fill remaining space in portrait */
 }
 
-/* Layout for landscape view (wider than tall) */
+/* Landscape view (wider than tall) */
 @media (min-aspect-ratio: 1 / 1) {
     #main-container {
         flex-direction: row;  /* Side-by-side layout for landscape */
     }
-    
+
     #player-embed {
         width: 70%;
         height: 100%;
-        aspect-ratio: unset;  /* Let iframe fill 70% height in landscape */
+        aspect-ratio: unset;  /* Fill 70% height in landscape */
     }
 
     #playlist {
         width: 30%;
         height: 100%;
+        flex-grow: 0;  /* Ensures playlist is fixed to 30% width */
     }
 }
 
-/* Playlist row style */
+/* Playlist row styling */
 .playlist-row {
     display: flex;
     align-items: center;
