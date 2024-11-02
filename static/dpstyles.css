@@ -77,8 +77,8 @@ body, html {
     }
     #player-embed {
         width: 70%;
-        height: 100%;
-        aspect-ratio: unset;  /* Unset aspect ratio in landscape */
+        height: auto;
+        aspect-ratio: 16 / 9;  /* Unset aspect ratio in landscape */
     }
     #playlist {
         width: 30%;
