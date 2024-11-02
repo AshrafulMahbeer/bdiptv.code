@@ -13,23 +13,42 @@ body, html {
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;  /* Default to column for portrait view */
 }
 
 #player-embed {
-    width: 70%;
-    height: 100%;
+    width: 100%;
+    aspect-ratio: 16 / 9;  /* Maintain 16:9 aspect ratio */
+    background-color: #000;
     border: none;
 }
 
 #playlist {
-    width: 30%;
-    height: 100%;
+    width: 100%;
+    height: auto;  /* Adjust height based on remaining space */
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
+    flex: 1;  /* Take up remaining space below player */
 }
 
+/* Layout for landscape view (wider than tall) */
+@media (min-aspect-ratio: 1 / 1) {
+    #main-container {
+        flex-direction: row;  /* Side-by-side layout for landscape */
+    }
+    
+    #player-embed {
+        width: 70%;
+        height: 100%;
+        aspect-ratio: unset;  /* Let iframe fill 70% height in landscape */
+    }
+
+    #playlist {
+        width: 30%;
+        height: 100%;
+    }
+}
+
+/* Playlist row style */
 .playlist-row {
     display: flex;
     align-items: center;
