@@ -11,9 +11,9 @@ function populatePlaylist() {
 
     // Example channel data for hardcoded playlist
     const channels = [
-        { name: 'Channel 24', logo: 'channel-24.png', page: '24.html' },
-        { name: 'Jamuna TV', logo: '3.png', page: 'Jamuna.html' },
-        { name: 'DBC News', logo: 'dbc-news.png', page: 'DBC.html' },
+        { name: 'Channel 24', logo: 'logos/channel-24.png', page: '24.html' },
+        { name: 'Jamuna TV', logo: 'logos/jamuna.png', page: 'Jamuna.html' },
+        { name: 'DBC News', logo: 'logos/dbc-news.png', page: 'DBC.html' },
         // Add more channels as needed
     ];
 
