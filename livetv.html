@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/dpstyles.css">
-    <script src="static/dpscript.js" defer></script>
-    <title>Playlist with Embedded Player</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <title>Dynamic Playlist Layout</title>
 </head>
 <body>
     <div id="main-container">
-        <!-- Embedded iframe for player -->
-        <iframe id="player-embed" src="Discovery.html" width="100%" height="100%" allowfullscreen></iframe>
-
-        <!-- Playlist Container -->
-        <div id="playlist"></div>
+        <iframe id="player-embed" src="static/channel1.html"></iframe>
+        <div id="playlist">
+            <!-- Playlist items will go here -->
+        </div>
     </div>
+    <script src="script.js"></script>
 </body>
 </html>
