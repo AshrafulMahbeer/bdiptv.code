@@ -1,14 +1,15 @@
+/* Reset default styling */
 body, html {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
     display: flex;
-    flex-direction: column;
     align-items: center;
     overflow: hidden;
 }
 
+/* Main container with default column layout */
 #main-container {
     width: 100%;
     height: 100%;
@@ -16,75 +17,34 @@ body, html {
     flex-direction: column;  /* Default to column for portrait view */
 }
 
+/* Player with 16:9 aspect ratio */
 #player-embed {
     width: 100%;
-    aspect-ratio: 16 / 9;  /* Maintain 16:9 aspect ratio */
+    aspect-ratio: 16 / 9;
     background-color: #000;
     border: none;
-    flex-shrink: 0;  /* Prevents resizing */
 }
 
+/* Playlist takes remaining space below player */
 #playlist {
     width: 100%;
-    height: 50%;  /* Ensures playlist has space below player */
+    height: auto;
     overflow-y: auto;
-    flex-grow: 1;  /* Fill remaining space in portrait */
+    flex-grow: 1;  /* Takes up remaining space */
 }
 
-/* Landscape view (wider than tall) */
+/* Landscape layout */
 @media (min-aspect-ratio: 1 / 1) {
     #main-container {
-        flex-direction: row;  /* Side-by-side layout for landscape */
+        flex-direction: row;
     }
-
     #player-embed {
         width: 70%;
         height: 100%;
-        aspect-ratio: unset;  /* Fill 70% height in landscape */
+        aspect-ratio: unset;  /* Unset aspect ratio in landscape */
     }
-
     #playlist {
         width: 30%;
         height: 100%;
-        flex-grow: 0;  /* Ensures playlist is fixed to 30% width */
     }
-}
-
-/* Playlist row styling */
-.playlist-row {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.playlist-row:hover {
-    background-color: #f0f0f0;
-}
-
-.playlist-logo {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-}
-
-.channel-info {
-    display: flex;
-    flex-direction: column;
-    margin-left: 10px;
-    flex: 1;
-}
-
-.channel-name {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.live-text {
-    font-size: 12px;
-    color: red;
-    font-weight: bold;
 }
