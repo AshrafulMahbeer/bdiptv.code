@@ -14,24 +14,14 @@ body, html {
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: column; /* Default to column for portrait view */
+    flex-direction: column;  /* Default to column for portrait view */
 }
 
-/* Wrapper for the player to enforce aspect ratio */
-#player-container {
+/* Player with 16:9 aspect ratio */
+#player-embed {
     width: 100%;
     aspect-ratio: 16 / 9;
     background-color: #000;
-    flex-shrink: 0; /* Ensures the player keeps its height */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Player embedded iframe */
-#player-embed {
-    width: 100%;
-    height: 100%;
     border: none;
 }
 
@@ -40,7 +30,7 @@ body, html {
     width: 100%;
     height: auto;
     overflow-y: auto;
-    flex-grow: 1; /* Takes up remaining space */
+    flex-grow: 1;  /* Takes up remaining space */
 }
 
 /* Landscape layout */
@@ -48,22 +38,16 @@ body, html {
     #main-container {
         flex-direction: row;
     }
-
-    /* Player container for 16:9 ratio in landscape */
-    #player-container {
+    #player-embed {
         width: 70%;
-        height: auto; /* Let aspect ratio control the height */
-        aspect-ratio: 16 / 9; /* Keep aspect ratio */
+        height: 100%;
+        aspect-ratio: unset;  /* Unset aspect ratio in landscape */
     }
-
     #playlist {
         width: 30%;
         height: 100%;
     }
-}
-
-/* Playlist row styling */
-.playlist-row {
+    .playlist-row {
     display: flex;
     align-items: center;
     padding: 10px;
@@ -99,4 +83,5 @@ body, html {
     font-size: 12px;
     color: red;
     font-weight: bold;
+}
 }
