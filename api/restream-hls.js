@@ -1,7 +1,8 @@
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
-  const hlsUrl = "https://example.com/your-hls-stream.m3u8"; // Replace with your HLS URL
+  const hlsUrl = "http://tv.cloudcdn.me/live.ts?channelId=74553&uid=13433&deviceMac=00:1A:79:00:97:A1
+"; // Replace with your HLS URL
 
   try {
     // Fetch the HLS content
