@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     }
 
     // URL of the remote database file
-    const databaseUrl = "https://my-project.vercel.app/static/database.txt";
+    const databaseUrl = "https://bosta-live.vercel.app/static/database.txt";
 
     // Fetch the database file content
     const response = await fetch(databaseUrl);
