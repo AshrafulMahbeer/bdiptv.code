@@ -16,12 +16,13 @@ export default async function handler(req, res) {
     }
     const library = await response.text();
 
-    // Helper function to normalize text for Bengali
+    // Helper function to normalize text
     function normalizeText(text) {
       return text
         .replace(/\s+/g, " ") // Normalize spaces
         .trim()               // Trim surrounding spaces
-        .normalize("NFC");    // Normalize Unicode (important for Bengali)
+        .normalize("NFC")     // Normalize Unicode (for consistency)
+        .toLowerCase();       // Convert to lowercase for case-insensitive matching
     }
 
     // Normalize input question and library content
@@ -64,7 +65,7 @@ export default async function handler(req, res) {
 
     // Helper function to extract answers
     function extractAnswers(library, question) {
-      const questionRegex = new RegExp(`#aiinf-que-\\d+\\s*:\\s*${question}\\s*;`);
+      const questionRegex = new RegExp(`#aiinf-que-\\d+\\s*:\\s*${question}\\s*;`, "i");
       const match = library.match(questionRegex);
 
       if (!match) {
@@ -76,7 +77,7 @@ export default async function handler(req, res) {
       const questionNumber = questionNumberMatch ? questionNumberMatch[1] : null;
       if (!questionNumber) return [];
 
-      const answersRegex = new RegExp(`#aiinf-ans-${questionNumber}\\s*:\\s*(.+?);`, "g");
+      const answersRegex = new RegExp(`#aiinf-ans-${questionNumber}\\s*:\\s*(.+?);`, "gi");
       const answers = [];
       let answerMatch;
 
