@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatting App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: #6200ea;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .chat-box {
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+        .chat-message {
+            margin: 10px 0;
+        }
+        .chat-input {
+            display: flex;
+            padding: 10px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+        .chat-input button {
+            padding: 10px 15px;
+            font-size: 1em;
+            color: white;
+            background-color: #6200ea;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .chat-input button:hover {
+            background-color: #5a00d1;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Chat App</div>
+        <div id="chatBox" class="chat-box"></div>
+        <div class="chat-input">
+            <input id="chatInput" type="text" placeholder="Type your message here...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const chatInput = document.getElementById('chatInput');
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Display the user's message
+            displayMessage('You', message);
+
+            // Send the message to the backend
+            try {
+                const response = await fetch(`https://bosta-live.vercel.app/api/AminulGPT?text=${encodeURIComponent(message)}`);
+                const data = await response.json();
+
+                // Display the backend's response
+                if (data && data.answer) {
+                    displayMessage('Bot', data.answer);
+                } else {
+                    displayMessage('Bot', 'Sorry, no response received.');
+                }
+            } catch (error) {
+                displayMessage('Bot', 'Error connecting to the server.');
+            }
+
+            chatInput.value = '';
+        }
+
+        function displayMessage(sender, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message';
+            messageDiv.textContent = `${sender}: ${message}`;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+        }
+    </script>
+</body>
+</html>
