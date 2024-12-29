@@ -1,3 +1,5 @@
-#AIINF-QUE-1 : How are you;
+#AIINF-QUE-1 : How are you?;
 #AIINF-ANS-1 : I am fine;
-#AIINF-EXT : No answer found;
+#AIINF-QUE-2 : আপনি কেমন আছেন?;
+#AIINF-ANS-2 : আমি ভালো আছি;
+#AIINF-EXT : Sorry, no answer found.;
