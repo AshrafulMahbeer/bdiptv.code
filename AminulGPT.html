@@ -94,12 +94,12 @@
 
                 // Display the backend's response
                 if (data && data.answer) {
-                    displayMessage('Bot', data.answer);
+                    displayMessage('AminulGPT', data.answer);
                 } else {
-                    displayMessage('Bot', 'Sorry, no response received.');
+                    displayMessage('Error', 'Sorry, no response received.');
                 }
             } catch (error) {
-                displayMessage('Bot', 'Error connecting to the server.');
+                displayMessage('Error', 'Error connecting to the server.');
             }
 
             chatInput.value = '';
