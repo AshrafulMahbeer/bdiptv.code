@@ -1,2 +1,2 @@
-#AIINF-QUE-1 : How are you?;
-#AIINF-ANS-1 : I am fine;
+#AIINF-QUE-1 : Hi;
+#AIINF-ANS-1 : Hello;
