@@ -16,12 +16,15 @@ export default async function handler(req, res) {
     }
     const library = await response.text();
 
-    // Helper function to normalize text (remove excess spaces, convert to lowercase)
+    // Helper function to normalize text for Bengali
     function normalizeText(text) {
-      return text.replace(/\s+/g, " ").trim().toLowerCase();
+      return text
+        .replace(/\s+/g, " ") // Normalize spaces
+        .trim()               // Trim surrounding spaces
+        .normalize("NFC");    // Normalize Unicode (important for Bengali)
     }
 
-    // Normalize question and library content
+    // Normalize input question and library content
     const normalizedQuestion = normalizeText(question);
     const normalizedLibrary = normalizeText(library);
 
