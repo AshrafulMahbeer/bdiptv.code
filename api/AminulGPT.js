@@ -24,7 +24,8 @@ function findAnswer(library, question) {
         // If we have multiple answers for this question, collect them
         let answer = library[i + 1];
         while (answer && answer.includes('#AIINF-ANS-')) {
-          matchedAnswers.push(answer.split('#AIINF-ANS-')[1].trim());
+          // Remove extra formatting such as "1 : " or " ;"
+          matchedAnswers.push(answer.split('#AIINF-ANS-')[1].trim().replace(/^\d+\s*[:;]?\s*/, ''));
           answer = library[i + 2];  // Move to the next answer
           i++; // Increment to check the next answer
         }
