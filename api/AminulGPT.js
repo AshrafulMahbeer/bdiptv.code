@@ -16,20 +16,19 @@ export default async function handler(req, res) {
     }
     const library = await response.text();
 
-    // Helper function to normalize text
+    // Normalize function for both query and database content
     function normalizeText(text) {
       return text
-        .replace(/\s+/g, " ") // Normalize spaces
-        .trim()               // Trim surrounding spaces
-        .normalize("NFC")     // Normalize Unicode (for consistency)
-        .toLowerCase();       // Convert to lowercase for case-insensitive matching
+        .replace(/[\s।?,.;]+/g, " ") // Normalize spaces and punctuation
+        .trim()                       // Trim spaces
+        .normalize("NFC");            // Unicode normalization
     }
 
-    // Normalize input question and library content
+    // Normalize input and library
     const normalizedQuestion = normalizeText(question);
     const normalizedLibrary = normalizeText(library);
 
-    // Helper function to find the closest matching question
+    // Helper function to find the closest question match
     function findClosestMatch(question, library) {
       const questionRegex = /#aiinf-que-\d+\s*:\s*(.+?);/g;
       let match;
@@ -51,19 +50,19 @@ export default async function handler(req, res) {
         }
       }
 
-      return highestSimilarity > 0 ? closestMatch : null;
+      // Require a minimum similarity threshold
+      return highestSimilarity >= 0.5 ? closestMatch : null;
     }
 
-    // Helper function to calculate string similarity
+    // String similarity calculation
     function calculateSimilarity(a, b) {
-      let matches = 0;
-      for (let i = 0; i < Math.min(a.length, b.length); i++) {
-        if (a[i] === b[i]) matches++;
-      }
-      return matches / Math.max(a.length, b.length);
+      const aWords = a.split(" ");
+      const bWords = b.split(" ");
+      const matches = aWords.filter(word => bWords.includes(word)).length;
+      return matches / Math.max(aWords.length, bWords.length);
     }
 
-    // Helper function to extract answers
+    // Extract answers based on the matched question
     function extractAnswers(library, question) {
       const questionRegex = new RegExp(`#aiinf-que-\\d+\\s*:\\s*${question}\\s*;`, "i");
       const match = library.match(questionRegex);
@@ -88,7 +87,7 @@ export default async function handler(req, res) {
       return answers;
     }
 
-    // Match the closest question and extract answers
+    // Find closest match and extract answers
     const closestQuestion = findClosestMatch(normalizedQuestion, normalizedLibrary);
     const answers = extractAnswers(normalizedLibrary, closestQuestion || "");
 
