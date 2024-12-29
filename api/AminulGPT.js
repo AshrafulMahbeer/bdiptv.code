@@ -16,18 +16,9 @@ export default async function handler(req, res) {
     }
     const library = await response.text();
 
-    // Helper function to calculate string similarity
-    function calculateSimilarity(a, b) {
-      let matches = 0;
-      for (let i = 0; i < Math.min(a.length, b.length); i++) {
-        if (a[i] === b[i]) matches++;
-      }
-      return matches / Math.max(a.length, b.length);
-    }
-
     // Helper function to find the closest matching question
     function findClosestMatch(question, library) {
-      const questionRegex = /#AIINF-QUE-\d+: (.+?);/g;
+      const questionRegex = /#AIINF-QUE-\d+ ?: (.+?);/g;
       let match;
       const questions = [];
       while ((match = questionRegex.exec(library)) !== null) {
@@ -50,9 +41,18 @@ export default async function handler(req, res) {
       return highestSimilarity > 0 ? closestMatch : null;
     }
 
+    // Helper function to calculate string similarity
+    function calculateSimilarity(a, b) {
+      let matches = 0;
+      for (let i = 0; i < Math.min(a.length, b.length); i++) {
+        if (a[i] === b[i]) matches++;
+      }
+      return matches / Math.max(a.length, b.length);
+    }
+
     // Helper function to extract answers
     function extractAnswers(library, question) {
-      const questionRegex = new RegExp(`#AIINF-QUE-\\d+: ${question};`);
+      const questionRegex = new RegExp(`#AIINF-QUE-\\d+ ?: ${question};`);
       const match = library.match(questionRegex);
 
       if (!match) {
@@ -60,8 +60,11 @@ export default async function handler(req, res) {
         return extraAnswerMatch ? [extraAnswerMatch[1]] : [];
       }
 
-      const questionNumber = match[0].match(/#AIINF-QUE-(\\d+):/)[1];
-      const answersRegex = new RegExp(`#AIINF-ANS-${questionNumber}: (.+?);`, "g");
+      const questionNumberMatch = match[0].match(/#AIINF-QUE-(\d+) ?: /);
+      const questionNumber = questionNumberMatch ? questionNumberMatch[1] : null;
+      if (!questionNumber) return [];
+
+      const answersRegex = new RegExp(`#AIINF-ANS-${questionNumber} ?: (.+?);`, "g");
       const answers = [];
       let answerMatch;
 
