@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     }
 
     // URL of the remote database file
-    const databaseUrl = "https://bosta-live.vercel.app/static/database.txt";
+    const databaseUrl = "https://my-project.vercel.app/static/database.txt";
 
     // Fetch the database file content
     const response = await fetch(databaseUrl);
@@ -16,22 +16,18 @@ export default async function handler(req, res) {
     }
     const library = await response.text();
 
-    // Helper function to normalize text
-    function normalizeText(text) {
-      return text
-        .replace(/\s+/g, " ") // Normalize spaces
-        .trim()               // Trim surrounding spaces
-        .normalize("NFC")     // Normalize Unicode (for consistency)
-        .toLowerCase();       // Convert to lowercase for case-insensitive matching
+    // Helper function to calculate string similarity
+    function calculateSimilarity(a, b) {
+      let matches = 0;
+      for (let i = 0; i < Math.min(a.length, b.length); i++) {
+        if (a[i] === b[i]) matches++;
+      }
+      return matches / Math.max(a.length, b.length);
     }
-
-    // Normalize input question and library content
-    const normalizedQuestion = normalizeText(question);
-    const normalizedLibrary = normalizeText(library);
 
     // Helper function to find the closest matching question
     function findClosestMatch(question, library) {
-      const questionRegex = /#aiinf-que-\d+\s*:\s*(.+?);/g;
+      const questionRegex = /#AIINF-QUE-\d+: (.+?);/g;
       let match;
       const questions = [];
       while ((match = questionRegex.exec(library)) !== null) {
@@ -44,7 +40,7 @@ export default async function handler(req, res) {
       let highestSimilarity = 0;
 
       for (const q of questions) {
-        const similarity = calculateSimilarity(question, q);
+        const similarity = calculateSimilarity(question.toLowerCase(), q.toLowerCase());
         if (similarity > highestSimilarity) {
           highestSimilarity = similarity;
           closestMatch = q;
@@ -54,30 +50,18 @@ export default async function handler(req, res) {
       return highestSimilarity > 0 ? closestMatch : null;
     }
 
-    // Helper function to calculate string similarity
-    function calculateSimilarity(a, b) {
-      let matches = 0;
-      for (let i = 0; i < Math.min(a.length, b.length); i++) {
-        if (a[i] === b[i]) matches++;
-      }
-      return matches / Math.max(a.length, b.length);
-    }
-
     // Helper function to extract answers
     function extractAnswers(library, question) {
-      const questionRegex = new RegExp(`#aiinf-que-\\d+\\s*:\\s*${question}\\s*;`, "i");
+      const questionRegex = new RegExp(`#AIINF-QUE-\\d+: ${question};`);
       const match = library.match(questionRegex);
 
       if (!match) {
-        const extraAnswerMatch = library.match(/#aiinf-ext\s*:\s*(.+?);/);
+        const extraAnswerMatch = library.match(/#AIINF-EXT: (.+?);/);
         return extraAnswerMatch ? [extraAnswerMatch[1]] : [];
       }
 
-      const questionNumberMatch = match[0].match(/#aiinf-que-(\d+)\s*:/);
-      const questionNumber = questionNumberMatch ? questionNumberMatch[1] : null;
-      if (!questionNumber) return [];
-
-      const answersRegex = new RegExp(`#aiinf-ans-${questionNumber}\\s*:\\s*(.+?);`, "gi");
+      const questionNumber = match[0].match(/#AIINF-QUE-(\\d+):/)[1];
+      const answersRegex = new RegExp(`#AIINF-ANS-${questionNumber}: (.+?);`, "g");
       const answers = [];
       let answerMatch;
 
@@ -89,8 +73,8 @@ export default async function handler(req, res) {
     }
 
     // Match the closest question and extract answers
-    const closestQuestion = findClosestMatch(normalizedQuestion, normalizedLibrary);
-    const answers = extractAnswers(normalizedLibrary, closestQuestion || "");
+    const closestQuestion = findClosestMatch(question, library);
+    const answers = extractAnswers(library, closestQuestion || "");
 
     if (answers.length === 0) {
       return res.status(404).json({ error: "No answer found." });
