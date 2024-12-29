@@ -53,6 +53,6 @@ module.exports = async (req, res) => {
   // Find the closest matching answer
   const answer = findAnswer(library, question);
 
-  // Return the matched answer as JSON
-  return res.status(200).json({ answer });
+  // Return the matched answer in the required format
+  return res.status(200).json({ answer: answer });
 };
