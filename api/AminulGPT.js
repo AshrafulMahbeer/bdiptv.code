@@ -16,9 +16,18 @@ export default async function handler(req, res) {
     }
     const library = await response.text();
 
+    // Helper function to normalize text (remove excess spaces, convert to lowercase)
+    function normalizeText(text) {
+      return text.replace(/\s+/g, " ").trim().toLowerCase();
+    }
+
+    // Normalize question and library content
+    const normalizedQuestion = normalizeText(question);
+    const normalizedLibrary = normalizeText(library);
+
     // Helper function to find the closest matching question
     function findClosestMatch(question, library) {
-      const questionRegex = /#AIINF-QUE-\d+ ?: (.+?);/g;
+      const questionRegex = /#aiinf-que-\d+\s*:\s*(.+?);/g;
       let match;
       const questions = [];
       while ((match = questionRegex.exec(library)) !== null) {
@@ -31,7 +40,7 @@ export default async function handler(req, res) {
       let highestSimilarity = 0;
 
       for (const q of questions) {
-        const similarity = calculateSimilarity(question.toLowerCase(), q.toLowerCase());
+        const similarity = calculateSimilarity(question, q);
         if (similarity > highestSimilarity) {
           highestSimilarity = similarity;
           closestMatch = q;
@@ -52,19 +61,19 @@ export default async function handler(req, res) {
 
     // Helper function to extract answers
     function extractAnswers(library, question) {
-      const questionRegex = new RegExp(`#AIINF-QUE-\\d+ ?: ${question};`);
+      const questionRegex = new RegExp(`#aiinf-que-\\d+\\s*:\\s*${question}\\s*;`);
       const match = library.match(questionRegex);
 
       if (!match) {
-        const extraAnswerMatch = library.match(/#AIINF-EXT: (.+?);/);
+        const extraAnswerMatch = library.match(/#aiinf-ext\s*:\s*(.+?);/);
         return extraAnswerMatch ? [extraAnswerMatch[1]] : [];
       }
 
-      const questionNumberMatch = match[0].match(/#AIINF-QUE-(\d+) ?: /);
+      const questionNumberMatch = match[0].match(/#aiinf-que-(\d+)\s*:/);
       const questionNumber = questionNumberMatch ? questionNumberMatch[1] : null;
       if (!questionNumber) return [];
 
-      const answersRegex = new RegExp(`#AIINF-ANS-${questionNumber} ?: (.+?);`, "g");
+      const answersRegex = new RegExp(`#aiinf-ans-${questionNumber}\\s*:\\s*(.+?);`, "g");
       const answers = [];
       let answerMatch;
 
@@ -76,8 +85,8 @@ export default async function handler(req, res) {
     }
 
     // Match the closest question and extract answers
-    const closestQuestion = findClosestMatch(question, library);
-    const answers = extractAnswers(library, closestQuestion || "");
+    const closestQuestion = findClosestMatch(normalizedQuestion, normalizedLibrary);
+    const answers = extractAnswers(normalizedLibrary, closestQuestion || "");
 
     if (answers.length === 0) {
       return res.status(404).json({ error: "No answer found." });
