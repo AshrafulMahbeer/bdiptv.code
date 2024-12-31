@@ -21,7 +21,9 @@ export default async function handler(req, res) {
     }
 
     const contentType = response.headers.get("content-type") || "";
-    if (contentType.includes("application/vnd.apple.mpegurl")) {
+
+    // Handle M3U8 files
+    if (contentType.includes("application/vnd.apple.mpegurl") || url.endsWith(".m3u8")) {
       const originalM3U8 = await response.text();
       const processedM3U8 = originalM3U8
         .split("\n")
@@ -41,12 +43,15 @@ export default async function handler(req, res) {
 
       res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
       res.send(processedM3U8);
-    } else if (contentType.includes("video/mp2t")) {
-      // If it's a .ts file, forward the content as-is.
-      res.setHeader("Content-Type", contentType);
+    } 
+    // Handle TS files
+    else if (contentType.includes("video/mp2t") || url.endsWith(".ts")) {
+      res.setHeader("Content-Type", "video/mp2t");
       response.body.pipe(res);
-    } else {
-      res.status(400).send("Invalid file type.");
+    } 
+    // Handle unknown content types
+    else {
+      res.status(400).send("Invalid file type or unsupported URL.");
     }
   } catch (err) {
     console.error(err);
