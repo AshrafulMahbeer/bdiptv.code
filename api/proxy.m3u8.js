@@ -21,6 +21,9 @@ export default async function handler(req, res) {
         // Get the M3U8 content
         const content = await response.text();
 
+        // Parse the base URL from the provided URL
+        const baseUrl = new URL(url);
+
         // Process the content
         const processedContent = content.split("\n").map(line => {
             if (line.startsWith("#")) {
@@ -28,11 +31,11 @@ export default async function handler(req, res) {
                 return line;
             } else if (line.endsWith(".m3u8")) {
                 // Proxy M3U8 URLs
-                const fullUrl = new URL(line, url).href;
+                const fullUrl = new URL(line, baseUrl).href;
                 return `https://bosta-live.vercel.app/api/proxy.m3u8?url=${encodeURIComponent(fullUrl)}`;
             } else if (line.endsWith(".ts")) {
                 // Ensure full URLs for TS segments
-                return new URL(line, url).href;
+                return new URL(line, baseUrl).href;
             } else {
                 // Pass other lines through
                 return line;
