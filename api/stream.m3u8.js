@@ -3,12 +3,10 @@ export default async function handler(req, res) {
     return res.status(405).send("Only GET requests are allowed");
   }
 
-  const { url } = req.query;
-  if (!url) {
-    return res.status(400).send("Missing 'url' query parameter");
-  }
-
   try {
+    // Specific URL to fetch the m3u8 file
+    const url = "https://bosta-live.vercel.app/api/proxy.m3u8?url=https://mafiatv.live/youtube/live.php?id=9PONc4b5g5A&e=.m3u8";
+
     // Fetch the m3u8 file content
     const response = await fetch(url);
 
