@@ -6,7 +6,7 @@ export default function handler(req, res) {
 
   // If 'chunks' is provided, redirect to the new URL
   if (chunks) {
-    return res.redirect(301, `https://mafiatv.live/youtube/live?chunks=${chunks}`);
+    return res.redirect(301, `https://mafiatv.live/youtube/live.php?chunks=${chunks}`);
   }
 
   // Otherwise, respond with a 400 Bad Request if 'chunks' is missing
