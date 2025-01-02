@@ -35,7 +35,12 @@ export default async function handler(req, res) {
                 return `https://bosta-live.vercel.app/api/proxy.m3u8?url=${encodeURIComponent(fullUrl)}`;
             } else if (line.endsWith(".ts")) {
                 // Ensure full URLs for TS segments
-                return new URL(line, baseUrl).href;
+                let fullUrl = new URL(line, baseUrl).href;
+
+                // Remove PHP-related parts (e.g., live.php?chunks= to live?chunks=)
+                fullUrl = fullUrl.replace(/\.php\?/, '?');
+
+                return fullUrl;
             } else {
                 // Pass other lines through
                 return line;
