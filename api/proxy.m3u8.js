@@ -1,60 +1,52 @@
+// Vercel Serverless Function
 export default async function handler(req, res) {
-  const { url } = req.query;
+    const { id, e } = req.query; // Extract parameters from query string
 
-  if (!url) {
-    res.status(400).send("Missing 'url' parameter.");
-    return;
-  }
-
-  try {
-    const targetUrl = new URL(url);
-    const response = await fetch(targetUrl, {
-      headers: {
-        Referer: targetUrl.origin,
-        "User-Agent": req.headers["user-agent"] || "default",
-      },
-    });
-
-    if (!response.ok) {
-      res.status(response.status).send("Failed to fetch the URL.");
-      return;
+    if (!id || !e) {
+        return res.status(400).send("Missing required parameters: 'id' and 'e'");
     }
 
-    const contentType = response.headers.get("content-type") || "";
+    // Construct the target URL
+    const targetUrl = `https://mafiatv.live/youtube/live.php?id=${id}&e=${e}`;
 
-    // Handle M3U8 files
-    if (contentType.includes("application/vnd.apple.mpegurl") || url.endsWith(".m3u8")) {
-      const originalM3U8 = await response.text();
-      const processedM3U8 = originalM3U8
-        .split("\n")
-        .map((line) => {
-          if (line.startsWith("#") || line.trim() === "") {
-            return line;
-          }
-          const isTsFile = line.endsWith(".ts");
-          return isTsFile
-            ? new URL(line, targetUrl).href
-            : `https://bosta-live.vercel.app/api/proxy.m3u8?url=${new URL(
-                line,
-                targetUrl
-              ).href}`;
-        })
-        .join("\n");
+    try {
+        // Fetch the M3U8 file with the correct referer
+        const response = await fetch(targetUrl, {
+            headers: {
+                Referer: "https://mafiatv.live",
+            },
+        });
 
-      res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-      res.send(processedM3U8);
-    } 
-    // Handle TS files
-    else if (contentType.includes("video/mp2t") || url.endsWith(".ts")) {
-      res.setHeader("Content-Type", "video/mp2t");
-      response.body.pipe(res);
-    } 
-    // Handle unknown content types
-    else {
-      res.status(400).send("Invalid file type or unsupported URL.");
+        if (!response.ok) {
+            return res.status(response.status).send("Failed to fetch M3U8 file");
+        }
+
+        // Get the M3U8 content
+        const content = await response.text();
+
+        // Process the content
+        const processedContent = content.split("\n").map(line => {
+            if (line.startsWith("#")) {
+                // Comments or metadata lines; pass through
+                return line;
+            } else if (line.endsWith(".m3u8")) {
+                // Proxy M3U8 URLs
+                const fullUrl = new URL(line, targetUrl).href;
+                return `https://bosta-live.vercel.app/api/proxy.m3u8?url=${encodeURIComponent(fullUrl)}`;
+            } else if (line.endsWith(".ts")) {
+                // Ensure full URLs for TS segments
+                return new URL(line, targetUrl).href;
+            } else {
+                // Pass other lines through
+                return line;
+            }
+        }).join("\n");
+
+        // Return the modified M3U8 content
+        res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+        return res.status(200).send(processedContent);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("Internal server error");
     }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal server error.");
-  }
 }
