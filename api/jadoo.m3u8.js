@@ -9,14 +9,21 @@ export default async function handler(req, res) {
     }
 
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            headers: {
+                'Referer': 'http://iptv.jadoodigital.com',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
 
         if (!response.ok) {
-            return res.status(response.status).send('Failed to fetch the M3U8 file');
+            console.error(`Failed to fetch the M3U8 file. Status: ${response.status} ${response.statusText}`);
+            return res.status(response.status).send(`Failed to fetch the M3U8 file. Status: ${response.status} ${response.statusText}`);
         }
 
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/vnd.apple.mpegurl')) {
+            console.error('Invalid content type:', contentType);
             return res.status(400).send('Provided URL does not point to a valid M3U8 file');
         }
 
@@ -32,10 +39,16 @@ export default async function handler(req, res) {
             } else if (line.endsWith('.m3u8')) {
                 // Handle nested M3U8 files
                 const nestedUrl = new URL(line, baseUrl).toString();
-                const nestedResponse = await fetch(nestedUrl);
+                const nestedResponse = await fetch(nestedUrl, {
+                    headers: {
+                        'Referer': 'http://iptv.jadoodigital.com',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    }
+                });
 
                 if (!nestedResponse.ok) {
-                    return res.status(nestedResponse.status).send('Failed to fetch nested M3U8 file');
+                    console.error(`Failed to fetch nested M3U8 file. Status: ${nestedResponse.status} ${nestedResponse.statusText}`);
+                    return res.status(nestedResponse.status).send(`Failed to fetch nested M3U8 file. Status: ${nestedResponse.status} ${nestedResponse.statusText}`);
                 }
 
                 const nestedContent = await nestedResponse.text();
@@ -62,7 +75,8 @@ export default async function handler(req, res) {
         res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
         return res.status(200).send(proxiedContent);
     } catch (error) {
-        console.error('Error processing M3U8 file:', error);
-        return res.status(500).send('Internal Server Error');
+        console.error('Error processing M3U8 file:', error.message);
+        console.error(error.stack);
+        return res.status(500).send('Internal Server Error: ' + error.message);
     }
 }
