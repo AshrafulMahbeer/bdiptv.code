@@ -16,11 +16,12 @@ export default async function handler(req, res) {
         }
 
         const contentType = response.headers.get('content-type');
-        if (!contentType.includes('application/vnd.apple.mpegurl')) {
+        if (!contentType || !contentType.includes('application/vnd.apple.mpegurl')) {
             return res.status(400).send('Provided URL does not point to a valid M3U8 file');
         }
 
         const m3u8Content = await response.text();
+        const baseUrl = new URL(url);
         const lines = m3u8Content.split('\n');
         let proxiedContent = '';
 
@@ -30,17 +31,29 @@ export default async function handler(req, res) {
                 proxiedContent += line + '\n';
             } else if (line.endsWith('.m3u8')) {
                 // Handle nested M3U8 files
-                const nestedResponse = await fetch(new URL(line, url).toString());
+                const nestedUrl = new URL(line, baseUrl).toString();
+                const nestedResponse = await fetch(nestedUrl);
 
                 if (!nestedResponse.ok) {
                     return res.status(nestedResponse.status).send('Failed to fetch nested M3U8 file');
                 }
 
-                proxiedContent += await nestedResponse.text();
+                const nestedContent = await nestedResponse.text();
+                const nestedLines = nestedContent.split('\n');
+                for (const nestedLine of nestedLines) {
+                    if (nestedLine.trim() === '' || nestedLine.startsWith('#')) {
+                        proxiedContent += nestedLine + '\n';
+                    } else if (nestedLine.endsWith('.ts')) {
+                        // Convert relative URLs to absolute
+                        proxiedContent += new URL(nestedLine, nestedUrl).toString() + '\n';
+                    } else {
+                        proxiedContent += nestedLine + '\n';
+                    }
+                }
                 break;
             } else if (line.endsWith('.ts')) {
-                // Media files (do not resolve them, just proxy the M3U8)
-                proxiedContent += line + '\n';
+                // Convert relative URLs to absolute
+                proxiedContent += new URL(line, baseUrl).toString() + '\n';
             } else {
                 proxiedContent += line + '\n';
             }
