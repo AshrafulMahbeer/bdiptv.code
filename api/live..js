@@ -1,6 +1,4 @@
-import { request } from 'https';
-
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const { chunks } = req.query;
 
   // If 'chunks' is missing, return a 400 Bad Request
@@ -8,39 +6,31 @@ export default function handler(req, res) {
     return res.status(400).json({ error: 'Missing chunks parameter' });
   }
 
-  // Construct the target URL path
-  const targetPath = `/youtube/live.php?chunks=${chunks}`;
+  // Construct the target URL
+  const targetUrl = `https://mafiatv.live/youtube/live.php?chunks=${chunks}`;
 
-  // Options for the proxy request
-  const options = {
-    hostname: 'mafiatv.live',
-    path: targetPath,
-    method: req.method,
-    headers: {
-      ...req.headers, // Forward incoming headers
-      referer: 'https://mafiatv.live/', // Override or add the Referer header
-    },
-  };
+  try {
+    // Make the proxy request
+    const response = await fetch(targetUrl, {
+      method: req.method,
+      headers: {
+        ...req.headers, // Forward incoming headers
+        referer: 'https://mafiatv.live/', // Override or add the Referer header
+      },
+      body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined, // Include body for non-GET/HEAD methods
+    });
 
-  // Create the proxy request
-  const proxy = request(options, (proxyRes) => {
-    // Forward the status code and headers from the proxied response
-    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    // Forward the response status and headers
+    res.status(response.status);
+    response.headers.forEach((value, key) => {
+      res.setHeader(key, value);
+    });
 
-    // Pipe the proxied response body to the client
-    proxyRes.pipe(res, { end: true });
-  });
-
-  // Handle errors in the proxy request
-  proxy.on('error', (err) => {
-    console.error('Proxy request error:', err);
+    // Stream the response body
+    const body = await response.text();
+    res.send(body);
+  } catch (error) {
+    console.error('Error proxying request:', error);
     res.status(500).json({ error: 'Internal Server Error' });
-  });
-
-  // Pipe the request body (if applicable) to the proxy request
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
-    req.pipe(proxy, { end: true });
-  } else {
-    proxy.end();
   }
 }
