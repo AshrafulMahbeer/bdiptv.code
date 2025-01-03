@@ -9,12 +9,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const response = await fetch(url, {
-            headers: {
-                'Referer': 'http://iptv.jadoodigital.com',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
-        });
+        const response = await fetch(url);
 
         if (!response.ok) {
             console.error(`Failed to fetch the M3U8 file. Status: ${response.status} ${response.statusText}`);
@@ -39,12 +34,7 @@ export default async function handler(req, res) {
             } else if (line.endsWith('.m3u8')) {
                 // Handle nested M3U8 files
                 const nestedUrl = new URL(line, baseUrl).toString();
-                const nestedResponse = await fetch(nestedUrl, {
-                    headers: {
-                        'Referer': 'http://iptv.jadoodigital.com',
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-                    }
-                });
+                const nestedResponse = await fetch(nestedUrl);
 
                 if (!nestedResponse.ok) {
                     console.error(`Failed to fetch nested M3U8 file. Status: ${nestedResponse.status} ${nestedResponse.statusText}`);
@@ -76,7 +66,7 @@ export default async function handler(req, res) {
         return res.status(200).send(proxiedContent);
     } catch (error) {
         console.error('Error processing M3U8 file:', error.message);
-        console.error(error.stack);
+        console.error('Error details:', error);
         return res.status(500).send('Internal Server Error: ' + error.message);
     }
 }
