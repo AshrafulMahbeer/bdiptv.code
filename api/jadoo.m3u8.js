@@ -1,23 +1,55 @@
 export default async function handler(req, res) {
-    const fetch = await import('node-fetch'); // Use fetch API in Node.js
+    if (req.method !== 'GET') {
+        return res.status(405).send('Method Not Allowed');
+    }
 
-    const url = "https://api.jadoodigital.com/api/v2.1/user/channel/duronto_tv";
-
-    const headers = {
-        "Referer": "https://iptv.jadoodigital.com/",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
-    };
+    const { url } = req.query;
+    if (!url) {
+        return res.status(400).send('Missing required query parameter: url');
+    }
 
     try {
-        const response = await fetch(url, { headers });
+        const response = await fetch(url);
 
         if (!response.ok) {
-            return res.status(response.status).json({ error: "Failed to fetch the file." });
+            return res.status(response.status).send('Failed to fetch the M3U8 file');
         }
 
-        const data = await response.json(); // Or response.text() for plain text
-        return res.status(200).json(data);
+        const contentType = response.headers.get('content-type');
+        if (!contentType.includes('application/vnd.apple.mpegurl')) {
+            return res.status(400).send('Provided URL does not point to a valid M3U8 file');
+        }
+
+        const m3u8Content = await response.text();
+        const lines = m3u8Content.split('\n');
+        let proxiedContent = '';
+
+        for (const line of lines) {
+            if (line.trim() === '' || line.startsWith('#')) {
+                // Keep comments and empty lines as is
+                proxiedContent += line + '\n';
+            } else if (line.endsWith('.m3u8')) {
+                // Handle nested M3U8 files
+                const nestedResponse = await fetch(new URL(line, url).toString());
+
+                if (!nestedResponse.ok) {
+                    return res.status(nestedResponse.status).send('Failed to fetch nested M3U8 file');
+                }
+
+                proxiedContent += await nestedResponse.text();
+                break;
+            } else if (line.endsWith('.ts')) {
+                // Media files (do not resolve them, just proxy the M3U8)
+                proxiedContent += line + '\n';
+            } else {
+                proxiedContent += line + '\n';
+            }
+        }
+
+        res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+        return res.status(200).send(proxiedContent);
     } catch (error) {
-        return res.status(500).json({ error: "An error occurred.", details: error.message });
+        console.error('Error processing M3U8 file:', error);
+        return res.status(500).send('Internal Server Error');
     }
 }
