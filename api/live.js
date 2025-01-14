@@ -22,13 +22,19 @@ export default async function handler(req, res) {
 
     // Custom headers (adjust as needed)
     const headers = {
-      'Referer': 'https://d20opqftbkv2z0.cloudfront.net',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+      'Referer': baseUrl, // Use the base URL as referer
+      'Custom-Header': req.headers['custom-header'] || '',
     };
+
+    console.log(`Fetching URL: ${url}`); // Log the URL being fetched
 
     // Fetch the content of the m3u8 file
     const response = await fetch(url, { headers });
+    console.log(`Response Status: ${response.status}`); // Log response status
+
     if (!response.ok) {
-      res.status(response.status).json({ error: `Failed to fetch ${url}` });
+      res.status(response.status).json({ error: `Failed to fetch ${url}: ${response.statusText}` });
       return;
     }
 
@@ -49,7 +55,7 @@ export default async function handler(req, res) {
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
     res.status(200).send(processedContent);
   } catch (error) {
-    console.error(error);
+    console.error('Error:', error); // Log the error for debugging
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
