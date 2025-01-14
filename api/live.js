@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', 'https://bostaflix.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Custom-Header');
 
   // Handle preflight requests for CORS
   if (req.method === 'OPTIONS') {
@@ -18,10 +18,16 @@ export default async function handler(req, res) {
       return;
     }
 
-    const baseUrl = new URL(url).origin;
+    const baseUrl = new URL(url).origin + new URL(url).pathname.replace(/\/[^/]*$/, '/');
+
+    // Custom headers (adjust as needed)
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (compatible; Vercel/1.0)',
+      'Custom-Header': req.headers['custom-header'] || '',
+    };
 
     // Fetch the content of the m3u8 file
-    const response = await fetch(url);
+    const response = await fetch(url, { headers });
     if (!response.ok) {
       res.status(response.status).json({ error: `Failed to fetch ${url}` });
       return;
@@ -29,18 +35,15 @@ export default async function handler(req, res) {
 
     const content = await response.text();
 
-    // Process m3u8 content: Replace relative URLs or add live?url= for absolute URLs
+    // Process m3u8 content: Add "live?url=" after #EXTINF: lines and resolve relative URLs
     const processedContent = content.replace(
-      /(^(?!https?:\/\/|#).*?$)|(^https?:\/\/.*?$)/gm,
-      (match, relativeUrl, fullUrl) => {
-        if (relativeUrl) {
-          // If the URL is relative
-          return `live?url=${encodeURIComponent(`${baseUrl}/${relativeUrl}`)}`;
-        } else if (fullUrl) {
-          // If the URL is absolute
-          return `live?url=${encodeURIComponent(fullUrl)}`;
+      /(^#EXTINF:.*?\n)(.*?$)/gm,
+      (match, extinfLine, mediaUrl) => {
+        if (!mediaUrl.startsWith('http')) {
+          // Resolve relative URL
+          mediaUrl = new URL(mediaUrl, baseUrl).href;
         }
-        return match;
+        return `${extinfLine}live?url=${mediaUrl}`;
       }
     );
 
