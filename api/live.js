@@ -22,8 +22,7 @@ export default async function handler(req, res) {
 
     // Custom headers (adjust as needed)
     const headers = {
-      'User-Agent': 'Mozilla/5.0 (compatible; Vercel/1.0)',
-      'Custom-Header': req.headers['custom-header'] || '',
+      'Referer': 'https://d20opqftbkv2z0.cloudfront.net',
     };
 
     // Fetch the content of the m3u8 file
