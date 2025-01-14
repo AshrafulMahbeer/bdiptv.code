@@ -3,7 +3,9 @@ export default function handler(req, res) {
 
   // Helper function to generate EXTINF lines
   const generateExtinf = (timestamp, duration) => {
-    const timePart = timestamp.toISOString().replace(/[-:.TZ]/g, '/').replace(/\/(\d{2})$/, '-$1'); // Matches format YYYY/MM/DD/HH/MM/SS
+    const timePart = timestamp.toISOString()
+      .replace(/[-:.TZ]/g, '/')
+      .replace(/(\d{2})\/$/, '$1'); // Matches format YYYY/MM/DD/HH/MM/SS
     const durationStr = String(duration.toFixed(3)).replace('.', '').padStart(6, '0');
     const filename = `https://mtv.sunplex.live/MAASRANGA-TV/tracks-v1a1/${timePart}-${durationStr}.ts`;
     return `#EXTINF:${duration.toFixed(3)},\n${filename}`;
