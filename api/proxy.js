@@ -11,7 +11,7 @@ export default async function handler(req, res) {
       method: req.method,
       headers: {
         ...req.headers,
-        referer: "https://example.com", // Set your custom Referer here
+        referer: "https://iptv24bd.live/", // Set your custom Referer here
       },
     });
 
