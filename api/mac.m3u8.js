@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         const m3u8Content = await response.text();
 
         // Base URL to prepend to each link
-        const baseUrl = "https://allinonereborn.com/test.m3u8/ts.php?ts=https://live6.ostv.pro/live/KVSingh/KVSingh/";
+        const baseUrl = "https://allinonereborn.com/test.m3u8/ts.php?ts=https://live6.ostv.pro/";
         
         // Modify the M3U8 content
         const modifiedM3U8 = m3u8Content.split('\n').map(line => {
