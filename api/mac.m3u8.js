@@ -7,7 +7,7 @@ export default async function handler(req, res) {
         }
 
         // Construct the M3U8 URL
-        const m3u8Url = `https://allinonereborn.com/test.m3u8/ts.php?ts=https://starshare.live/live/KVSingh/KVSingh/${id}.m3u8`;
+        const m3u8Url = `https://starshare.live/live/KVSingh/KVSingh/${id}.m3u8`;
         
         // Fetch the M3U8 file
         const response = await fetch(m3u8Url);
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
         
         // Modify the M3U8 content
         const modifiedM3U8 = m3u8Content.split('\n').map(line => {
-            return line.startsWith("http") ? baseUrl + line : line;
+            return line.startsWith("/") ? baseUrl + line.substring(1) : line;
         }).join('\n');
 
         // Return the modified M3U8
