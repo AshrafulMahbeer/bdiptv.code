@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://bosta-live.vercel.app/DPlayer.min.css" />
+  <script src="https://bosta-live.vercel.app/DPlayer.min.js"></script>
+  <script src="https://bosta-live.vercel.app/hls.min.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    #dplayer {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo {
+      position: absolute;
+      bottom: 5%;
+      left: 5%;
+      width: 9%;
+      max-height: 12%;
+      opacity: 0.5;
+      z-index: 2;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="dplayer"></div>
+
+  <script>
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    const streamId = getQueryParam('id');
+    const streamUrl = `https://app.ncare.live/live-orgin/${streamId}/playlist.m3u8`;
+
+    let dp;
+
+    function initPlayer() {
+      if (!streamId) {
+        console.error('No stream ID provided');
+        return;
+      }
+      
+      dp = new DPlayer({
+        container: document.getElementById('dplayer'),
+        live: true,
+        autoplay: true,
+        video: {
+          url: streamUrl,
+          type: 'customHls',
+          customType: {
+            customHls: function(video, player) {
+              if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(video.src);
+                hls.attachMedia(video);
+              } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = video.src;
+              }
+            }
+          }
+        },
+      });
+    }
+
+    initPlayer();
+  </script>
+</body>
+</html>
