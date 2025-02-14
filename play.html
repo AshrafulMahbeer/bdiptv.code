@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BOSTAFLIX</title>
+  <style>
+    /* General reset */
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      height: 100vh;
+    }
+
+    /* Header styling */
+    header {
+      background-color: #212121;
+      color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100vw;
+      box-sizing: border-box;
+    }
+
+    .logo {
+      color: #ff0000;
+      text-decoration: none;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 10px;
+      transition: background-color 0.3s;
+    }
+
+    .nav-links a:hover {
+      background-color: #555;
+      border-radius: 5px;
+    }
+
+    /* Mobile Dropdown Menu */
+    .menu-icon {
+      display: none;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+
+    .dropdown {
+      display: none;
+      flex-direction: column;
+      background-color: #333;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 100%;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+    }
+
+    .dropdown a {
+      padding: 10px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .dropdown a:hover {
+      background-color: #444;
+    }
+
+    @media (max-width: 639px) {
+      .nav-links {
+        display: none;
+      }
+
+      .menu-icon {
+        display: block;
+      }
+    }
+
+    /* Layout styling */
+    .content {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      gap: 20px;
+      box-sizing: border-box;
+      flex-direction: row;
+      height: calc(100vh - 60px);
+    }
+
+    /* Video player container using an iframe */
+    #player-container {
+      flex: 3;
+      background-color: white;
+      position: relative;
+      min-height: 200px;
+    }
+
+    #videoIframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Iframe container styling */
+    #iframe-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow: hidden;
+    }
+
+    #iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Mobile view adjustments */
+    @media (max-width: 639px) {
+      .content {
+        flex-direction: column;
+      }
+
+      #player-container,
+      #iframe-container {
+        width: 100%;
+      }
+
+      #player-container {
+        flex: none;
+        height: auto;
+      }
+
+      #iframe-container {
+        height: calc(100vh - 60px - 56.25vw);
+      }
+
+      #iframe-container iframe {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header>
+    <a href="https://bostaflix.rf.gd/index.html" class="logo">BOSTAFLIX</a>
+    <nav class="nav-links" id="nav-links"></nav>
+    <div class="menu-icon" onclick="toggleDropdown()">☰</div>
+    <div class="dropdown" id="dropdown"></div>
+  </header>
+
+  <!-- Content Layout -->
+  <div class="content">
+    <!-- Video Player Container using iframe -->
+    <div id="player-container">
+      <iframe id="videoIframe" src="" allowfullscreen></iframe>
+    </div>
+
+    <!-- Iframe Container -->
+    <div id="iframe-container">
+      <iframe id="myIframe" src="https://bostaflix.rf.gd/index.html" width="600" height="400"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const iframe = document.getElementById('myIframe');
+
+    iframe.onload = () => {
+      try {
+        const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+        
+        iframeDocument.addEventListener('click', function(event) {
+          const target = event.target.closest('a');
+          
+          if (target && target.tagName === 'A' && target.href) {
+            event.preventDefault();
+            window.location.href = target.href;
+          }
+        });
+      } catch (error) {
+        console.log("Error accessing iframe content:", error);
+      }
+    }
+    // Toggle Dropdown Menu
+    function toggleDropdown() {
+      const dropdown = document.getElementById("dropdown");
+      dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+    }
+
+    // Fetch Navigation Links
+    async function fetchNavLinks() {
+      try {
+        const response = await fetch('static/nav.txt');
+        if (!response.ok) {
+          console.error('Failed to fetch navigation links');
+          return;
+        }
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const links = doc.querySelectorAll('a');
+
+        const navContainer = document.getElementById('nav-links');
+        links.forEach(link => {
+          navContainer.appendChild(link.cloneNode(true));
+        });
+
+        const dropdownContainer = document.getElementById('dropdown');
+        links.forEach(link => {
+          dropdownContainer.appendChild(link.cloneNode(true));
+        });
+      } catch (error) {
+        console.error('Error fetching navigation links:', error);
+      }
+    }
+
+    // Get Query Parameter
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    // Set Video Source
+    function setVideoSrc() {
+      const videoId = getQueryParam('id');
+      const server = getQueryParam('server') || 'jago';
+      if (videoId) {
+        document.getElementById('videoIframe').src = `https://bostaflix.rf.gd/${server}.html?id=${videoId}`;
+      }
+    }
+
+    // Update Dynamic Title
+    function updateTitle() {
+      const titleParam = getQueryParam('title');
+      if (titleParam) {
+        document.title = `Watch ${decodeURIComponent(titleParam)} Live on BOSTAFLIX BDIX IPTV & FTP Server`;
+      }
+    }
+
+    // Initialize Functions
+    fetchNavLinks();
+    setVideoSrc();
+    updateTitle();
+  </script>
+</body>
+</html>
