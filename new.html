@@ -57,14 +57,12 @@
             border-radius: 5px;
         }
         .content {
-            display: flex;
             flex: 1;
+            display: flex;
             flex-direction: column;
-            width: 35%;
+            gap: 10px;
         }
         .playlist {
-            display: flex;
-            flex-direction: column;
             flex: 1;
             background: transparent;
             overflow-y: auto;
@@ -96,7 +94,7 @@
             .container {
                 flex-direction: row;
             }
-            .player-container, .server-container {
+            .player-container {
                 width: 65%;
             }
             .content {
@@ -110,8 +108,8 @@
         <div class="player-container">
             <iframe id="player" frameborder="0" allowfullscreen></iframe>
         </div>
-        <div class="server-container" id="server-buttons"></div>
         <div class="content">
+            <div class="server-container" id="server-buttons"></div>
             <div class="playlist">
                 <div class="channel-list" id="channel-list"></div>
             </div>
