@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Player</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .container {
+            display: flex;
+            height: 100%;
+            gap: 10px;
+        }
+        .player-container {
+            flex: 0 0 65%;
+            aspect-ratio: 16 / 9;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 10px;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+        .server-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(128, 128, 128, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .server-button {
+            border: 1px solid white;
+            color: white;
+            background: transparent;
+            padding: 8px 12px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .content {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            width: 35%;
+        }
+        .playlist {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            background: transparent;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .channel-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .channel {
+            width: calc(33.33% - 10px);
+            aspect-ratio: 1 / 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            background: #2e2e2e;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .channel img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        @media (orientation: landscape) {
+            .container {
+                flex-direction: row;
+            }
+            .player-container, .server-container {
+                width: 65%;
+            }
+            .content {
+                width: 35%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="player-container">
+            <iframe id="player" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div class="server-container" id="server-buttons"></div>
+        <div class="content">
+            <div class="playlist">
+                <div class="channel-list" id="channel-list"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const channelId = urlParams.get('id') || 'default';
+        const server = urlParams.get('server') || 'jago';
+        document.getElementById('player').src = `${server}.html?id=${channelId}`;
+        
+        fetch('channels.txt')
+            .then(response => response.json())
+            .then(channels => {
+                const list = document.getElementById('channel-list');
+                channels.forEach(channel => {
+                    let div = document.createElement('div');
+                    div.className = 'channel';
+                    div.innerHTML = `<img src="${channel.logo}" alt="${channel.name}">`;
+                    div.onclick = () => {
+                        window.location.search = `?id=${channel.id}&server=${server}`;
+                    };
+                    list.appendChild(div);
+                });
+            });
+    </script>
+</body>
+</html>
