@@ -1,0 +1,47 @@
+[
+    {
+        "id": "tsports",
+        "name": "T Sports",
+        "logo": "logos/tsports.png"
+    },
+    {
+        "id": "gtv",
+        "name": "GTV",
+        "logo": "logos/gtv.png"
+    },
+    {
+        "id": "sony1",
+        "name": "Sony Sports 1",
+        "logo": "logos/sony1.png"
+    },
+    {
+        "id": "sony2",
+        "name": "Sony Sports 2",
+        "logo": "logos/sony2.png"
+    },
+    {
+        "id": "star1",
+        "name": "Star Sports 1",
+        "logo": "logos/star1.png"
+    },
+    {
+        "id": "star1hd",
+        "name": "Star Sports 1 HD",
+        "logo": "logos/star1hd.png"
+    },
+    {
+        "id": "star2",
+        "name": "Star Sports 2",
+        "logo": "logos/star2.png"
+    },
+    {
+        "id": "select1",
+        "name": "Star Sports Select 1",
+        "logo": "logos/select1.png"
+    },
+    {
+        "id": "select2",
+        "name": "Star Sports Select 2",
+        "logo": "logos/select2.png"
+    }
+]
