@@ -21,7 +21,6 @@
 
         /* Container for the main iframe */
         .iframe-container {
-            width: 100%;
             padding-bottom: auto;
             aspect-ratio: 16/9;
             position: relative;
@@ -105,7 +104,9 @@
           max-height: 70vh;
           max-width: 100%;
           min-width: 60%
-          width: auto;
+      @media (max-width: 720px) {
+          .iframe-container {
+          width: 100%;
     </style>
 </head>
 
