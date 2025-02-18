@@ -26,8 +26,7 @@
         .player-container {
             position: relative;
             width: 100%;
-            padding-top: 56.5%; /* 16:9 Aspect Ratio */
-            aspect-ratio: 16/9;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
             background: black;
             border-radius: 10px;
             overflow: hidden;
@@ -46,7 +45,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
         }
         .playlist {
             flex: 1;
@@ -59,12 +58,10 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            justify-content: center;
-            align-items: center;
         }
         .channel {
-            width: calc(25% - 10px);
-            aspect-ratio: 1 / 1;
+            width: calc(33.33% - 7px); /* 3 columns with gap */
+            aspect-ratio: 1 / 1; /* Square aspect ratio */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -88,13 +85,16 @@
                 flex-direction: row;
             }
             .player-container {
-                width: 65%;
+                width: 60%; /* Player takes 60% of the width */
                 padding-top: 0;
                 height: 0;
-                padding-bottom: 36.5625%; /* 65% of 56.25% (16:9) */
+                padding-bottom: 33.75%; /* 60% of 56.25% (16:9) */
             }
             .content {
-                width: 35%;
+                width: 40%; /* Channel list takes 40% of the width */
+            }
+            .channel {
+                width: calc(33.33% - 7px); /* 3 columns with gap */
             }
         }
     </style>
