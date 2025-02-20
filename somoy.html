@@ -30,11 +30,11 @@
       position: absolute;
       bottom: 5%;
       left: 5%;
-      width: 9%; /* Adjust for desired width */
-      max-height: 12%; /* Adjust for desired height */
-      opacity: 0.5; /* Adjust opacity for desired fade effect */
+      width: 9%;
+      max-height: 12%;
+      opacity: 0.5;
       z-index: 2;
-      pointer-events: none; /* Make the logo non-interactive */
+      pointer-events: none;
     }
   </style>
 </head>
@@ -55,9 +55,22 @@
           customType: {
             customHls: function(video, player) {
               if (Hls.isSupported()) {
-                const hls = new Hls();
+                const hls = new Hls({
+                  autoStartLoad: true,
+                  capLevelToPlayerSize: false, // Prevents downscaling
+                  maxBufferLength: 30, // Keep enough buffer
+                });
+
                 hls.loadSource(video.src);
                 hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                  hls.startLevel = -1; // Start with highest quality
+                  hls.currentLevel = hls.levels.length - 1; // Force highest available
+                  hls.autoLevelEnabled = true; // Enable auto adjustment
+                });
+
+                player.hls = hls;
               } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = video.src;
               }
@@ -72,7 +85,7 @@
       logo.classList.add('logo');
       dp.container.appendChild(logo);
 
-      // Add an event listener to ensure the logo remains visible in fullscreen
+      // Ensure logo remains visible in fullscreen mode
       dp.on('fullscreen', function() {
         logo.style.display = 'block';
       });
