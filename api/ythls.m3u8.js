@@ -13,7 +13,14 @@ export default async function handler(req, res) {
     const match = html.match(/<source src="(.*?)" type="application\/x-mpegURL"/);
     
     if (match && match[1]) {
-      const redirectLink = match[1];
+      let redirectLink = match[1];
+      
+      // If the link is relative, add the origin URL
+      if (!redirectLink.startsWith("http")) {
+        const url = new URL(webpageUrl);
+        redirectLink = url.origin + redirectLink;
+      }
+      
       res.redirect(302, redirectLink);
     } else {
       res.status(404).send("Stream link not found");
