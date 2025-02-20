@@ -40,23 +40,40 @@ export default async function handler(req, res) {
       streamUrl = url.origin + streamUrl;
     }
     
-    async function fetchDeepestM3U8(url) {
-      let response = await fetch(url);
-      let text = await response.text();
-      
-      const nestedMatch = text.match(/(https?:\/\/[^\s]+\.m3u8)/);
-      if (nestedMatch && nestedMatch[1]) {
-        return fetchDeepestM3U8(nestedMatch[1]);
+    async function fetchM3U8(url) {
+      try {
+        let response = await fetch(url);
+        let text = await response.text();
+        return { url: response.url, text };
+      } catch (err) {
+        console.error("Error fetching M3U8:", err);
+        return { url, text: "" };
       }
-      
-      return text.replace(/https?:\/\/[^\/]+/g, "https://inv.nadeko.net");
     }
     
-    const finalM3U8 = await fetchDeepestM3U8(streamUrl);
+    // Fetch first M3U8
+    const firstM3U8 = await fetchM3U8(streamUrl);
+    if (!firstM3U8.text) {
+      return res.status(500).send("Error fetching first M3U8");
+    }
+    
+    // Find the second M3U8 URL within the first one
+    const secondM3U8Match = firstM3U8.text.match(/(https?:\/\/[^\s]+\.m3u8)/);
+    let finalM3U8Url = secondM3U8Match ? secondM3U8Match[1] : firstM3U8.url;
+    
+    // Fetch the final M3U8
+    const finalM3U8 = await fetchM3U8(finalM3U8Url);
+    if (!finalM3U8.text) {
+      return res.status(500).send("Error fetching second M3U8");
+    }
+    
+    // Replace all origin URLs with inv.nadeko.net
+    const modifiedM3U8 = finalM3U8.text.replace(/https?:\/\/[^\/]+/g, "https://inv.nadeko.net");
     
     res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-    res.send(finalM3U8);
+    res.send(modifiedM3U8);
   } catch (error) {
+    console.error("Error fetching stream:", error);
     res.status(500).send("Error fetching stream");
   }
 }
