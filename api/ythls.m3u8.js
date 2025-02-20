@@ -40,12 +40,22 @@ export default async function handler(req, res) {
       streamUrl = url.origin + streamUrl;
     }
     
-    const m3u8Response = await fetch(streamUrl);
-    let m3u8Text = await m3u8Response.text();
-    m3u8Text = m3u8Text.replace(/https:\/\/www\.youtube\.com/g, "https://inv.nadeko.net");
+    async function fetchDeepestM3U8(url) {
+      let response = await fetch(url);
+      let text = await response.text();
+      
+      const nestedMatch = text.match(/(https?:\/\/[^\s]+\.m3u8)/);
+      if (nestedMatch && nestedMatch[1]) {
+        return fetchDeepestM3U8(nestedMatch[1]);
+      }
+      
+      return text.replace(/https?:\/\/[^\/]+/g, "https://inv.nadeko.net");
+    }
+    
+    const finalM3U8 = await fetchDeepestM3U8(streamUrl);
     
     res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-    res.send(m3u8Text);
+    res.send(finalM3U8);
   } catch (error) {
     res.status(500).send("Error fetching stream");
   }
