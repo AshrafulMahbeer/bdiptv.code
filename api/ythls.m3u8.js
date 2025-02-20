@@ -68,7 +68,7 @@ export default async function handler(req, res) {
     }
     
     // Replace all origin URLs with inv.nadeko.net
-    const modifiedM3U8 = finalM3U8.text.replace(/https?:\/\/[^\/]+/g, "https://inv.nadeko.net");
+    const modifiedM3U8 = finalM3U8.text.replace(/https?:\/\/[^\/]+/g, "https://inv-ca1.nadeko.net");
     
     res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
     res.send(modifiedM3U8);
