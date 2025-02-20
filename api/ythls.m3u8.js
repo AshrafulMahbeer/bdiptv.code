@@ -4,7 +4,7 @@ export default async function handler(req, res) {
     return res.status(400).send("Missing video ID");
   }
 
-  const webpageUrl = `https://inv.nadeko.net/watch?v=${id}`; // Replace with the actual webpage URL
+  const webpageUrl = `https://inv.nadeko.net/watch?v=${id}`;
   
   try {
     const response = await fetch(webpageUrl, {
@@ -28,23 +28,55 @@ export default async function handler(req, res) {
     });
     
     const html = await response.text();
-    
     const match = html.match(/<source src="(.*?)" type="application\/x-mpegURL"/);
     
-    if (match && match[1]) {
-      let redirectLink = match[1];
+    if (!match || !match[1]) {
+      return res.status(404).send("Stream link not found");
+    }
+    
+    let streamUrl = match[1];
+    if (!streamUrl.startsWith("http")) {
+      const url = new URL(webpageUrl);
+      streamUrl = url.origin + streamUrl;
+    }
+    
+    async function fetchBestM3U8(url) {
+      let m3u8Response = await fetch(url);
+      let m3u8Text = await m3u8Response.text();
       
-      // If the link is relative, add the origin URL
-      if (!redirectLink.startsWith("http")) {
-        const url = new URL(webpageUrl);
-        redirectLink = url.origin + redirectLink;
+      if (m3u8Text.includes(".m3u8")) {
+        const lines = m3u8Text.split("\n");
+        let bestQualityUrl = "";
+        let maxBandwidth = 0;
+        
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].includes("BANDWIDTH=")) {
+            const bandwidthMatch = lines[i].match(/BANDWIDTH=(\d+)/);
+            if (bandwidthMatch) {
+              const bandwidth = parseInt(bandwidthMatch[1], 10);
+              if (bandwidth > maxBandwidth) {
+                maxBandwidth = bandwidth;
+                bestQualityUrl = lines[i + 1];
+              }
+            }
+          }
+        }
+        
+        if (bestQualityUrl.startsWith("/")) {
+          const urlObj = new URL(url);
+          bestQualityUrl = urlObj.origin + bestQualityUrl;
+        }
+        
+        return fetchBestM3U8(bestQualityUrl);
       }
       
-      res.redirect(302, redirectLink);
-    } else {
-      res.status(404).send("Stream link not found");
+      return m3u8Text.replace(/https:\/\/www\.youtube\.com/g, "https://inv.nadeko.net");
     }
+    
+    const finalM3U8 = await fetchBestM3U8(streamUrl);
+    res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+    res.send(finalM3U8);
   } catch (error) {
-    res.status(500).send("Error fetching webpage");
+    res.status(500).send("Error fetching stream");
   }
 }
