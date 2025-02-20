@@ -1,52 +1,59 @@
-export default async function handler(req, res) {
-  const { id } = req.query;
-  if (!id) {
-    return res.status(400).send("Missing video ID");
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://bosta-live.vercel.app/DPlayer.min.css" />
+  <script src="https://bosta-live.vercel.app/DPlayer.min.js"></script>
+  <script src="https://bosta-live.vercel.app/hls.min.js"></script>
+</head>
+<body>
+  <div id="dplayer"></div>
 
-  const webpageUrl = `https://inv.nadeko.net/watch?v=${id}`;
-  
-  try {
-    const response = await fetch(webpageUrl, {
-      headers: {
-        "authority": "inv.nadeko.net",
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "en-US,en;q=0.9,bn;q=0.8",
-        "cache-control": "max-age=0",
-        "cookie": "PREFS=%7B%22volume%22%3A100%2C%22speed%22%3A1%7D; INVIDIOUS_SERVER_ID=2",
-        "dnt": "1",
-        "priority": "u=0, i",
-        "referer": webpageUrl,
-        "sec-fetch-dest": "document",
-        "sec-fetch-mode": "navigate",
-        "sec-fetch-site": "same-origin",
-        "sec-fetch-user": "?1",
-        "upgrade-insecure-requests": "1",
-        "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
-      }
-    });
-    
-    const html = await response.text();
-    const match = html.match(/<source src="(.*?)" type="application\/x-mpegURL"/);
-    
-    if (!match || !match[1]) {
-      return res.status(404).send("Stream link not found");
+  <script>
+    let dp;
+
+    function initPlayer() {
+      dp = new DPlayer({
+        container: document.getElementById('dplayer'),
+        live: true,
+        autoplay: true,
+        video: {
+          url: 'https://bosta-live.vercel.app/api/ythls.m3u8?id=4hAzkFtRp70',
+          type: 'customHls',
+          customType: {
+            customHls: function(video, player) {
+              if (Hls.isSupported()) {
+                const hls = new Hls({
+                  autoStartLoad: true
+                });
+
+                hls.loadSource(video.src);
+                hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                  console.log("Available qualities:", hls.levels);
+
+                  hls.currentLevel = hls.levels.length - 1; // Force highest quality
+                  hls.autoLevelEnabled = false; // Disable auto switching
+                });
+
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                  console.error("HLS.js Error:", data);
+                });
+
+                player.hls = hls;
+              } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = video.src;
+                video.play();
+              }
+            }
+          }
+        },
+      });
     }
-    
-    let streamUrl = match[1];
-    if (!streamUrl.startsWith("http")) {
-      const url = new URL(webpageUrl);
-      streamUrl = url.origin + streamUrl;
-    }
 
-    // Append ?local=true to the stream URL
-    const redirectUrl = streamUrl.includes("?") ? `${streamUrl}&local=true` : `${streamUrl}?local=true`;
-
-    res.writeHead(302, { Location: redirectUrl });
-    res.end();
-  } catch (error) {
-    console.error("Error fetching stream:", error);
-    res.status(500).send("Error fetching stream");
-  }
-}
+    initPlayer();
+  </script>
+</body>
+</html>
