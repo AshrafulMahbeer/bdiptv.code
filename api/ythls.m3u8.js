@@ -39,8 +39,11 @@ export default async function handler(req, res) {
       const url = new URL(webpageUrl);
       streamUrl = url.origin + streamUrl;
     }
-    
-    res.writeHead(302, { Location: streamUrl });
+
+    // Append ?local=true to the stream URL
+    const redirectUrl = streamUrl.includes("?") ? `${streamUrl}&local=true` : `${streamUrl}?local=true`;
+
+    res.writeHead(302, { Location: redirectUrl });
     res.end();
   } catch (error) {
     console.error("Error fetching stream:", error);
