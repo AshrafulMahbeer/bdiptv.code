@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     }
 
     // Target URL
-    const targetUrl = `https://inv.nadeko.net/watch?v=${id}`;
+    const targetUrl = `https://corsproxy.io/?https://inv.nadeko.net/watch?v=${id}`;
 
     // Headers for the request
     const headers = {
