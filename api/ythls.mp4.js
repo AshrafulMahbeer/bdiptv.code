@@ -37,11 +37,11 @@ export default async function handler(req, res) {
     // Read the page content
     const html = await response.text();
 
-    // Extract the video URL from <meta property="og:video" content="videourl">
-    const match = html.match(/<meta\s+property="og:video"\s+content="([^"]+)"/);
-    if (!match) {
-      return res.status(500).send("Video URL not found");
-    }
+// Extract the video URL from <source> tag inside <video>
+const match = html.match(/<source\s+src="([^"]+)"\s+type="application\/x-mpegURL"/);
+if (!match) {
+  return res.status(500).send("Video URL not found");
+}
     const videoUrl = match[1];
 
     // Redirect to the extracted video URL
