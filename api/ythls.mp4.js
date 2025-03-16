@@ -11,13 +11,16 @@ export default async function handler(req, res) {
         // Fetch the content from the original URL
         const response = await fetch(targetUrl);
 
-        // Forward the response headers
+        // Copy status code from the origin response
+        res.status(response.status);
+
+        // Copy headers from the origin response
         response.headers.forEach((value, name) => res.setHeader(name, value));
 
-        // Stream the response body
-        res.status(response.status);
-        response.body.pipe(res);
-        
+        // Read body as ArrayBuffer and send it as a Buffer
+        const body = await response.arrayBuffer();
+        res.send(Buffer.from(body));
+
     } catch (error) {
         console.error("Fetch error:", error);
         res.status(500).json({ error: "Something went wrong" });
