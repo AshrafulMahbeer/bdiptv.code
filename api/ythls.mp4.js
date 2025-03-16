@@ -7,7 +7,7 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: "Missing 'id' parameter" });
         }
 
-        const targetUrl = `https://inv-ca1-c.nadeko.net/latest_version?id=${encodeURIComponent(id)}&itag=id`;
+        const targetUrl = `https://inv-ca1-c.nadeko.net/latest_version?id=${encodeURIComponent(id)}&itag=18`;
         console.log(`Fetching: ${targetUrl}`);
 
         // Fetch the original content
