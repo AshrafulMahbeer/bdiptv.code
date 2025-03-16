@@ -8,20 +8,16 @@ export default async function handler(req, res) {
     try {
         const targetUrl = `https://inv-ca1-c.nadeko.net/latest_version?id=${encodeURIComponent(id)}&itag=id`;
 
-        // Fetch URL without following redirects
-        const response = await fetch(targetUrl, { method: 'HEAD' });
+        // Fetch the content from the original URL
+        const response = await fetch(targetUrl);
 
-        // Get the redirected URL from the Location header
-        const location = response.headers.get('location');
+        // Forward the response headers
+        response.headers.forEach((value, name) => res.setHeader(name, value));
 
-        if (!location) {
-            return res.status(500).json({ error: "No redirect URL found" });
-        }
-
-        // Redirect user to the final location
-        res.writeHead(302, { Location: location });
-        res.end();
-
+        // Stream the response body
+        res.status(response.status);
+        response.body.pipe(res);
+        
     } catch (error) {
         console.error("Fetch error:", error);
         res.status(500).json({ error: "Something went wrong" });
