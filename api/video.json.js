@@ -4,6 +4,8 @@ import { URL } from 'url';
 
 export default async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', 'https://bostaflix.vercel.app');
+  res.setHeader('Content-Type', 'application/json');
 
   const { url } = req.query;
   const msg = {};
