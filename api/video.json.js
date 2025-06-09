@@ -6,11 +6,22 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://bostaflix.vercel.app');
   res.setHeader('Content-Type', 'application/json');
 
-  const { url } = req.query;
+  let { url } = req.query;
   const msg = {};
 
   try {
     if (!url) throw new Error('Please provide the URL');
+
+    // ✅ Normalize m.facebook.com to www.facebook.com
+    url = url.replace('m.facebook.com', 'www.facebook.com');
+
+    // ✅ Convert /watch/?v=... to /video.php?v=...
+    if (url.includes('/watch/?v=')) {
+      const videoId = new URL(url).searchParams.get('v');
+      if (videoId) {
+        url = `https://www.facebook.com/video.php?v=${videoId}`;
+      }
+    }
 
     const headers = {
       'sec-fetch-user': '?1',
