@@ -16,9 +16,11 @@ export default async function handler(req, res) {
 
     if (match && match[1]) {
       const videoId = match[1];
+      const streamUrl = `https://bosta2-cdn.global.ssl.fastly.net/Youtube/live.php?id=${videoId}&e=.m3u8`;
+
       res.statusCode = 200;
       res.setHeader("Content-Type", "text/plain");
-      return res.end(videoId);
+      return res.end(streamUrl);
     } else {
       res.statusCode = 404;
       return res.end("No live video found");
