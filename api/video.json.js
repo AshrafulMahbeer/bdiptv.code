@@ -1,26 +1,13 @@
-import http from 'http';
-import https from 'https';
-import { URL } from 'url';
-
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', 'https://bostaflix.vercel.app');
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', 'https://bostaflix.vercel.app');
 
-  let { url } = req.query;
+  const url = req.query.url;
   const msg = {};
 
   try {
-    if (!url) throw new Error('Please provide the URL');
-
-    // ✅ Normalize m.facebook.com to www.facebook.com
-    url = url.replace('m.facebook.com', 'www.facebook.com');
-
-    // ✅ Convert /watch/?v=... to /video.php?v=...
-    if (url.includes('/watch/?v=')) {
-      const videoId = new URL(url).searchParams.get('v');
-      if (videoId) {
-        url = `https://www.facebook.com/video.php?v=${videoId}`;
-      }
+    if (!url) {
+      throw new Error('Please provide the URL');
     }
 
     const headers = {
@@ -35,76 +22,59 @@ export default async function handler(req, res) {
       'accept-language': 'en-GB,en;q=0.9,tr-TR;q=0.8,tr;q=0.7,en-US;q=0.6',
       'sec-ch-ua': '"Google Chrome";v="89", "Chromium";v="89", ";Not A Brand";v="99"',
       'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36',
-      'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+      'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
     };
 
-    const html = await fetchRawHtml(url, headers);
+    const response = await fetch(url, {
+      method: 'GET',
+      headers
+    });
+
+    const html = await response.text();
 
     msg.success = true;
-    msg.id = extractId(url);
-    msg.title = extractTitle(html);
-    msg.links = {};
+    msg.id = generateId(url);
+    msg.title = getTitle(html);
 
-    const sdLink = extractMatch(html, /browser_native_sd_url":"([^"]+)"/);
-    const hdLink = extractMatch(html, /browser_native_hd_url":"([^"]+)"/);
+    const sdLink = getSDLink(html);
+    const hdLink = getHDLink(html);
 
-    if (sdLink) msg.links['Download Low Quality'] = decodeJsonString(sdLink) + '&dl=1';
-    if (hdLink) msg.links['Download High Quality'] = decodeJsonString(hdLink) + '&dl=1';
+    if (sdLink) msg.links = { ...msg.links, 'Download Low Quality': sdLink + '&dl=1' };
+    if (hdLink) msg.links = { ...msg.links, 'Download High Quality': hdLink + '&dl=1' };
 
-    res.status(200).end(JSON.stringify(msg));
-  } catch (err) {
-    res.status(500).end(JSON.stringify({ success: false, message: err.message }));
+  } catch (error) {
+    msg.success = false;
+    msg.message = error.message;
   }
+
+  res.status(200).json(msg);
 }
 
-// Fetch raw HTML from a URL using native http/https
-function fetchRawHtml(rawUrl, headers) {
-  const urlObj = new URL(rawUrl);
-  const lib = urlObj.protocol === 'https:' ? https : http;
-
-  return new Promise((resolve, reject) => {
-    const options = {
-      headers,
-      timeout: 10000,
-    };
-
-    const req = lib.get(rawUrl, options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => resolve(data));
-    });
-
-    req.on('error', reject);
-    req.on('timeout', () => {
-      req.destroy();
-      reject(new Error('Request timed out'));
-    });
-  });
-}
-
-// Extract Facebook video ID
-function extractId(url) {
+// Utility functions
+function generateId(url) {
   const match = url.match(/(\d+)\/?$/);
   return match ? match[1] : '';
 }
 
-// Extract HTML title tag content
-function extractTitle(html) {
-  const match = html.match(/<title>(.*?)<\/title>/);
-  return match ? decodeJsonString(match[1]) : '';
-}
-
-// Safely decode string that may contain escaped sequences (e.g., \u0025)
-function decodeJsonString(str) {
+function cleanStr(str) {
   try {
-    return JSON.parse(`{"text":"${str}"}`).text;
+    return JSON.parse(`{"text": "${str.replace(/"/g, '\\"')}"}`).text;
   } catch {
     return str;
   }
 }
 
-// Regex extractor
-function extractMatch(text, regex) {
-  const match = text.match(regex);
-  return match ? match[1] : null;
+function getSDLink(html) {
+  const match = html.match(/browser_native_sd_url":"([^"]+)"/);
+  return match ? cleanStr(match[1]) : null;
+}
+
+function getHDLink(html) {
+  const match = html.match(/browser_native_hd_url":"([^"]+)"/);
+  return match ? cleanStr(match[1]) : null;
+}
+
+function getTitle(html) {
+  const match = html.match(/<title>(.*?)<\/title>/) || html.match(/title id="pageTitle">(.+?)<\/title>/);
+  return match ? cleanStr(match[1]) : '';
 }
