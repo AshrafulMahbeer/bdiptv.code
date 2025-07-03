@@ -1,57 +1,29 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import http from 'http';
-import https from 'https';
-import { URL } from 'url';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   const originalUrl = 'http://103.121.48.61:8080/live/0531195110/0531195110%20/83811.ts';
 
   try {
-    const redirectUrl = await getRedirectLocation(originalUrl);
+    // Step 1: HEAD request to get the redirect URL
+    const headResp = await fetch(originalUrl, { method: 'HEAD', redirect: 'manual' });
+
+    const redirectUrl = headResp.headers.get('location');
     if (!redirectUrl) {
-      return res.status(502).send('No redirect location found');
+      return res.status(502).json({ error: 'No redirect location found' });
     }
 
-    const content = await fetchBinary(redirectUrl);
-    res.setHeader('Content-Type', 'video/mp2t');
-    res.status(200).send(content);
-    res.setHeader('Access-Control-Allow-Origin', 'https://bostaflix.vercel.app');
-  } catch (err: any) {
-    res.status(500).send(`Error: ${err.message}`);
+    // Step 2: Fetch the redirected content
+    const finalResp = await fetch(redirectUrl);
+
+    if (!finalResp.ok) {
+      return res.status(finalResp.status).send('Failed to fetch redirected content');
+    }
+
+    // Step 3: Set content headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Content-Type', finalResp.headers.get('content-type') || 'application/octet-stream');
+
+    const data = await finalResp.arrayBuffer();
+    res.status(200).send(Buffer.from(data));
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
-}
-
-function getRedirectLocation(urlStr: string): Promise<string | null> {
-  return new Promise((resolve, reject) => {
-    const url = new URL(urlStr);
-    const mod = url.protocol === 'https:' ? https : http;
-
-    const req = mod.request(
-      url,
-      { method: 'HEAD' },
-      (res) => {
-        if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          resolve(res.headers.location);
-        } else {
-          resolve(null);
-        }
-      }
-    );
-
-    req.on('error', reject);
-    req.end();
-  });
-}
-
-function fetchBinary(urlStr: string): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const url = new URL(urlStr);
-    const mod = url.protocol === 'https:' ? https : http;
-
-    mod.get(url, (res) => {
-      const chunks: Buffer[] = [];
-      res.on('data', (chunk) => chunks.push(chunk));
-      res.on('end', () => resolve(Buffer.concat(chunks)));
-    }).on('error', reject);
-  });
 }
