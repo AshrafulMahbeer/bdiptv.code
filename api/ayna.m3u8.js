@@ -143,15 +143,21 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: "Stream not available" });
   }
 
-  const result = {
-    id: name,
-    m3u8: url,
-    image: match.image,
-    landscapeImage: match.landscapeImage,
-    name: match.name,
-    author: "https://t.me/fredflixceo"
-  };
+let finalUrl = url;
+if (url.includes("tvsen6.aynascope.net")) {
+  finalUrl = url.replace("tvsen6.aynascope.net", "tvsen6-bostascope.global.ssl.fastly.net");
+}
+
+const result = {
+  id: name,
+  m3u8: finalUrl,
+  image: match.image,
+  landscapeImage: match.landscapeImage,
+  name: match.name,
+  author: "https://bostaflix.vercel.app/"
+};
 
   res.setHeader("Content-Type", "application/json");
+  res.setHeader("Access-Control-Allow-Origin", "https://bostaflix.vercel.app/");
   res.status(200).end(JSON.stringify(result, null, 2));
 };
