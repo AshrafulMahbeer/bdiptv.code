@@ -9,10 +9,11 @@ const CHANNEL_JSON_URL = "https://aynaott.yflix.top/fuck_api.json";
 const TOKEN_API_URL = "https://aynatoken.linkchur.top/?action=token";
 const STREAM_API_BASE = "https://web.aynaott.com/api/player/streams";
 
+// Helper to make HTTPS GET requests and parse JSON
 function httpsGetJson(url, headers = {}, params = {}) {
   return new Promise((resolve, reject) => {
     const u = new URL(url);
-    Object.keys(params).forEach(k => u.searchParams.append(k, params[k]));
+    Object.entries(params).forEach(([k, v]) => u.searchParams.append(k, v));
 
     const options = {
       method: "GET",
@@ -24,10 +25,9 @@ function httpsGetJson(url, headers = {}, params = {}) {
       res.on("data", chunk => data += chunk);
       res.on("end", () => {
         try {
-          const json = JSON.parse(data);
-          resolve(json);
-        } catch (e) {
-          reject(e);
+          resolve(JSON.parse(data));
+        } catch (err) {
+          reject(err);
         }
       });
     });
@@ -37,6 +37,7 @@ function httpsGetJson(url, headers = {}, params = {}) {
   });
 }
 
+// Get JWT token (cache if under 4 hours old)
 async function getToken() {
   try {
     if (fs.existsSync(TOKEN_FILE)) {
@@ -54,16 +55,18 @@ async function getToken() {
       return token;
     }
   } catch (e) {
-    console.error("Error fetching token:", e);
+    console.error("Token fetch failed:", e);
   }
   return null;
 }
 
+// Fetch the list of channels (id, name, image, etc.)
 async function fetchChannelData() {
   try {
     const json = await httpsGetJson(CHANNEL_JSON_URL);
     const result = [];
     const blocks = json?.content?.data || [];
+
     for (const block of blocks) {
       for (const item of (block.items?.data || [])) {
         result.push({
@@ -76,16 +79,14 @@ async function fetchChannelData() {
     }
     return result;
   } catch (e) {
-    console.error("Error fetching channel list:", e);
+    console.error("Channel list fetch failed:", e);
     return [];
   }
 }
 
+// Get stream URL for a given media ID
 async function fetchStreamUrl(media_id, token) {
-  const headers = {
-    Authorization: `Bearer ${token}`
-  };
-
+  const headers = { Authorization: `Bearer ${token}` };
   const params = {
     language: "en",
     operator_id: "1fb1b4c7-dbd9-469e-88a2-c207dc195869",
@@ -94,7 +95,7 @@ async function fetchStreamUrl(media_id, token) {
     client: "browser",
     platform: "web",
     os: "windows",
-    media_id: media_id
+    media_id
   };
 
   try {
@@ -107,12 +108,18 @@ async function fetchStreamUrl(media_id, token) {
       }
     }
   } catch (e) {
-    console.error(`Error fetching stream for ${media_id}:`, e);
+    console.error(`Stream fetch failed for ${media_id}:`, e);
   }
   return { name: null, url: null };
 }
 
 module.exports = async (req, res) => {
+  const queryTitle = (req.query?.channel || "").toLowerCase().trim();
+
+  if (!queryTitle) {
+    return res.status(400).json({ error: "Missing ?channel=Channel Title query param" });
+  }
+
   const token = await getToken();
   if (!token) {
     return res.status(500).json({ error: "Token fetch failed" });
@@ -123,24 +130,28 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: "Channel list fetch failed" });
   }
 
-  const output = [];
-  for (const ch of channels) {
-    const { name, url } = await fetchStreamUrl(ch.id, token);
-    if (url) {
-      output.push({
-        id: name,
-        m3u8: url,
-        image: ch.image,
-        landscapeImage: ch.landscapeImage,
-        name: ch.name,
-        author: "https://bostaflix.vercel.app"
-      });
-    } else {
-      console.log(`Skipped: ${ch.name}`);
-    }
+  const match = channels.find(
+    ch => ch.name.toLowerCase().trim() === queryTitle
+  );
+
+  if (!match) {
+    return res.status(404).json({ error: `Channel "${queryTitle}" not found` });
   }
 
+  const { name, url } = await fetchStreamUrl(match.id, token);
+  if (!url) {
+    return res.status(500).json({ error: "Stream not available" });
+  }
+
+  const result = {
+    id: name,
+    m3u8: url,
+    image: match.image,
+    landscapeImage: match.landscapeImage,
+    name: match.name,
+    author: "https://t.me/fredflixceo"
+  };
+
   res.setHeader("Content-Type", "application/json");
-  res.setHeader("Access-Control-Allow-Origin", "https://bostaflix.vercel.app");
-  res.status(200).end(JSON.stringify(output, null, 2));
+  res.status(200).end(JSON.stringify(result, null, 2));
 };
