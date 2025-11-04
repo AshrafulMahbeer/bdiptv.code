@@ -9,6 +9,5 @@ export default async function handler(req, res) {
 #EXTINF:6.0,
 https://livecdn-bostaflix.global.ssl.fastly.net/segment.ts
 #EXT-X-ENDLIST`;
-
   res.status(200).send(playlist);
 }
