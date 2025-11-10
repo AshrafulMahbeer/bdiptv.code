@@ -9,6 +9,5 @@ export default async function handler(req, res) {
 #EXTINF:6.0,
 https://bostaflix.vercel.app/segment.ts
 #EXT-X-ENDLIST`;
-
   res.status(200).send(playlist);
 }
