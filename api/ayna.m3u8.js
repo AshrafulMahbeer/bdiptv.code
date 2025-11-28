@@ -1,61 +1,35 @@
-// api/proxy.js
+// /api/proxy.js
 export default async function handler(req, res) {
-  const target = "http://ayna-playlist.xfireflix.workers.dev/";
+  const url = 'https://xfireflix.ct.ws/ayna/play.php?id=9ab9aa29-3d3b-4527-ab47-d9b69f0ea80c';
 
-  // Build VLC-like / universal media headers
   const headers = {
-    // Exact-ish VLC UA (use latest version string you observed)
-    "User-Agent": "VLC/3.0.18 LibVLC/3.0.18",
-    "Accept": "*/*",
-    // force identity to avoid gzip responses that some streamers don't expect
-    "Accept-Encoding": "identity",
-    // let server know we want metadata (icy) if available
-    "Icy-MetaData": "1",
-    // keep connection alive
-    "Connection": "keep-alive",
-    // allow range requests from the client to be forwarded
-    "Range": req.headers.range || "bytes=0-",
-    // Some servers like a referer; uncomment and set one if needed:
-    // "Referer": "https://example.com/",
-    // "Pragma"/"Cache-Control" sometimes help:
-    "Pragma": "no-cache",
-    "Cache-Control": "no-cache"
+    'cache-control': 'no-cache, max-age=0',
+    'connection': 'keep-alive',
+    'content-type': 'text/html; charset=UTF-8',
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'accept-encoding': 'gzip, deflate, br', // Vercel fetch can decode gzip/deflate/br automatically
+    'accept-language': 'en-US,en;q=0.9,bn;q=0.8',
+    'cookie': '__test=392f9bcbab403b32d5586ef28a71f6f1',
+    'dnt': '1',
+    'pragma': 'no-cache',
+    'referer': 'https://xfireflix.ct.ws/ayna/play.php?id=9ab9aa29-3d3b-4527-ab47-d9b69f0ea80c',
+    'sec-ch-ua': '"Chromium";v="142", "Google Chrome";v="142", "Not_A Brand";v="99"',
+    'sec-ch-ua-mobile': '?1',
+    'sec-ch-ua-platform': '"Android"',
+    'sec-fetch-dest': 'document',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-site': 'same-origin',
+    'upgrade-insecure-requests': '1',
+    'user-agent': 'Mozilla/5.0 (Linux; Android 13; SM-G981B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Mobile Safari/537.36'
   };
 
-  // Allow browser clients to call this endpoint (CORS)
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Range,Accept,Content-Type");
-
-  if (req.method === "OPTIONS") {
-    return res.status(204).end();
-  }
-
   try {
-    const upstream = await fetch(target, { method: "GET", headers });
+    const response = await fetch(url, { headers });
+    const body = await response.text();
 
-    // Copy some important response headers to the client
-    const contentType = upstream.headers.get("content-type");
-    const contentRange = upstream.headers.get("content-range");
-    const acceptRanges = upstream.headers.get("accept-ranges");
-    const contentLength = upstream.headers.get("content-length");
-
-    if (contentType) res.setHeader("Content-Type", contentType);
-    if (contentRange) res.setHeader("Content-Range", contentRange);
-    if (acceptRanges) res.setHeader("Accept-Ranges", acceptRanges);
-    if (contentLength) res.setHeader("Content-Length", contentLength);
-
-    // If upstream returns non-200/206, pass status and text
-    if (!upstream.ok) {
-      const errText = await upstream.text().catch(() => "");
-      return res.status(upstream.status).send(errText || `Upstream status ${upstream.status}`);
-    }
-
-    // For playlist files (small): use arrayBuffer and send as single response
-    // This is easiest and reliable for .m3u/.m3u8/.txt playlists.
-    const buf = Buffer.from(await upstream.arrayBuffer());
-    res.status(upstream.status).end(buf);
+    res.setHeader('Content-Type', 'text/html');
+    res.status(200).send(body);
   } catch (err) {
-    res.status(502).send("Proxy error: " + err.message);
+    res.status(500).send('Fetch error: ' + err.message);
   }
 }
