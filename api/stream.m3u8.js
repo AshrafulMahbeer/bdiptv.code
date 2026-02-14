@@ -16,19 +16,7 @@ export default function handler(req, res) {
   const secondsFromHour =
     now.getMinutes() * 60 + now.getSeconds();
 
-  let effectiveSegment = absoluteSegment;
-
-  // 🔥 ONLY adjust during first 60 seconds
-  if (secondsFromHour < BRIDGE_SECONDS) {
-
-    // How many segments have passed in this hour?
-    const hourSegment = Math.floor(secondsFromHour / SEGMENT_DURATION);
-
-    // Subtract ONLY that amount
-    effectiveSegment = absoluteSegment - hourSegment;
-  }
-
-  const startSegment = effectiveSegment - WINDOW_SIZE + 1;
+  const startSegment = absoluteSegment - WINDOW_SIZE + 1;
 
   let playlist = `#EXTM3U
 #EXT-X-VERSION:3
@@ -39,8 +27,16 @@ export default function handler(req, res) {
   for (let i = 0; i < WINDOW_SIZE; i++) {
     const abs = startSegment + i;
 
-    const fileIndex =
-      ((abs % MAX_SEGMENTS) + MAX_SEGMENTS) % MAX_SEGMENTS;
+    let fileIndex = abs % MAX_SEGMENTS;
+
+    // 🔥 Only modify file index during first 60s
+    if (secondsFromHour < BRIDGE_SECONDS) {
+      const previousHourBase =
+        (absoluteSegment - Math.floor(secondsFromHour / SEGMENT_DURATION)) % MAX_SEGMENTS;
+
+      fileIndex =
+        (previousHourBase - (WINDOW_SIZE - 1 - i) + MAX_SEGMENTS) % MAX_SEGMENTS;
+    }
 
     playlist += `#EXTINF:${SEGMENT_DURATION}.0,\n`;
     playlist += `https://raw.githubusercontent.com/AshrafulMahbeer/bosta-cdn/refs/heads/main/hls/${fileIndex}.ts\n`;
