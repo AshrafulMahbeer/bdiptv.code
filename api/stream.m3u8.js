@@ -20,7 +20,7 @@ export default function handler(req, res) {
 
   for (let i = startSegment; i <= currentSegment; i++) {
     playlist += `#EXTINF:${SEGMENT_DURATION}.0,\n`;
-    playlist += `/segments/${i}.ts\n`;
+    playlist += `https://raw.githubusercontent.com/AshrafulMahbeer/bosta-cdn/refs/heads/main/hls/${i}.ts\n`;
   }
 
   res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
