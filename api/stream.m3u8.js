@@ -1,7 +1,7 @@
 export default function handler(req, res) {
   const SEGMENT_DURATION = 10;      // seconds
   const WINDOW_SIZE = 6;          // number of segments in playlist
-  const MAX_SEGMENTS = 300;        // loop after 300 segments
+  const MAX_SEGMENTS = 165;        // loop after 300 segments
 
   const now = new Date();
   const secondsFromHour =
