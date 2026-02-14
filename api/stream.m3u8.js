@@ -1,18 +1,11 @@
 export default function handler(req, res) {
-  const SEGMENT_DURATION = 10;   // seconds
-  const WINDOW_SIZE = 6;         // playlist window size
-  const MAX_SEGMENTS = 166;      // 0–164 files
-  const BRIDGE_SECONDS = 60;     // smooth bridge time
+  const SEGMENT_DURATION = 10;
+  const WINDOW_SIZE = 6;
+  const MAX_SEGMENTS = 165;
+  const BRIDGE_SECONDS = 60;
 
   const now = new Date();
 
-  const minutes = now.getMinutes();
-  const seconds = now.getSeconds();
-  const secondsFromHour = minutes * 60 + seconds;
-
-  const segmentsPerHour = Math.floor(3600 / SEGMENT_DURATION);
-
-  // Absolute segment counter since midnight (continuous)
   const secondsFromMidnight =
     now.getHours() * 3600 +
     now.getMinutes() * 60 +
@@ -20,28 +13,19 @@ export default function handler(req, res) {
 
   const absoluteSegment = Math.floor(secondsFromMidnight / SEGMENT_DURATION);
 
-  // Detect hour boundary bridge
-  const inHourBridge = secondsFromHour < BRIDGE_SECONDS;
-
-  // Detect file loop bridge (when wrapping MAX_SEGMENTS)
-  const fileIndex = absoluteSegment % MAX_SEGMENTS;
-  const previousFileIndex = (absoluteSegment - 1) % MAX_SEGMENTS;
-
-  const loopJustWrapped =
-    fileIndex < previousFileIndex;
+  const secondsFromHour =
+    now.getMinutes() * 60 + now.getSeconds();
 
   let effectiveSegment = absoluteSegment;
 
-  // 🔥 Hour Bridge
-  if (inHourBridge) {
-    effectiveSegment =
-      absoluteSegment - segmentsPerHour;
-  }
+  // 🔥 ONLY adjust during first 60 seconds
+  if (secondsFromHour < BRIDGE_SECONDS) {
 
-  // 🔥 Loop Bridge
-  if (loopJustWrapped && secondsFromHour < BRIDGE_SECONDS) {
-    effectiveSegment =
-      absoluteSegment - MAX_SEGMENTS;
+    // How many segments have passed in this hour?
+    const hourSegment = Math.floor(secondsFromHour / SEGMENT_DURATION);
+
+    // Subtract ONLY that amount
+    effectiveSegment = absoluteSegment - hourSegment;
   }
 
   const startSegment = effectiveSegment - WINDOW_SIZE + 1;
@@ -54,15 +38,16 @@ export default function handler(req, res) {
 
   for (let i = 0; i < WINDOW_SIZE; i++) {
     const abs = startSegment + i;
-    const safeIndex =
+
+    const fileIndex =
       ((abs % MAX_SEGMENTS) + MAX_SEGMENTS) % MAX_SEGMENTS;
 
     playlist += `#EXTINF:${SEGMENT_DURATION}.0,\n`;
-    playlist += `https://raw.githubusercontent.com/AshrafulMahbeer/bosta-cdn/refs/heads/main/hls/${safeIndex}.ts\n`;
+    playlist += `https://raw.githubusercontent.com/AshrafulMahbeer/bosta-cdn/refs/heads/main/hls/${fileIndex}.ts\n`;
   }
 
   res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.setHeader("Cache-Control", "no-store");
   res.status(200).send(playlist);
 }
