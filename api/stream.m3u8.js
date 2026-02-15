@@ -1,6 +1,6 @@
 export default function handler(req, res) {
   const SEGMENT_DURATION = 10;     // seconds
-  const WINDOW_SIZE = 6;           // segments in playlist
+  const WINDOW_SIZE = 1;           // segments in playlist
   const MAX_SEGMENTS = 166;        // 0–164 files
 
   // 🔥 Fixed anchor time (DO NOT CHANGE after deploy)
