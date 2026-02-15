@@ -1,34 +1,34 @@
 export default function handler(req, res) {
-  const SEGMENT_DURATION = 10;     // seconds
-  const WINDOW_SIZE = 1;           // segments in playlist
-  const MAX_SEGMENTS = 166;        // 0–164 files
+  const SEGMENT_DURATION = 10;   // seconds per segment
+  const WINDOW_SIZE = 3;         // playlist window
+  const MAX_SEGMENTS = 166;      // 0–165
 
-  // 🔥 Fixed anchor time (DO NOT CHANGE after deploy)
+  // 🔥 Fixed anchor time (never change after deploy)
   const ANCHOR_TIME = new Date("2025-01-01T00:00:00Z").getTime();
 
   const now = Date.now();
 
-  const elapsedSeconds =
-    Math.floor((now - ANCHOR_TIME) / 1000);
+  // Total elapsed seconds since anchor
+  const elapsedSeconds = Math.floor((now - ANCHOR_TIME) / 1000);
 
-  const segmentNumber =
-    Math.floor(elapsedSeconds / SEGMENT_DURATION);
+  // Absolute segment index since anchor (keeps growing forever)
+  const segmentNumber = Math.floor(elapsedSeconds / SEGMENT_DURATION);
 
-  const currentFile =
-    segmentNumber % MAX_SEGMENTS;
+  // Current file index (0–165 looping)
+  const currentFile = segmentNumber % MAX_SEGMENTS;
 
-  const startSequence =
-    segmentNumber - WINDOW_SIZE + 1;
+  // MEDIA-SEQUENCE must always increase continuously
+  const mediaSequence = segmentNumber;
 
   let playlist = `#EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-TARGETDURATION:${SEGMENT_DURATION}
-#EXT-X-MEDIA-SEQUENCE:${startSequence}
+#EXT-X-MEDIA-SEQUENCE:${mediaSequence}
 `;
 
   for (let i = 0; i < WINDOW_SIZE; i++) {
-    const fileIndex =
-      (currentFile - (WINDOW_SIZE - 1 - i) + MAX_SEGMENTS) % MAX_SEGMENTS;
+    // Forward order: x, x+1, x+2
+    const fileIndex = (currentFile + i) % MAX_SEGMENTS;
 
     playlist += `#EXTINF:${SEGMENT_DURATION}.0,\n`;
     playlist += `https://raw.githubusercontent.com/AshrafulMahbeer/bosta-cdn/refs/heads/main/hls/${fileIndex}.ts\n`;
