@@ -1,7 +1,7 @@
 export default function handler(req, res) {
   const SEGMENT_DURATION = 10;
   const WINDOW_SIZE = 3;
-  const MAX_SEGMENTS = 166;
+  const MAX_SEGMENTS = 180;
 
   const ANCHOR_TIME = new Date("2025-01-01T00:00:00Z").getTime();
   const now = Date.now();
