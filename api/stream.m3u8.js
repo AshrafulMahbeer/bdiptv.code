@@ -9,34 +9,37 @@ export default function handler(req, res) {
   const elapsedSeconds = Math.floor((now - ANCHOR_TIME) / 1000);
   const segmentNumber = Math.floor(elapsedSeconds / SEGMENT_DURATION);
 
-  const currentFile = segmentNumber % MAX_SEGMENTS;
-  const mediaSequence = segmentNumber;
+  // Sliding live window
+  const firstSegment = segmentNumber - WINDOW_SIZE + 1;
+  const mediaSequence = firstSegment;
 
   let playlist = `#EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-TARGETDURATION:${SEGMENT_DURATION}
-#EXT-X-PLAYLIST-TYPE:EVENT
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-MEDIA-SEQUENCE:${mediaSequence}
 `;
 
   for (let i = 0; i < WINDOW_SIZE; i++) {
-    const fileIndex = (currentFile + i) % MAX_SEGMENTS;
-    const sequence = mediaSequence + i; // real incrementing sequence
+    const segNum = firstSegment + i;
 
-    const programDateTime = new Date(
-      ANCHOR_TIME + (segmentNumber + i) * SEGMENT_DURATION * 1000
-    ).toISOString();
+    // Handle negative start during very early time
+    if (segNum < 0) continue;
 
-    playlist += `#EXT-X-PROGRAM-DATE-TIME:${programDateTime}\n`;
+    const fileIndex = segNum % MAX_SEGMENTS;
+
+    // 🔥 CRITICAL FIX:
+    // Insert discontinuity when loop wraps
+    if (segNum > 0 && fileIndex === 0) {
+      playlist += "#EXT-X-DISCONTINUITY\n";
+    }
+
     playlist += `#EXTINF:${SEGMENT_DURATION}.0,\n`;
-    playlist += `https://raw.githubusercontent.com/AshrafulMahbeer/bosta-cdn/refs/heads/main/hls/${fileIndex}.ts?S=${sequence}\n`;
+    playlist += `https://raw.githubusercontent.com/AshrafulMahbeer/bosta-cdn/refs/heads/main/hls/${fileIndex}.ts?v=${segNum}\n`;
   }
 
   res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Cache-Control", "no-store");
   res.setHeader("Access-Control-Allow-Origin", "*");
-
   res.status(200).send(playlist);
 }
