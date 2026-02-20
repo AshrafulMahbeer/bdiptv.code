@@ -22,19 +22,21 @@ export default function handler(req, res) {
 
   for (let i = 0; i < WINDOW_SIZE; i++) {
     const fileIndex = (currentFile + i) % MAX_SEGMENTS;
+    const sequence = mediaSequence + i; // real incrementing sequence
 
-    // Make each segment look like real broadcast time
     const programDateTime = new Date(
       ANCHOR_TIME + (segmentNumber + i) * SEGMENT_DURATION * 1000
     ).toISOString();
 
     playlist += `#EXT-X-PROGRAM-DATE-TIME:${programDateTime}\n`;
     playlist += `#EXTINF:${SEGMENT_DURATION}.0,\n`;
-    playlist += `https://raw.githubusercontent.com/AshrafulMahbeer/bosta-cdn/refs/heads/main/hls/${fileIndex}.ts\n`;
+    playlist += `https://raw.githubusercontent.com/AshrafulMahbeer/bosta-cdn/refs/heads/main/hls/${fileIndex}.ts?S=${sequence}\n`;
   }
 
   res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+  res.setHeader("Pragma", "no-cache");
   res.setHeader("Access-Control-Allow-Origin", "*");
+
   res.status(200).send(playlist);
 }
