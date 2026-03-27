@@ -51,7 +51,7 @@ export default async function handler(req, res) {
         .join("\n");
 
       res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Origin", "https://bostaflix.vercel.app/");
       res.send(rewritten);
       return;
     }
