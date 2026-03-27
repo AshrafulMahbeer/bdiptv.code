@@ -1,0 +1,69 @@
+export default async function handler(req, res) {
+  try {
+    const { url } = req.query;
+
+    if (!url) {
+      res.status(400).send("Missing ?url=");
+      return;
+    }
+
+    const targetUrl = decodeURIComponent(url);
+
+    const response = await fetch(targetUrl, {
+      headers: {
+        "User-Agent": req.headers["user-agent"] || "",
+        "Referer": targetUrl,
+        "Origin": new URL(targetUrl).origin,
+      },
+    });
+
+    if (!response.ok) {
+      res.status(response.status).send("Upstream error");
+      return;
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+
+    // --- Handle M3U8 playlist ---
+    if (contentType.includes("application/vnd.apple.mpegurl") || targetUrl.includes(".m3u8")) {
+      let text = await response.text();
+
+      const base = targetUrl.substring(0, targetUrl.lastIndexOf("/") + 1);
+
+      const rewritten = text
+        .split("\n")
+        .map(line => {
+          line = line.trim();
+
+          // skip comments
+          if (!line || line.startsWith("#")) return line;
+
+          // absolute URL
+          let absoluteUrl;
+          if (line.startsWith("http")) {
+            absoluteUrl = line;
+          } else {
+            absoluteUrl = base + line;
+          }
+
+          return `/api/hls?url=${encodeURIComponent(absoluteUrl)}`;
+        })
+        .join("\n");
+
+      res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.send(rewritten);
+      return;
+    }
+
+    // --- Handle media segments ---
+    const buffer = await response.arrayBuffer();
+
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.send(Buffer.from(buffer));
+
+  } catch (err) {
+    res.status(500).send("Proxy error");
+  }
+}
