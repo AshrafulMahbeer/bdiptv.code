@@ -1,5 +1,19 @@
 export default async function handler(req, res) {
   try {
+    const ALLOWED_ORIGIN = "https://bostaflix.vercel.app";
+
+    const origin = req.headers.origin || "";
+    const referer = req.headers.referer || "";
+
+    // --- 🔒 Block unauthorized access ---
+    if (
+      !origin.includes(ALLOWED_ORIGIN) &&
+      !referer.startsWith(ALLOWED_ORIGIN)
+    ) {
+      res.status(403).send("Forbidden");
+      return;
+    }
+
     const { url } = req.query;
 
     if (!url) {
@@ -24,8 +38,11 @@ export default async function handler(req, res) {
 
     const contentType = response.headers.get("content-type") || "";
 
-    // --- Handle M3U8 playlist ---
-    if (contentType.includes("application/vnd.apple.mpegurl") || targetUrl.includes(".m3u8")) {
+    // --- Handle M3U8 ---
+    if (
+      contentType.includes("application/vnd.apple.mpegurl") ||
+      targetUrl.includes(".m3u8")
+    ) {
       let text = await response.text();
 
       const base = targetUrl.substring(0, targetUrl.lastIndexOf("/") + 1);
@@ -35,10 +52,8 @@ export default async function handler(req, res) {
         .map(line => {
           line = line.trim();
 
-          // skip comments
           if (!line || line.startsWith("#")) return line;
 
-          // absolute URL
           let absoluteUrl;
           if (line.startsWith("http")) {
             absoluteUrl = line;
@@ -51,16 +66,18 @@ export default async function handler(req, res) {
         .join("\n");
 
       res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-      res.setHeader("Access-Control-Allow-Origin", "https://bostaflix.vercel.app");
+      res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+      res.setHeader("Cache-Control", "no-store");
       res.send(rewritten);
       return;
     }
 
-    // --- Handle media segments ---
+    // --- Handle segments ---
     const buffer = await response.arrayBuffer();
 
     res.setHeader("Content-Type", contentType);
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+    res.setHeader("Cache-Control", "no-store");
     res.send(Buffer.from(buffer));
 
   } catch (err) {
