@@ -56,7 +56,7 @@ export default async function handler(req, res) {
             ? line
             : base + line;
 
-          return `/api/hls?url=${encodeURIComponent(absoluteUrl)}`;
+          return `/api/live?url=${encodeURIComponent(absoluteUrl)}`;
         })
         .join("\n");
 
