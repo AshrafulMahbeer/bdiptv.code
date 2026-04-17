@@ -1,4 +1,5 @@
-const DATA_URL = "https://raw.githubusercontent.com/sm-monirulislam/Toffee-Auto-Update-Playlist/refs/heads/main/toffee_data.json";
+const DATA_URL =
+  "https://raw.githubusercontent.com/sm-monirulislam/Toffee-Auto-Update-Playlist/refs/heads/main/toffee_data.json";
 
 let cache = null;
 let lastFetch = 0;
@@ -22,22 +23,46 @@ export default async function handler(req, res) {
     let targetUrl = url;
     let customHeaders = {};
 
-    // 🔄 Cache JSON (1 min)
+    // ---------------------------
+    // 🔄 CACHE JSON (1 min)
+    // ---------------------------
     if (!cache || Date.now() - lastFetch > 60000) {
-      cache = await fetch(DATA_URL).then(r => r.json());
+      const resp = await fetch(DATA_URL);
+
+      if (!resp.ok) {
+        throw new Error("Failed to fetch playlist JSON");
+      }
+
+      cache = await resp.json();
       lastFetch = Date.now();
+
+      if (!cache.response) {
+        throw new Error("Invalid JSON format");
+      }
     }
 
-    // 🔎 Lookup by ID (name)
+    // ---------------------------
+    // 🔎 FIND CHANNEL BY ID
+    // ---------------------------
     if (id) {
-      const cleanId = decodeURIComponent(id).trim();
+      const cleanId = decodeURIComponent(id || "")
+        .trim()
+        .toLowerCase();
 
       const found = cache.response.find(
-        ch => ch.name && ch.name.trim() === cleanId
+        (ch) =>
+          ch.name &&
+          ch.name.trim().toLowerCase() === cleanId
       );
 
       if (!found) {
-        return res.status(404).send("Channel not found");
+        return res.status(404).json({
+          error: "Channel not found",
+          requested: cleanId,
+          available: cache.response
+            .slice(0, 15)
+            .map((c) => c.name),
+        });
       }
 
       targetUrl = found.link;
@@ -48,11 +73,28 @@ export default async function handler(req, res) {
       return res.status(400).send("Missing id or url");
     }
 
-    // ❌ Remove forbidden headers
+    // ---------------------------
+    // 🧹 CLEAN HEADERS (IMPORTANT)
+    // ---------------------------
     const safeHeaders = { ...customHeaders };
+
     delete safeHeaders.host;
     delete safeHeaders.Host;
+    delete safeHeaders["accept-encoding"];
+    delete safeHeaders["Accept-Encoding"];
 
+    if (safeHeaders["client-api-header"] === "null") {
+      delete safeHeaders["client-api-header"];
+    }
+
+    let originHeader = "";
+    try {
+      originHeader = new URL(targetUrl).origin;
+    } catch {}
+
+    // ---------------------------
+    // 🌐 FETCH STREAM
+    // ---------------------------
     const upstream = await fetch(targetUrl, {
       headers: {
         ...safeHeaders,
@@ -60,20 +102,28 @@ export default async function handler(req, res) {
           safeHeaders["user-agent"] ||
           req.headers["user-agent"] ||
           "Mozilla/5.0",
-        "Referer": targetUrl,
-        "Origin": new URL(targetUrl).origin,
+        Referer: targetUrl,
+        Origin: originHeader,
       },
     });
 
     if (!upstream.ok) {
-      return res.status(upstream.status).send("Upstream error");
+      const errText = await upstream.text();
+      return res
+        .status(upstream.status)
+        .send(errText || "Upstream error");
     }
 
-    const contentType = upstream.headers.get("content-type") || "";
+    const contentType =
+      upstream.headers.get("content-type") || "";
 
-    // 🎯 M3U8 handling
+    // ---------------------------
+    // 🎯 M3U8 HANDLING
+    // ---------------------------
     if (
-      contentType.includes("application/vnd.apple.mpegurl") ||
+      contentType.includes(
+        "application/vnd.apple.mpegurl"
+      ) ||
       targetUrl.includes(".m3u8")
     ) {
       const text = await upstream.text();
@@ -85,18 +135,20 @@ export default async function handler(req, res) {
 
       const rewritten = text
         .split("\n")
-        .map(line => {
+        .map((line) => {
           line = line.trim();
 
-          if (!line || line.startsWith("#")) return line;
+          if (!line || line.startsWith("#"))
+            return line;
 
           const absoluteUrl = line.startsWith("http")
             ? line
             : base + line;
 
-          return `/api/live?url=${encodeURIComponent(
+          // IMPORTANT: remove id from segments
+          return `/api/toffee?url=${encodeURIComponent(
             absoluteUrl
-          )}&id=${encodeURIComponent(id || "")}`;
+          )}`;
         })
         .join("\n");
 
@@ -113,7 +165,9 @@ export default async function handler(req, res) {
       return res.send(rewritten);
     }
 
-    // 🚀 Stream (Node-safe)
+    // ---------------------------
+    // 🚀 STREAM (VERCEL SAFE)
+    // ---------------------------
     res.setHeader("Content-Type", contentType);
     res.setHeader(
       "Access-Control-Allow-Origin",
@@ -123,14 +177,12 @@ export default async function handler(req, res) {
 
     res.status(upstream.status);
 
-    // Node/Vercel compatible streaming
-    if (upstream.body.pipe) {
+    if (upstream.body && upstream.body.pipe) {
       upstream.body.pipe(res);
     } else {
       const buffer = await upstream.arrayBuffer();
       res.send(Buffer.from(buffer));
     }
-
   } catch (err) {
     console.error("PROXY ERROR:", err);
     res.status(500).send(err.message || "Proxy error");
