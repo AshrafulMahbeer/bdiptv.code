@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     const ALLOWED_ORIGIN = "https://bostaflix.vercel.app";
     const { origin = "", referer = "" } = req.headers;
 
-    // 1. CORS/Security
+    // 1. CORS check
     if (!origin.includes(ALLOWED_ORIGIN) && !referer.startsWith(ALLOWED_ORIGIN)) {
       return res.status(403).send("Forbidden");
     }
@@ -33,7 +33,6 @@ export default async function handler(req, res) {
     if (id) {
       const cleanId = decodeURIComponent(id).trim().toLowerCase();
       const found = cache.find(ch => ch.name?.trim().toLowerCase() === cleanId);
-      
       if (!found) return res.status(404).json({ error: "Channel not found" });
       
       targetUrl = found.link;
@@ -43,19 +42,31 @@ export default async function handler(req, res) {
     if (!targetUrl) return res.status(400).send("Missing URL");
 
     // 4. Prepare Proxy Headers
+    const targetUri = new URL(targetUrl);
     const safeHeaders = { ...customHeaders };
-    // Remove headers that interfere with proxying
-    ['host', 'connection', 'content-length', 'accept-encoding'].forEach(h => delete safeHeaders[h]);
+
+    // Fix: Explicitly set the Host header to the target domain
+    safeHeaders["Host"] = targetUri.host;
+    
+    // Remove headers that might cause conflicts
+    ['connection', 'content-length', 'accept-encoding'].forEach(h => {
+        delete safeHeaders[h];
+        delete safeHeaders[h.toLowerCase()];
+    });
 
     const upstream = await fetch(targetUrl, {
       headers: {
         ...safeHeaders,
         "User-Agent": safeHeaders["user-agent"] || req.headers["user-agent"] || "Mozilla/5.0",
-        "Referer": new URL(targetUrl).origin,
+        "Referer": targetUri.origin,
+        "Origin": targetUri.origin,
       },
     });
 
-    if (!upstream.ok) return res.status(upstream.status).send("Upstream Error");
+    if (!upstream.ok) {
+      const errText = await upstream.text();
+      return res.status(upstream.status).send(errText || "Upstream Error");
+    }
 
     const contentType = upstream.headers.get("content-type") || "";
 
@@ -82,7 +93,6 @@ export default async function handler(req, res) {
     res.setHeader("Cache-Control", "public, max-age=10");
 
     if (upstream.body) {
-      // Bridges Web Stream to Node.js Writable Stream
       return Readable.fromWeb(upstream.body).pipe(res);
     }
     
