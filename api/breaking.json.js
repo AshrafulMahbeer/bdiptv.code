@@ -1,8 +1,21 @@
 export default async function handler(req, res) {
+
+    // -------------------------------
+    // CORS HEADERS (IMPORTANT)
+    // -------------------------------
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    // Handle preflight request (CORS)
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
+    }
+
     try {
 
         // -------------------------------
-        // 1. SOMOY GRAPHQL REQUEST
+        // SOMOY GRAPHQL
         // -------------------------------
         const somoyRes = await fetch("https://www.somoynews.tv/api/graphql", {
             method: "POST",
@@ -28,7 +41,7 @@ export default async function handler(req, res) {
         const somoyData = somoyJson?.data?.topBreaking || [];
 
         // -------------------------------
-        // 2. CHANNEL24 REQUEST
+        // CHANNEL24 API
         // -------------------------------
         const channelRes = await fetch("https://backoffice.channel24bd.tv/api/active-breaking");
         const channelJson = await channelRes.json();
@@ -39,30 +52,21 @@ export default async function handler(req, res) {
             [];
 
         // -------------------------------
-        // 3. CHECK IF ANY HAS DATA
+        // LOGIC
         // -------------------------------
-        const hasSomoy = somoyData.length > 0;
-        const hasChannel = channelData.length > 0;
+        const hasData = somoyData.length > 0 || channelData.length > 0;
 
-        let output;
-
-        if (hasSomoy || hasChannel) {
-            output = [
-                "BREAKING NEWS",
-                "BOSTAFLIX BDIX IPTV"
-            ];
-        } else {
-            output = [
-                "BOSTAFLIX BDIX IPTV"
-            ];
-        }
+        const output = hasData
+            ? ["BREAKING NEWS", "BOSTAFLIX BDIX IPTV"]
+            : ["BOSTAFLIX BDIX IPTV"];
 
         // -------------------------------
-        // 4. RESPONSE
+        // RESPONSE
         // -------------------------------
         return res.status(200).json(output);
 
     } catch (error) {
+
         return res.status(500).json({
             error: "Server Error",
             message: error.message
