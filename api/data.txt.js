@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         const dbcJson = await dbcRes.json();
 
         const dbcTitles = (dbcJson || [])
-            .slice(0, 5)
+            .slice(0, 10)
             .map(a => a?.title)
             .filter(Boolean);
 
