@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 
         const somoyJson = await somoyRes.json();
         const somoyTitles = (somoyJson?.data?.topBreaking || [])
-            .map(x => x.title)
+            .map(x => x?.title)
             .filter(Boolean);
 
         // =========================
@@ -55,20 +55,44 @@ export default async function handler(req, res) {
             [];
 
         const chTitles = chData
-            .map(x => x.title)
+            .map(x => x?.title)
             .filter(Boolean);
 
         // =========================
-        // 4. MERGE
+        // 4. MODE CHECK
         // =========================
-        const allTitles = [
-            ...somoyTitles,
-            ...chTitles,
-            ...dbcTitles
-        ].slice(0, 12);
+        const isBreaking = req.query?.breaking === "1";
+
+        const hasBreakingData =
+            somoyTitles.length > 0 ||
+            chTitles.length > 0;
+
+        let allTitles = [];
+
+        if (isBreaking && hasBreakingData) {
+
+            // 🔴 BREAKING MODE (ONLY 1–2 ITEMS)
+            allTitles = [
+                ...somoyTitles,
+                ...chTitles
+            ]
+            .filter(Boolean)
+            .slice(0, 2);
+
+        } else {
+
+            // 🔵 NORMAL MODE
+            allTitles = [
+                ...somoyTitles,
+                ...chTitles,
+                ...dbcTitles
+            ]
+            .filter(Boolean)
+            .slice(0, 12);
+        }
 
         // =========================
-        // 5. OUTPUT STRING ONLY
+        // 5. OUTPUT
         // =========================
         let output;
 
