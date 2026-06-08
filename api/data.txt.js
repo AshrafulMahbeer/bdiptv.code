@@ -1,9 +1,9 @@
 export default async function handler(req, res) {
+export default async function handler(req, res) {
 
     // ---------------- CORS ----------------
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
 
     if (req.method === "OPTIONS") {
         return res.status(200).end();
@@ -12,14 +12,9 @@ export default async function handler(req, res) {
     try {
 
         // =========================
-        // 1. DBC NEWS ARTICLES
+        // 1. DBC NEWS
         // =========================
-        const dbcRes = await fetch("https://dbcnews.tv/api/articles?per-page=15", {
-            headers: {
-                "User-Agent": "Mozilla/5.0"
-            }
-        });
-
+        const dbcRes = await fetch("https://dbcnews.tv/api/articles?per-page=15");
         const dbcJson = await dbcRes.json();
 
         const dbcTitles = (dbcJson || [])
@@ -38,7 +33,6 @@ export default async function handler(req, res) {
                 variables: {},
                 query: `{
                     topBreaking(timeInHours: 48) {
-                        _id
                         title
                     }
                 }`
@@ -46,9 +40,9 @@ export default async function handler(req, res) {
         });
 
         const somoyJson = await somoyRes.json();
-        const somoyData = somoyJson?.data?.topBreaking || [];
-
-        const somoyTitles = somoyData.map(x => x.title).filter(Boolean);
+        const somoyTitles = (somoyJson?.data?.topBreaking || [])
+            .map(x => x.title)
+            .filter(Boolean);
 
         // =========================
         // 3. CHANNEL24 BREAKING
@@ -61,10 +55,12 @@ export default async function handler(req, res) {
             chJson?.data ? chJson.data :
             [];
 
-        const chTitles = chData.map(x => x.title).filter(Boolean);
+        const chTitles = chData
+            .map(x => x.title)
+            .filter(Boolean);
 
         // =========================
-        // 4. MERGE ALL TITLES
+        // 4. MERGE
         // =========================
         const allTitles = [
             ...somoyTitles,
@@ -73,41 +69,19 @@ export default async function handler(req, res) {
         ].slice(0, 8);
 
         // =========================
-        // 5. BREAKING CHECK
+        // 5. OUTPUT STRING ONLY
         // =========================
-        const isBreaking =
-            somoyTitles.length > 0 ||
-            chTitles.length > 0;
-
-        // =========================
-        // 6. OUTPUT FORMAT
-        // =========================
-        let outputText;
+        let output;
 
         if (allTitles.length > 0) {
-
-            outputText = (isBreaking ? "🔴 ব্রেকিং নিউজ >> " : "") +
-                allTitles.join(" | ");
-
+            output = "              শীর্ষ সংবাদ>> " + allTitles.join(" | ");
         } else {
-
-            outputText = "BOSTAFLIX BDIX IPTV";
+            output = "              শীর্ষ সংবাদ>> BOSTAFLIX BDIX IPTV";
         }
 
-        // =========================
-        // 7. RESPONSE
-        // =========================
-        return res.status(200).json({
-            text: outputText,
-            breaking: isBreaking,
-            count: allTitles.length
-        });
+        return res.status(200).send(output);
 
     } catch (error) {
-
-        return res.status(500).json({
-            error: "Server Error",
-            message: error.message
-        });
+        return res.status(500).send("শীর্ষ সংবাদ>>Server Error");
     }
 }
