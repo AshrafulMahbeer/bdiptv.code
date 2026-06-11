@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     const upstream = await fetch(targetUrl, {
       headers: {
         "User-Agent": req.headers["user-agent"] || "",
-        "Referer": targetUrl,
+        "Referer": https://tv.roarzone.net/player.php?stream=,
         "Origin": new URL(targetUrl).origin,
       },
     });
