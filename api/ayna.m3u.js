@@ -1,17 +1,17 @@
-import fs from "fs";
-import path from "path";
+const SOURCE =
+    "https://biostartvworld.pages.dev/akashgo.m3u";
 
-const encodeB64 = (str) =>
-    Buffer.from(str, "utf8")
+function encodeB64(str) {
+    return Buffer.from(str, "utf8")
         .toString("base64")
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
         .replace(/=+$/, "");
+}
 
-function proxify(slug, url, channelObj = null, customExt = null) {
+function proxify(slug, url, isFallback = false, channelObj = null, customExt = null) {
     if (!url) return "";
 
-    // Don't proxy existing key URLs
     if (url.includes("/api/key/")) {
         return url;
     }
@@ -51,73 +51,106 @@ function proxify(slug, url, channelObj = null, customExt = null) {
         }
     } catch (e) {}
 
+    /*
+     * Don't use window.location.origin in Vercel.
+     * The hostname comes from the request.
+     */
     return `/api/key/${encodeB64(payload)}/${filename}`;
 }
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
     try {
-        const file = path.join(process.cwd(), "https://biostartvworld.pages.dev/akashgo.m3u");
+        const response = await fetch(SOURCE, {
+            headers: {
+                "User-Agent": "Mozilla/5.0"
+            },
+            cache: "no-store"
+        });
 
-        let m3u = fs.readFileSync(file, "utf8");
+        if (!response.ok) {
+            return res
+                .status(response.status)
+                .send("Unable to fetch source playlist");
+        }
 
-        const lines = m3u.split(/\r?\n/);
+        const playlist = await response.text();
+
+        /*
+         * For authorized/non-DRM playlists, process the URLs here.
+         *
+         * The source playlist can contain:
+         * #EXTINF
+         * #KODIPROP
+         * #EXTHTTP
+         * stream URL
+         *
+         * Those directive lines are left untouched.
+         */
+
+        const lines = playlist.split(/\r?\n/);
 
         let currentChannel = null;
 
         const output = lines.map((line) => {
             const trimmed = line.trim();
 
-            // EXTINF line
             if (trimmed.startsWith("#EXTINF")) {
                 const comma = trimmed.indexOf(",");
 
-                let name = "";
+                const name =
+                    comma >= 0
+                        ? trimmed.substring(comma + 1).trim()
+                        : "channel";
 
-                if (comma !== -1) {
-                    name = trimmed.substring(comma + 1).trim();
-                }
+                const idMatch =
+                    trimmed.match(/tvg-id="([^"]+)"/i);
 
                 currentChannel = {
                     name,
+                    slug: idMatch
+                        ? idMatch[1]
+                        : name,
                     user_agent: "",
                     headers: {}
                 };
 
-                // Read tvg-id as slug if available
-                const idMatch = trimmed.match(/tvg-id="([^"]+)"/i);
-
-                if (idMatch) {
-                    currentChannel.slug = idMatch[1];
-                }
-
-                // Read user-agent if present
-                const uaMatch = trimmed.match(
-                    /(?:user-agent|user_agent)="([^"]+)"/i
-                );
-
-                if (uaMatch) {
-                    currentChannel.user_agent = uaMatch[1];
-                }
-
                 return line;
             }
 
-            // Preserve comments/directives
-            if (!trimmed || trimmed.startsWith("#")) {
+            /*
+             * Preserve all M3U/Kodi directives.
+             */
+            if (
+                !trimmed ||
+                trimmed.startsWith("#")
+            ) {
                 return line;
             }
 
-            // This should be the stream URL
+            /*
+             * Stream URL.
+             *
+             * For a playlist that you are authorized to proxy,
+             * proxify() can be applied here.
+             */
             if (
                 trimmed.startsWith("http://") ||
                 trimmed.startsWith("https://")
             ) {
-                const slug =
-                    currentChannel?.slug ||
-                    currentChannel?.name ||
-                    "channel";
-
-                return proxify(slug, trimmed, currentChannel);
+                /*
+                 * Intentionally leave the source URL unchanged
+                 * for the Widevine-protected Akash Go playlist.
+                 *
+                 * For your own/non-DRM stream:
+                 *
+                 * return proxify(
+                 *     currentChannel?.slug || "channel",
+                 *     trimmed,
+                 *     false,
+                 *     currentChannel
+                 * );
+                 */
+                return trimmed;
             }
 
             return line;
@@ -125,17 +158,30 @@ export default function handler(req, res) {
 
         const result = output.join("\n");
 
-        res.setHeader("Content-Type", "application/x-mpegURL; charset=utf-8");
+        res.status(200);
+
+        res.setHeader(
+            "Content-Type",
+            "application/x-mpegURL; charset=utf-8"
+        );
+
+        res.setHeader(
+            "Access-Control-Allow-Origin",
+            "*"
+        );
+
         res.setHeader(
             "Cache-Control",
             "public, s-maxage=30, stale-while-revalidate=60"
         );
-        res.status(200).send(result);
-    } catch (err) {
-        console.error(err);
 
-        res.status(500).send(
-            "#EXTM3U\n#ERROR Failed to generate playlist"
-        );
+        return res.send(result);
+
+    } catch (error) {
+        console.error(error);
+
+        return res
+            .status(500)
+            .send("#EXTM3U\n#ERROR Source unavailable");
     }
 }
