@@ -56,7 +56,7 @@ function proxify(slug, url, channelObj = null, customExt = null) {
 
 export default function handler(req, res) {
     try {
-        const file = path.join(process.cwd(), "akashgo.m3u");
+        const file = path.join(process.cwd(), "https://biostartvworld.pages.dev/akashgo.m3u");
 
         let m3u = fs.readFileSync(file, "utf8");
 
