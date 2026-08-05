@@ -1,15 +1,481 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>CORS Proxy for m3u8</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Jadoo | Buddy✘TV</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/level-selector@0.2.0/dist/level-selector.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@clappr/hlsjs-playback@1.0.1/dist/hlsjs-playback.min.js"></script>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+
+        #player {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        @media (max-width: 400px) {
+            body {
+                transform: scale(0.8);
+                transform-origin: top left;
+                width: 125%;
+                height: 125%;
+            }
+        }
+
+        #status {
+            position: fixed;
+            z-index: 9999;
+            left: 10px;
+            bottom: 10px;
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font: 13px Arial, sans-serif;
+            border-radius: 4px;
+        }
+    </style>
 </head>
+
 <body>
-  <form id="proxy-form">
-    <label for="url">https://entezeetv.fun/bdcast/hls/index.m3u8?id=sllfd45v:</label>
-    <input type="text" id="url" name="url">
-    <button type="submit">Proxy</button>
-  </form>
-  <div id="result"></div>
+
+<div id="player"></div>
+<div id="status">Loading...</div>
+
+<script>
+
+    /* =========================
+       CONFIG
+    ========================= */
+
+    const M3U_URL = "/akashgo.m3u";
+
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    function status(text) {
+        document.getElementById("status").textContent = text;
+    }
+
+
+    /* =========================
+       GET ?id=
+    ========================= */
+
+    function getQueryParam(name) {
+        return new URLSearchParams(window.location.search).get(name);
+    }
+
+
+    /* =========================
+       PARSE M3U
+    ========================= */
+
+    async function getChannelFromM3U(channelId) {
+
+        const response = await fetch(M3U_URL, {
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                "Could not load " + M3U_URL +
+                " (" + response.status + ")"
+            );
+        }
+
+        const text = await response.text();
+
+        const lines = text
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(Boolean);
+
+
+        for (let i = 0; i < lines.length; i++) {
+
+            const line = lines[i];
+
+            /*
+             * Find:
+             *
+             * #EXTINF:-1 ... tvg-id="229" ...
+             */
+
+            if (!line.startsWith("#EXTINF:"))
+                continue;
+
+
+            /*
+             * Get tvg-id
+             */
+
+            const idMatch = line.match(
+                /tvg-id=["']([^"']+)["']/
+            );
+
+            /*
+             * Also allow a channel ID in the stream URL:
+             *
+             * /bpk-tv/1722/output/index.m3u8
+             */
+
+            let streamUrl = null;
+            let httpHeaders = {};
+
+
+            /*
+             * Look at the lines following EXTINF.
+             */
+
+            let j = i + 1;
+
+            while (j < lines.length) {
+
+                const next = lines[j];
+
+
+                /*
+                 * Read #EXTHTTP
+                 */
+
+                if (next.startsWith("#EXTHTTP:")) {
+
+                    const json = next.substring(
+                        "#EXTHTTP:".length
+                    );
+
+                    try {
+                        httpHeaders = JSON.parse(json);
+                    } catch (e) {
+                        console.error(
+                            "Invalid EXTHTTP JSON:",
+                            json
+                        );
+                    }
+
+                    j++;
+                    continue;
+                }
+
+
+                /*
+                 * Ignore other M3U tags
+                 */
+
+                if (next.startsWith("#")) {
+                    j++;
+                    continue;
+                }
+
+
+                /*
+                 * First non-tag line = stream URL
+                 */
+
+                streamUrl = next;
+
+                break;
+            }
+
+
+            /*
+             * Match the requested ID.
+             */
+
+            const idMatches =
+                idMatch &&
+                idMatch[1] === String(channelId);
+
+
+            /*
+             * If tvg-id doesn't match, also check
+             * the stream URL's /bpk-tv/CHANNEL_ID/
+             */
+
+            let urlId = null;
+
+            if (streamUrl) {
+
+                const match = streamUrl.match(
+                    /\/bpk-tv\/([^/]+)\//
+                );
+
+                if (match) {
+                    urlId = match[1];
+                }
+            }
+
+
+            const urlMatches =
+                urlId === String(channelId);
+
+
+            if (idMatches || urlMatches) {
+
+                return {
+                    extinf: line,
+                    url: streamUrl,
+                    headers: httpHeaders
+                };
+            }
+        }
+
+
+        throw new Error(
+            "Channel ID " + channelId +
+            " was not found in " + M3U_URL
+        );
+    }
+
+
+    /* =========================
+       CREATE PLAYER
+    ========================= */
+
+    function createPlayer(channel) {
+
+        const sourceUrl = channel.url;
+
+        const headers = channel.headers || {};
+
+        console.log("Stream:", sourceUrl);
+        console.log("EXTHTTP:", headers);
+
+
+        /*
+         * Extract the credentials from #EXTHTTP
+         */
+
+        const edgePolicy =
+            headers["edge-policy"];
+
+        const edgeSignature =
+            headers["edge-signature"];
+
+
+        if (!edgePolicy || !edgeSignature) {
+
+            console.warn(
+                "No edge-policy / edge-signature found"
+            );
+        }
+
+
+        /*
+         * HLS.js request hook.
+         *
+         * This adds the EXTHTTP credentials to
+         * playlist and segment requests.
+         */
+
+        const hlsjsConfig = {
+
+            xhrSetup: function(xhr) {
+
+                if (edgePolicy) {
+
+                    xhr.setRequestHeader(
+                        "edge-policy",
+                        edgePolicy
+                    );
+                }
+
+                if (edgeSignature) {
+
+                    xhr.setRequestHeader(
+                        "edge-signature",
+                        edgeSignature
+                    );
+                }
+            }
+        };
+
+
+        const player = new Clappr.Player({
+
+            source: sourceUrl,
+
+            width: "100%",
+            height: "100%",
+
+            autoPlay: true,
+
+            plugins: [
+                HlsjsPlayback,
+                LevelSelector
+            ],
+
+            mimeType:
+                "application/x-mpegURL",
+
+            /*
+             * Pass configuration to HLS.js
+             */
+
+            hlsjsConfig: hlsjsConfig,
+
+            mediacontrol: {
+                seekbar: "#ff0000",
+                buttons: "#eee"
+            },
+
+            parentId: "#player"
+        });
+
+
+        /*
+         * Retry after playback error.
+         */
+
+        player.on(
+            Clappr.Events.PLAYER_ERROR,
+            function() {
+
+                console.warn(
+                    "Player error - retrying..."
+                );
+
+                status("Stream error — retrying...");
+
+                setTimeout(function() {
+
+                    player.load(sourceUrl);
+
+                    player.play();
+
+                }, 1000);
+            }
+        );
+
+
+        player.on(
+            Clappr.Events.PLAYER_STOP,
+            function() {
+
+                player.play();
+            }
+        );
+
+
+        player.on(
+            Clappr.Events.PLAYBACK_BUFFERFULL,
+            function() {
+
+                status("");
+            }
+        );
+
+
+        return player;
+    }
+
+
+    /* =========================
+       START
+    ========================= */
+
+    async function start() {
+
+        const channelId =
+            getQueryParam("id");
+
+
+        if (!channelId) {
+
+            status("No channel ID");
+
+            console.error(
+                "Missing ?id= parameter"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            status(
+                "Loading channel " +
+                channelId +
+                "..."
+            );
+
+
+            /*
+             * Read /akashgo.m3u
+             */
+
+            const channel =
+                await getChannelFromM3U(
+                    channelId
+                );
+
+
+            console.log(
+                "Matched M3U entry:",
+                channel
+            );
+
+
+            /*
+             * Start Clappr using the URL
+             * and credentials from EXTHTTP.
+             */
+
+            createPlayer(channel);
+
+
+            status("");
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            status(
+                "Error: " +
+                error.message
+            );
+        }
+    }
+
+
+    /* =========================
+       DISABLE RIGHT CLICK
+    ========================= */
+
+    document.addEventListener(
+        "contextmenu",
+        function(event) {
+            event.preventDefault();
+        }
+    );
+
+
+    start();
+
+</script>
+
 </body>
-<script src="script.js"></script>
 </html>
+```
