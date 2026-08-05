@@ -8,7 +8,7 @@ export default function handler(req, res) {
     return res.status(400).send("Missing channel id");
   }
 
-  const file = path.join(process.cwd(), "public", "akashgo.m3u");
+  const file = path.join(process.cwd(), "public", "https://biostartvworld.pages.dev/akashgo.m3u");
 
   if (!fs.existsSync(file)) {
     return res.status(404).send("akashgo.m3u not found");
