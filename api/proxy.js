@@ -1,76 +1,164 @@
 export default async function handler(req, res) {
-  const target = req.query.url;
-  const policy = req.query.policy;
-  const signature = req.query.signature;
-
-  if (!target || !policy || !signature) {
-    return res.status(400).send("Missing proxy parameters");
-  }
-
-  let upstream;
-
   try {
-    upstream = new URL(target);
-  } catch {
-    return res.status(400).send("Invalid URL");
-  }
+    const { url, policy, signature } = req.query;
 
-  // Basic SSRF protection: only allow the expected CDN.
-  if (upstream.hostname !== "owrcovcrpy.gpcdn.net") {
-    return res.status(403).send("Host not allowed");
-  }
-
-  const response = await fetch(upstream, {
-    headers: {
-      "edge-policy": policy,
-      "edge-signature": signature
+    if (!url || !policy || !signature) {
+      return res.status(400).send("Missing url, policy or signature");
     }
-  });
 
-  if (!response.ok) {
-    return res
-      .status(response.status)
-      .send(`Upstream returned ${response.status}`);
-  }
+    let target;
 
-  const contentType =
-    response.headers.get("content-type") ||
-    "application/vnd.apple.mpegurl";
+    try {
+      target = new URL(url);
+    } catch {
+      return res.status(400).send("Invalid URL");
+    }
 
-  let body = await response.text();
+    // Prevent this endpoint from becoming an open proxy.
+    if (target.hostname !== "owrcovcrpy.gpcdn.net") {
+      return res.status(403).send("Host not allowed");
+    }
 
-  // Rewrite HLS URLs through our proxy.
-  const base = new URL(".", upstream);
+    const upstream = await fetch(target.toString(), {
+      method: "GET",
+      headers: {
+        "edge-policy": String(policy),
+        "edge-signature": String(signature),
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "*/*"
+      },
+      redirect: "follow"
+    });
 
-  body = body
-    .split("\n")
-    .map(line => {
-      const trimmed = line.trim();
+    if (!upstream.ok) {
+      const errorText = await upstream.text().catch(() => "");
 
-      if (!trimmed || trimmed.startsWith("#")) {
-        return line;
-      }
+      return res
+        .status(upstream.status)
+        .send(`Upstream HTTP ${upstream.status}\n${errorText.slice(0, 500)}`);
+    }
 
-      let absolute;
+    const contentType =
+      upstream.headers.get("content-type") || "";
 
-      try {
-        absolute = new URL(trimmed, base).href;
-      } catch {
-        return line;
-      }
+    const isPlaylist =
+      target.pathname.endsWith(".m3u8") ||
+      contentType.includes("mpegurl") ||
+      contentType.includes("application/vnd.apple.mpegurl");
 
-      return (
-        "/api/proxy" +
-        "?url=" + encodeURIComponent(absolute) +
-        "&policy=" + encodeURIComponent(policy) +
-        "&signature=" + encodeURIComponent(signature)
+    if (!isPlaylist) {
+      // Binary stream/segment
+      const buffer = Buffer.from(await upstream.arrayBuffer());
+
+      res.setHeader(
+        "Content-Type",
+        contentType || "video/mp2t"
       );
-    })
-    .join("\n");
 
-  res.setHeader("Content-Type", contentType);
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Cache-Control", "no-store");
+      res.setHeader(
+        "Access-Control-Allow-Origin",
+        "*"
+      );
 
-  return res.status(200).send(body);
+      res.setHeader(
+        "Cache-Control",
+        "no-store"
+      );
+
+      return res.status(200).send(buffer);
+    }
+
+    // HLS playlist
+    let playlist = await upstream.text();
+
+    const base = new URL("./", target);
+
+    const rewritten = playlist
+      .split(/\r?\n/)
+      .map(line => {
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          return line;
+        }
+
+        // Normal URI line:
+        // segment_001.ts
+        if (!trimmed.startsWith("#")) {
+          try {
+            const absolute = new URL(trimmed, base).href;
+
+            return makeProxyUrl(
+              absolute,
+              policy,
+              signature
+            );
+          } catch {
+            return line;
+          }
+        }
+
+        // Handle URI="..." inside HLS tags such as:
+        // #EXT-X-KEY:URI="..."
+        // #EXT-X-MAP:URI="..."
+        if (trimmed.includes('URI="')) {
+          return trimmed.replace(
+            /URI="([^"]+)"/g,
+            (_, uri) => {
+              try {
+                const absolute = new URL(uri, base).href;
+
+                return `URI="${makeProxyUrl(
+                  absolute,
+                  policy,
+                  signature
+                )}"`;
+              } catch {
+                return `URI="${uri}"`;
+              }
+            }
+          );
+        }
+
+        return line;
+      })
+      .join("\n");
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.apple.mpegurl"
+    );
+
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      "*"
+    );
+
+    res.setHeader(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate"
+    );
+
+    return res.status(200).send(rewritten);
+
+  } catch (err) {
+    console.error("PROXY ERROR:", err);
+
+    return res
+      .status(500)
+      .send(
+        "Proxy crashed: " +
+        (err?.message || String(err))
+      );
+  }
+}
+
+
+function makeProxyUrl(url, policy, signature) {
+  return (
+    "/api/proxy" +
+    "?url=" + encodeURIComponent(url) +
+    "&policy=" + encodeURIComponent(policy) +
+    "&signature=" + encodeURIComponent(signature)
+  );
 }
