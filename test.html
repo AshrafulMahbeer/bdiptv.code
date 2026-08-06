@@ -42,7 +42,7 @@
 <body>
     <div id="player"></div>
 <script>
-    const M3U_URL = "https://xyz.pages.dev/akashgo.m3u";
+    const M3U_URL = "https://biostartvworld.pages.dev/akashgo.m3u";
 
     const encodeB64 = (str) =>
         btoa(unescape(encodeURIComponent(str)))
@@ -103,7 +103,7 @@
             if (fn) filename = fn;
         } catch (e) {}
 
-        return `${window.location.origin}/api/key/${encodeB64(payload)}/${filename}`;
+        return `https://biostartvworld.pages.dev/api/key/${encodeB64(payload)}/${filename}`;
     }
 
 
