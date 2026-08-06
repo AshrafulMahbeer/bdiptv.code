@@ -18,6 +18,7 @@ export default async function handler(req, res) {
     const upstream = await fetch(target.href, {
       redirect: "follow",
       headers: {
+        Host: "owrcovcrpy.gpcdn.net",
         "edge-policy":
           "eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9vd3Jjb3ZjcnB5LmdwY2RuLm5ldC9icGstdHYvMTcxMS9vdXRwdXQvKiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiRWRnZVRpbWUiOjE3ODU5OTYwNDN9fX1dfQ",
         "edge-signature":
