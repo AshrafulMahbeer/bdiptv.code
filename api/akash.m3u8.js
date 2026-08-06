@@ -6,11 +6,13 @@ export default async function handler(req, res) {
   }
 
   const upstream = await fetch(url, {
-    headers: {
-      "edge-policy": "YOUR_EDGE_POLICY",
-      "edge-signature": "YOUR_EDGE_SIGNATURE",
-      "User-Agent": "Mozilla/5.0"
-    }
+   headers: {
+        "edge-policy":
+          "eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9vd3Jjb3ZjcnB5LmdwY2RuLm5ldC9icGstdHYvMTcxMS9vdXRwdXQvKiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiRWRnZVRpbWUiOjE3ODU5OTYwNDN9fX1dfQ",
+        "edge-signature":
+          "x4TTwRqgxy5k4YK4CJ9wq0RxWRGoEQzqxtp9ZHgy~lA",
+        "User-Agent": "Mozilla/5.0"
+      }
   });
 
   res.status(upstream.status);
